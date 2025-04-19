@@ -1,6 +1,9 @@
 package simu.framework;
 
 import controller.IControllerMtoV;
+
+import eduni.distributions.Bernoulli;
+import eduni.distributions.DiscreteGenerator;
 import simu.model.ServicePoint;
 
 public abstract class Engine extends Thread implements IEngine {  // NEW DEFINITIONS
@@ -11,6 +14,8 @@ public abstract class Engine extends Thread implements IEngine {  // NEW DEFINIT
 	protected EventList eventList;
 	protected ServicePoint[] servicePoints;
 	protected IControllerMtoV controller; // NEW
+	protected DiscreteGenerator euFlightGenerator;
+	protected int arrivalFrequency;
 
 	public Engine(IControllerMtoV controller) {	// NEW
 		this.controller = controller;  			// NEW
@@ -32,6 +37,20 @@ public abstract class Engine extends Thread implements IEngine {  // NEW DEFINIT
 	@Override // NEW
 	public long getDelay() {
 		return delay;
+	}
+
+	/**
+	 * Sets the percentage of flights allocated to the EU region based on a Bernoulli distribution.
+	 *
+	 * <p>This method initializes a Bernoulli distribution generator with the given percentage,
+	 * which simulates the likelihood of assigning a flight to the EU region.</p>
+	 *
+	 *  @param percentage The probability of success (0.0 <= prob <= 1.0).
+	 *  *             Represents the likelihood of a "successful" outcome in the Bernoulli trial.
+	 */
+	@Override
+	public void setEUFlightPercentage(double percentage){
+		euFlightGenerator = new Bernoulli(percentage);
 	}
 	
 	@Override
