@@ -9,12 +9,13 @@ import simu.model.ServicePoint;
 public abstract class Engine extends Thread implements IEngine {  // NEW DEFINITIONS
 	private double simulationTime = 0;	// time when the simulation will be stopped
 	private long delay = 0;
-	protected DiscreteGenerator euFlightGenerator;
 	private Clock clock;				// in order to simplify the code (clock.getClock() instead Clock.getInstance().getClock())
 	
 	protected EventList eventList;
 	protected ServicePoint[] servicePoints;
 	protected IControllerMtoV controller; // NEW
+	protected DiscreteGenerator euFlightGenerator;
+	protected int arrivalFrequency;
 
 	public Engine(IControllerMtoV controller) {	// NEW
 		this.controller = controller;  			// NEW
