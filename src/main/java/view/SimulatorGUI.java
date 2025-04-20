@@ -8,6 +8,7 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import simu.framework.Trace;
@@ -17,6 +18,11 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.text.*;
+
+import simu.model.Customer; // Import the correct Customer class
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class SimulatorGUI extends Application implements ISimulatorUI {
 
@@ -30,13 +36,16 @@ public class SimulatorGUI extends Application implements ISimulatorUI {
 	private Label timeLabel;
 	private Label delayLabel;
 	private Label resultLabel;
-	
+
 	private Button startButton;
 	private Button slowButton;
 	private Button speedUpButton;
 
 	private IVisualisation display;
 
+    private Label mainTitle;
+
+    private List<Customer> customers = new ArrayList<>();
 
 	@Override
 	public void init(){
@@ -56,7 +65,11 @@ public class SimulatorGUI extends Application implements ISimulatorUI {
 			    }
 			});
 
-			primaryStage.setTitle("Simulator");
+			primaryStage.setTitle("Airport Simulator");
+
+            // Initialize mainTitle here
+            mainTitle = new Label("Airport Simulator");
+            mainTitle.setFont(Font.font("Tahoma", FontWeight.NORMAL, 20));
 
 			startButton = new Button();
 			startButton.setText("Start simulation");
@@ -65,6 +78,12 @@ public class SimulatorGUI extends Application implements ISimulatorUI {
 	            public void handle(ActionEvent event) {
 	                controller.startSimulation();
 	                startButton.setDisable(true);
+
+                    // Example: Add a customer when the simulation starts
+                    // Use 0 or 1 for isEUFlight
+                    Customer customer = new Customer(0);
+                    customers.add(customer);
+                    display.addCustomer(customer);
 	            }
 	        });
 
@@ -77,28 +96,36 @@ public class SimulatorGUI extends Application implements ISimulatorUI {
 			speedUpButton.setOnAction(e -> controller.increaseSpeed());
 
 			timeLabel = new Label("Simulation time:");
-			timeLabel.setFont(Font.font("Tahoma", FontWeight.NORMAL, 20));
+			timeLabel.setFont(Font.font("Tahoma", FontWeight.NORMAL, 16));
 	        time = new TextField("Give time");
-	        time.setFont(Font.font("Tahoma", FontWeight.NORMAL, 20));
-	        time.setPrefWidth(150);
+	        time.setFont(Font.font("Tahoma", FontWeight.NORMAL, 16));
+	        time.setPrefWidth(100);
 
 	        delayLabel = new Label("Delay:");
-			delayLabel.setFont(Font.font("Tahoma", FontWeight.NORMAL, 20));
+			delayLabel.setFont(Font.font("Tahoma", FontWeight.NORMAL, 16));
 	        delay = new TextField("Give delay");
-	        delay.setFont(Font.font("Tahoma", FontWeight.NORMAL, 20));
-	        delay.setPrefWidth(150);
-	                	        
-	        resultLabel = new Label("Total time:");
-			resultLabel.setFont(Font.font("Tahoma", FontWeight.NORMAL, 20));
-	        results = new Label();
-	        results.setFont(Font.font("Tahoma", FontWeight.NORMAL, 20));
-	        results.setPrefWidth(150);
+	        delay.setFont(Font.font("Tahoma", FontWeight.NORMAL, 16));
+	        delay.setPrefWidth(100);
 
+	        resultLabel = new Label("Total time:");
+			resultLabel.setFont(Font.font("Tahoma", FontWeight.NORMAL, 16));
+	        results = new Label();
+	        results.setFont(Font.font("Tahoma", FontWeight.NORMAL, 16));
+	        results.setPrefWidth(100);
+
+            // Create a VBox layout
+            VBox vBox = new VBox();
+            vBox.setAlignment(Pos.CENTER);
+            vBox.setPadding(new Insets(10));
+            vBox.setSpacing(10); // Set spacing between elements
+            vBox.getChildren().add(mainTitle);
+
+            // Create a hBox layout
 	        HBox hBox = new HBox();
 	        hBox.setPadding(new Insets(15, 12, 15, 12)); // margins up, right, bottom, left
-	        hBox.setSpacing(10);   // node distance 10 pixel
-	        
-	        GridPane grid = new GridPane();
+	        hBox.setSpacing(10);   // Node distance 10 pixels
+
+            GridPane grid = new GridPane();
 	        grid.setAlignment(Pos.CENTER);
 	        grid.setVgap(10);
 	        grid.setHgap(5);
@@ -112,13 +139,18 @@ public class SimulatorGUI extends Application implements ISimulatorUI {
 	        grid.add(startButton,0, 3);
 	        grid.add(speedUpButton, 0, 4);
 	        grid.add(slowButton, 1, 4);
-	        
-	        display = new Visualisation2(400,200);
+
+	        display = new Visualisation(600,600);
 
 	        // Fill the box:
 	        hBox.getChildren().addAll(grid, (Canvas) display);
-	        
-	        Scene scene = new Scene(hBox);
+
+            // Create a root BorderPane and set the VBox and HBox
+            BorderPane root = new BorderPane();
+            root.setTop(vBox); // Place the title at the top
+            root.setCenter(hBox); // Place the grid and canvas in the center
+
+	        Scene scene = new Scene(root, 1000, 800);
 	        primaryStage.setScene(scene);
 	        primaryStage.show();
 		} catch(Exception e) {
