@@ -6,13 +6,20 @@ import eduni.distributions.Bernoulli;
 import eduni.distributions.DiscreteGenerator;
 import simu.model.ServicePoint;
 
+import java.util.ArrayList;
+
 public abstract class Engine extends Thread implements IEngine {  // NEW DEFINITIONS
 	private double simulationTime = 0;	// time when the simulation will be stopped
 	private long delay = 0;
 	private Clock clock;				// in order to simplify the code (clock.getClock() instead Clock.getInstance().getClock())
 	
 	protected EventList eventList;
-	protected ServicePoint[] servicePoints;
+	protected ArrayList<ServicePoint> servicePoints;
+	protected ArrayList<ServicePoint> checkinPoints;
+	protected ArrayList<ServicePoint> securityCheckPoints;
+	protected ArrayList<ServicePoint> passportControlPoints;
+	protected ArrayList<ServicePoint> EUGates;
+	protected ArrayList<ServicePoint> NonEUGates;
 	protected IControllerMtoV controller; // NEW
 	protected DiscreteGenerator euFlightGenerator;
 	protected int arrivalFrequency;

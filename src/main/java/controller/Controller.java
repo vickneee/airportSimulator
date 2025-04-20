@@ -16,10 +16,15 @@ public class Controller implements IControllerVtoM, IControllerMtoV {   // NEW
 	/* Engine control: */
 	@Override
 	public void startSimulation() {
-		engine = new MyEngine(this, 15); // new Engine thread is created for every simulation. tne integer parameter represents the arrival frequency for customer arrivals.
+		// A new Engine thread is created for every simulation.
+		// The first integer parameter represents the arrival frequency for customer arrivals.
+		// The subsequent integer parameters represent the number of service points
+		// for check-in, security, EU gates, passport control, and Non-EU gates, respectively.
+		engine = new MyEngine(this, 5, 5,5,5,5,5);
 		engine.setSimulationTime(ui.getTime());
 		engine.setDelay(ui.getDelay());
-		engine.setEUFlightPercentage(0.3);// Sets the percentage of flights within the EU
+		// Sets the percentage of flights within the EU
+		engine.setEUFlightPercentage(0.3);
 		ui.getVisualisation().clearDisplay();
 		((Thread) engine).start();
 		//((Thread)engine).run(); // Never like this, why?
