@@ -47,12 +47,12 @@ public class Visualisation extends Canvas implements IVisualisation {
 
     @Override
     public void clearDisplay() {
-        gc.setFill(Color.LIGHTBLUE); // Or any background color you prefer
+        gc.setFill(Color.WHITE); // Or any background color you prefer
         gc.fillRect(0, 0, width, height);
     }
 
     private void drawLocations() {
-        drawLocation(ARRIVAL, 600, 50);
+        // drawLocation(ARRIVAL, 600, 50);
         drawLocation(CHECK_IN, 50, 25);
         drawLocation(SECURITY_CHECK, 50, 125);
         drawLocation(PASSPORT_CONTROL, 50, 225);
@@ -65,10 +65,15 @@ public class Visualisation extends Canvas implements IVisualisation {
         gc.fillText(locationName, x - 20, y + 25);
     }
 
-    private void drawCustomer(int customerId, String location) {
+    private void drawCustomer(int customerId, String location, boolean isQueueShort) {
         Position position = getLocationPosition(location);
-        gc.setFill(Color.RED);
-        gc.fillOval(position.x - CUSTOMER_SIZE / 2 + 50, position.y - CUSTOMER_SIZE / 2 + 46, CUSTOMER_SIZE, CUSTOMER_SIZE);
+        // Set color based on queue length
+        if (isQueueShort) {
+            gc.setFill(Color.LIGHTGREEN); // Green for short queues
+        } else {
+            gc.setFill(Color.LIGHTCORAL); // Red for long queues
+        }
+        gc.fillOval(position.x - CUSTOMER_SIZE / 2 + 100, position.y - CUSTOMER_SIZE / 2 + 46, CUSTOMER_SIZE, CUSTOMER_SIZE);
     }
 
     private void drawQueues() {
@@ -77,20 +82,22 @@ public class Visualisation extends Canvas implements IVisualisation {
         String[] servicePointNames = {CHECK_IN, SECURITY_CHECK, PASSPORT_CONTROL, EU_GATE, NON_EU_GATE};
 
         for (int i = 0; i < Math.min(queueLengths.size(), servicePointNames.length); i++) {
-            String queueName = "Queue: " + queueLengths.get(i);
+            String queueName = "Queue Length: " + queueLengths.get(i);
             Position position = getLocationPosition(servicePointNames[i]);
             double x = position.x + horizontalOffset;
             double y = position.y + verticalSpacing;
             drawQueue(queueName, x, y);
+
             // Draw the customer in the queue
+            boolean isQueueShort = queueLengths.get(i) < 5; // Check if queue length is less than 5
             for (int j = 0; j < queueLengths.get(i); j++) {
-                drawCustomer(j, servicePointNames[i]);
+                drawCustomer(j, servicePointNames[i], isQueueShort);
             }
         }
     }
 
     private void drawQueue(String name, double x, double y) {
-        gc.setFill(Color.BLUE);
+        gc.setFill(Color.GRAY);
         gc.fillText(name, x, y);
     }
 
@@ -150,31 +157,6 @@ public class Visualisation extends Canvas implements IVisualisation {
         drawLocations();
         drawQueues();
         // drawCustomers();
-    }
-
-//    private void drawCustomers() {
-//        for (Map.Entry<Integer, String> entry : customerLocations.entrySet()) {
-//            int customerId = entry.getKey();
-//            String location = entry.getValue();
-//            drawCustomer(customerId, location);
-//        }
-//    }
-
-    @Override
-    public void update(List<Customer> customers) {
-        // This method seems redundant with newCustomer and moveCustomer in this setup.
-        // You should likely rely on newCustomer and moveCustomer to handle customer visualization.
-        // If you intend to use this, you'll need to define how it updates the customer locations.
-        simulatorGUI.logEvent("Warning: Visualisation.update(List<Customer>) called but not fully implemented.");
-    }
-
-    @Override
-    public void updateQueueLength(int queueIndex, int length) {
-        if (queueIndex >= 0 && queueIndex < queueLengths.size()) {
-            queueLengths.set(queueIndex, length);
-            System.out.println("Updating queue " + queueIndex + " to length: " + length);
-            redrawCanvas(); // This is crucial for updating the display
-        }
     }
 
     @Override

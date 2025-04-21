@@ -14,7 +14,7 @@ public class ServicePoint implements Comparable<ServicePoint>{
 	private ContinuousGenerator generator;
 	private EventList eventList;
 	private EventType eventTypeScheduled;
-	//Queuestrategy strategy; // option: ordering of the customer
+	// Queuestrategy strategy; // option: ordering of the customer
 	private boolean reserved = false;
 
 	public ServicePoint(ContinuousGenerator generator, EventList tapahtumalista, EventType tyyppi){
@@ -72,10 +72,6 @@ public class ServicePoint implements Comparable<ServicePoint>{
 	public int compareTo(ServicePoint other){
 		return Integer.compare(this.jono.size(), other.jono.size());//compare the size of the queue.
 	}
-
-    public void resetQueue() {
-        jono.clear(); // Clear the queue
-    }
 
     public int getQueueLength() {
         return this.jono.size();

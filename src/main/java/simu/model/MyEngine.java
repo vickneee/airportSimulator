@@ -13,12 +13,14 @@ import java.util.Random;
 
 public class MyEngine extends Engine implements IEngine {
     private ArrivalProcess arrivalProcess;
+    private double arrivalInterval;
     private Bernoulli euFlightGenerator; // Declare the generator
 
     private boolean isRunning = true; // Flag to control running state
 
     public MyEngine(IControllerMtoV controller, int arrivalInterval, int checkinNum, int securityNum, int passportNum, int EUNum, int NonEUNum) { // NEW
         super(controller); // NEW
+        this.arrivalInterval = arrivalInterval; // Set the arrival interval NEW
         // Initialize the generator with a probability (e.g., 0.5 for 50%)
         euFlightGenerator = new Bernoulli(0.5, new Random().nextLong());
         // Initialize the main list for all service points
@@ -44,7 +46,7 @@ public class MyEngine extends Engine implements IEngine {
         servicePoints.addAll(EUGates);
         servicePoints.addAll(NonEUGates);
 
-        arrivalProcess = new ArrivalProcess(new Negexp(arrivalInterval, 5), eventList, EventType.ARR1);
+        arrivalProcess = new ArrivalProcess(new Negexp(arrivalInterval, 1), eventList, EventType.ARR1);
     }
 
     /**
@@ -163,23 +165,23 @@ public class MyEngine extends Engine implements IEngine {
         updateQueueLengths(); // Final update
     }
 
-    @Override
-    public void reset() {
-        // Clear the event list
-        eventList.clear();
-
-        // Reset the clock
-        Clock.getInstance().reset();
-
-        // Reinitialize the arrival process
-        arrivalProcess.generateNext();
-
-        // Reset any other necessary state (e.g., service points)
-        for (ServicePoint sp : servicePoints) {
-            sp.resetQueue();
-        }
-        updateQueueLengths(); // Reset queue display to 0
-    }
+//    @Override
+//    public void reset() {
+//        // Clear the event list
+//        eventList.clear();
+//
+//        // Reset the clock
+//        Clock.getInstance().reset();
+//
+//        // Reinitialize the arrival process
+//        arrivalProcess.generateNext();
+//
+//        // Reset any other necessary state (e.g., service points)
+//        for (ServicePoint sp : servicePoints) {
+//            sp.resetQueue();
+//        }
+//        updateQueueLengths(); // Reset queue display to 0
+//    }
 
     // Methods for controlling the simulation state (to be called from the Controller)
     public void pauseSimulation() {
@@ -192,5 +194,11 @@ public class MyEngine extends Engine implements IEngine {
 
     public boolean isRunning() {
         return isRunning;
+    }
+
+    @Override
+    public void setArrivalInterval(int arrivalInterval) {
+        this.arrivalInterval = arrivalInterval;
+        arrivalProcess.setGenerator(new Negexp(arrivalInterval, 1)); // Update distribution
     }
 }

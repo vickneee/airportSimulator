@@ -10,9 +10,6 @@ public interface IVisualisation {
     void newCustomer(Customer customer); // Called by Controller with Customer object
     void moveCustomer(int customerId, String toLocation);
     void updateQueueLengths(List<Integer> lengths);
-    void update(List<Customer> customers); // Potentially redundant
-    void updateQueueLength(int queueIndex, int length);
-    void addCustomer(Customer customer); // NEW METHOD
-
+    void addCustomer(Customer customer);
 }
 

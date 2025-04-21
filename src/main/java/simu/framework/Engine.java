@@ -22,7 +22,6 @@ public abstract class Engine extends Thread implements IEngine {  // NEW DEFINIT
 	protected ArrayList<ServicePoint> NonEUGates;
 	protected IControllerMtoV controller; // NEW
 	protected DiscreteGenerator euFlightGenerator;
-	protected int arrivalFrequency;
 
     private volatile boolean isRunning = true; // Use volatile for thread safety
 
@@ -106,8 +105,8 @@ public abstract class Engine extends Thread implements IEngine {  // NEW DEFINIT
         return isRunning && clock.getTime() < simulationTime && !Thread.currentThread().isInterrupted();
     }
 
-	private void delay() { // NEW
-		Trace.out(Trace.Level.INFO, "Delay " + delay);
+	private void delay() {
+		// Trace.out(Trace.Level.INFO, "Delay " + delay);
 		try {
 			sleep(delay);
 		} catch (InterruptedException e) {
