@@ -24,7 +24,9 @@ public abstract class Engine extends Thread implements IEngine {  // NEW DEFINIT
 	protected DiscreteGenerator euFlightGenerator;
 	protected int arrivalFrequency;
 
-	public Engine(IControllerMtoV controller) {	// NEW
+    private volatile boolean isRunning = true; // Use volatile for thread safety
+
+    public Engine(IControllerMtoV controller) {	// NEW
 		this.controller = controller;  			// NEW
 		clock = Clock.getInstance();
 		eventList = new EventList();
@@ -62,23 +64,30 @@ public abstract class Engine extends Thread implements IEngine {  // NEW DEFINIT
 	
 	@Override
 	public void run() {
-		initialization(); // creating, e.g., the first event
+        System.out.println("Simulation started.");
+        initialization(); // creating, e.g., the first event
 
-		while (simulate()){
-			delay(); // NEW
-			clock.setTime(currentTime());
-			runBEvents();
-			tryCEvents();
-		}
+        while (isRunning && clock.getTime() < simulationTime && !Thread.currentThread().isInterrupted()) {
+            delay(); // NEW
+            clock.setTime(currentTime());
+            runBEvents();
+            tryCEvents();
+        }
 
 		results();
-	}
-	
-	private void runBEvents() {
-		while (eventList.getNextTime() == clock.getTime()){
-			runEvent(eventList.remove());
-		}
-	}
+        System.out.println("Simulation ended.");
+    }
+
+    public void stopSimulation() {
+        isRunning = false;
+        interrupt(); // Interrupt the thread as well
+    }
+
+    private void runBEvents() {
+        while (eventList.getNextTime() == clock.getTime() && isRunning && !Thread.currentThread().isInterrupted()) {
+            runEvent(eventList.remove());
+        }
+    }
 
 	private void tryCEvents() {    // define protected, if you want to overwrite
 		for (ServicePoint p: servicePoints){
@@ -91,19 +100,21 @@ public abstract class Engine extends Thread implements IEngine {  // NEW DEFINIT
 	private double currentTime(){
 		return eventList.getNextTime();
 	}
-	
-	private boolean simulate() {
-		Trace.out(Trace.Level.INFO, "Time is: " + clock.getTime());
-		return clock.getTime() < simulationTime;
-	}
+
+    private boolean simulate() {
+        Trace.out(Trace.Level.INFO, "Time is: " + clock.getTime());
+        return isRunning && clock.getTime() < simulationTime && !Thread.currentThread().isInterrupted();
+    }
 
 	private void delay() { // NEW
 		Trace.out(Trace.Level.INFO, "Delay " + delay);
 		try {
 			sleep(delay);
 		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
+            Thread.currentThread().interrupt(); // Re-interrupt to ensure the flag is set
+            isRunning = false; // Stop the simulation loop
+            System.out.println("Simulation interrupted during delay.");
+        }
 	}
 
 	protected abstract void initialization(); 	// Defined in simu.model-package's class who is inheriting the Engine class

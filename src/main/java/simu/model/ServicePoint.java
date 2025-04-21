@@ -21,7 +21,6 @@ public class ServicePoint implements Comparable<ServicePoint>{
 		this.eventList = tapahtumalista;
 		this.generator = generator;
 		this.eventTypeScheduled = tyyppi;
-				
 	}
 
 	public void addQueue(Customer a){   // First customer at the queue is always on the service
@@ -73,5 +72,13 @@ public class ServicePoint implements Comparable<ServicePoint>{
 	public int compareTo(ServicePoint other){
 		return Integer.compare(this.jono.size(), other.jono.size());//compare the size of the queue.
 	}
+
+    public void resetQueue() {
+        jono.clear(); // Clear the queue
+    }
+
+    public int getQueueLength() {
+        return this.jono.size();
+    }
 
 }
