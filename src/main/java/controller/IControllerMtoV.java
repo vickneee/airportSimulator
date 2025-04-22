@@ -8,9 +8,9 @@ import view.SimulatorGUI; // Ensure this import is correct
 public interface IControllerMtoV {
     void showEndTime(double time);
     void visualiseCustomer();
-    void moveCustomer(int customerId, String toLocation);
-    void updateQueueLengths(List<Integer> queueLengths);
-    void addCustomer(Customer customer);
+    /*void moveCustomer(int customerId, String toLocation);*/
+    void updateQueueLengths(List<List<Integer>> queueLengths);
+    /*void addCustomer(Customer customer);*/
     void checkPaused(); // Check if the simulation is paused
     SimulatorGUI getSimulatorGUI();
 }

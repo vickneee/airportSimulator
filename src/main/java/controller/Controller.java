@@ -8,6 +8,8 @@ import view.ISimulatorUI;
 import view.SimulatorGUI;
 import view.Visualisation;
 
+import java.util.List;
+
 public class Controller implements IControllerVtoM, IControllerMtoV {   // NEW
 	private IEngine engine;
 	private ISimulatorUI ui;
@@ -23,10 +25,10 @@ public class Controller implements IControllerVtoM, IControllerMtoV {   // NEW
         }
 
         // Bind slider to arrival interval
-        simulatorGUI.getArrivalSlider().valueProperty().addListener((obs, oldVal, newVal) -> {
+        /*simulatorGUI.getArrivalSlider().valueProperty().addListener((obs, oldVal, newVal) -> {
             if (engine != null) {
                 engine.setArrivalInterval((int) simulatorGUI.getArrivalSlider().getValue());            }
-        });
+        });*/
     }
 
     @Override
@@ -41,14 +43,15 @@ public class Controller implements IControllerVtoM, IControllerMtoV {   // NEW
     }
 
     private void initializeEngine() {
+        int arrivalTime = (int) simulatorGUI.getArrivalSlider().getValue();
         // A new Engine thread is created for every simulation.
         // The first integer parameter represents the arrival frequency for customer arrivals.
         // The subsequent integer parameters represent the number of service points
         // for check-in, security, EU gates, passport control, and Non-EU gates, respectively.
         // The arrival frequency is set to 2, which means a new customer arrives every 2 time units.
         // Decrease the arrivalInterval (e.g., from 2 to 5) to decrease customer arrivals
-        engine = new MyEngine(this, 2, 5, 5, 5, 5, 5);
-        engine.setArrivalInterval((int) simulatorGUI.getArrivalSlider().getValue());        engine.setSimulationTime(ui.getTime());
+        engine = new MyEngine(this, arrivalTime, 5, 3, 5, 3, 5);
+        engine.setSimulationTime(ui.getTime());
         engine.setDelay(ui.getDelay());
         // Sets the percentage of flights within the EU
         engine.setEUFlightPercentage(0.3);
@@ -80,18 +83,18 @@ public class Controller implements IControllerVtoM, IControllerMtoV {   // NEW
         Platform.runLater(() -> ui.getVisualisation().newCustomer());
     }
 
-    @Override
+    /*@Override
     public void addCustomer(simu.model.Customer customer) {
         Platform.runLater(() -> ui.getVisualisation().newCustomer(customer));
-    }
+    }*/
 
-    @Override
+    /*@Override
     public void moveCustomer(int customerId, String toLocation) {
         Platform.runLater(() -> ui.getVisualisation().moveCustomer(customerId, toLocation));
-    }
+    }*/
 
     @Override
-    public void updateQueueLengths(java.util.List<Integer> queueLengths) {
+    public void updateQueueLengths(List<List<Integer>> queueLengths) {
         Platform.runLater(() -> {
             if (ui.getVisualisation() instanceof Visualisation) {
                 Visualisation visualisation = (Visualisation) ui.getVisualisation();
@@ -144,9 +147,9 @@ public class Controller implements IControllerVtoM, IControllerMtoV {   // NEW
 
             // **Clear the log events in the SimulatorGUI**
             simulatorGUI.clearLogArea(); // Assuming you have a method like this in SimulatorGUI
-
+            int arrivalTime = (int) simulatorGUI.getArrivalSlider().getValue();
             // **Create a new engine instance**
-            engine = new MyEngine(this, 5, 5, 5, 5, 5, 5);
+            engine = new MyEngine(this, arrivalTime, 5, 5, 5, 5, 5);
             engine.setSimulationTime(ui.getTime());
             engine.setDelay(ui.getDelay());
             engine.setEUFlightPercentage(0.3); // Reset EU flight percentage
