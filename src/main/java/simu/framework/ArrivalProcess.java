@@ -18,4 +18,8 @@ public class ArrivalProcess {
 		eventList.add(t);
 	}
 
+    // Method to update the generator dynamically
+    public void setGenerator(ContinuousGenerator newGenerator) {
+        this.generator = newGenerator;
+    }
 }

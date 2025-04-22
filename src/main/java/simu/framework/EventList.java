@@ -19,6 +19,8 @@ public class EventList {
 	public double getNextTime(){
 		return lista.peek().getTime();
 	}
-	
-	
+
+    public void clear() {
+        lista.clear(); // Clear all events from the priority queue
+    }
 }
