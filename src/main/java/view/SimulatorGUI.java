@@ -87,9 +87,9 @@ public class SimulatorGUI extends Application implements ISimulatorUI {
 
                     // Example: Add a customer when the simulation starts
                     // Use 0 or 1 for isEUFlight
-                    Customer customer = new Customer (0, SimulatorGUI.this);
+                    /*Customer customer = new Customer (0, SimulatorGUI.this);
                     customers.add(customer);
-                    display.addCustomer(customer);
+                    display.addCustomer(customer);*/
 
 	            }
 	        });
@@ -222,7 +222,7 @@ public class SimulatorGUI extends Application implements ISimulatorUI {
 	        grid.add(slowButton, 1, 35);
             grid.add(restartButton, 0, 36);
 
-	        display = new Visualisation(500,550 , this);
+	        display = new Visualisation(500,620 , this);
 
 	        // Fill the box:
 	        hBox.getChildren().addAll(grid, (Canvas) display);

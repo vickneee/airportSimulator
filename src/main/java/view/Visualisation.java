@@ -22,10 +22,13 @@ public class Visualisation extends Canvas implements IVisualisation {
     private static final String PASSPORT_CONTROL = "Passport Control for non-EU flights";
     private static final String EU_GATE = "Boarding Gate for EU flights";
     private static final String NON_EU_GATE = "Boarding Gate for non-EU flights";
+    private String[] servicePointNames = {CHECK_IN, SECURITY_CHECK, PASSPORT_CONTROL, EU_GATE, NON_EU_GATE};
 
     private Map<Integer, String> customerLocations = new HashMap<>();
     private static final double CUSTOMER_SIZE = 10;
-    private List<Integer> queueLengths = new ArrayList<>();
+    private final int QUEUE_HEIGHT=10;
+    private final int QUEUE_WIDTH=100;
+    private List<List<Integer>> queueLengths = new ArrayList<>();
 
     public Visualisation(int w, int h, SimulatorGUI simulatorGUI) {
         super(w, h);
@@ -35,14 +38,14 @@ public class Visualisation extends Canvas implements IVisualisation {
         gc = this.getGraphicsContext2D();
 
         // Initialize queue lengths for each service point (adjust size as needed)
-        queueLengths = new ArrayList<>();
+        /*queueLengths = new ArrayList<>();
         for (int i = 0; i < 5; i++) {
             queueLengths.add(0);
-        }
+        }*/
 
         clearDisplay();
         drawLocations();
-        drawQueues();
+        //drawQueues();
     }
 
     @Override
@@ -53,11 +56,15 @@ public class Visualisation extends Canvas implements IVisualisation {
 
     private void drawLocations() {
         // drawLocation(ARRIVAL, 600, 50);
-        drawLocation(CHECK_IN, 50, 25);
+        for(int i=0; i < servicePointNames.length; i++) {
+            Position position = getLocationPosition(servicePointNames[i]);
+            drawLocation(servicePointNames[i], position.x, position.y);
+        }
+        /*drawLocation(CHECK_IN, 50, 25);
         drawLocation(SECURITY_CHECK, 50, 125);
         drawLocation(PASSPORT_CONTROL, 50, 225);
         drawLocation(EU_GATE, 50, 325);
-        drawLocation(NON_EU_GATE, 50, 425);
+        drawLocation(NON_EU_GATE, 50, 425);*/
     }
 
     private void drawLocation(String locationName, double x, double y) {
@@ -65,33 +72,46 @@ public class Visualisation extends Canvas implements IVisualisation {
         gc.fillText(locationName, x - 20, y + 25);
     }
 
-    private void drawCustomer(int customerId, String location, boolean isQueueShort) {
-        Position position = getLocationPosition(location);
+    private void drawCustomer(String location, boolean isQueueShort, double x, double y) {
         // Set color based on queue length
         if (isQueueShort) {
             gc.setFill(Color.LIGHTGREEN); // Green for short queues
         } else {
             gc.setFill(Color.LIGHTCORAL); // Red for long queues
         }
-        gc.fillOval(position.x - CUSTOMER_SIZE / 2 + 100, position.y - CUSTOMER_SIZE / 2 + 46, CUSTOMER_SIZE, CUSTOMER_SIZE);
+        gc.fillRect(x, y, QUEUE_WIDTH, QUEUE_HEIGHT);
     }
 
     private void drawQueues() {
         double verticalSpacing = 50;
         double horizontalOffset = -20;
-        String[] servicePointNames = {CHECK_IN, SECURITY_CHECK, PASSPORT_CONTROL, EU_GATE, NON_EU_GATE};
+        double secondaryColumnOffset = 220;
+        int maxColumns = 4;
+        //String[] servicePointNames = {CHECK_IN, SECURITY_CHECK, PASSPORT_CONTROL, EU_GATE, NON_EU_GATE};
 
         for (int i = 0; i < Math.min(queueLengths.size(), servicePointNames.length); i++) {
-            String queueName = "Queue Length: " + queueLengths.get(i);
-            Position position = getLocationPosition(servicePointNames[i]);
-            double x = position.x + horizontalOffset;
-            double y = position.y + verticalSpacing;
-            drawQueue(queueName, x, y);
+            List<Integer> servicePointQueues = queueLengths.get(i);
+            double x=0;
+            double y=0;
+            for (int j = 0; j < servicePointQueues.size(); j++) {
+                String queueName = "Queue Length: " + servicePointQueues.get(j);
+                Position position = getLocationPosition(servicePointNames[i]);
 
-            // Draw the customer in the queue
-            boolean isQueueShort = queueLengths.get(i) < 5; // Check if queue length is less than 5
-            for (int j = 0; j < queueLengths.get(i); j++) {
-                drawCustomer(j, servicePointNames[i], isQueueShort);
+                if (j < maxColumns) {
+                    x = position.x + horizontalOffset;
+                }else {
+                    x = position.x + horizontalOffset + secondaryColumnOffset;
+                }
+                if(j==0 || j==maxColumns){
+                    y = position.y + verticalSpacing;
+                } else{
+                    y += 20;
+                }
+
+                drawQueue(queueName, x, y);
+
+                boolean isQueueShort = servicePointQueues.get(j) < 5;
+                drawCustomer(servicePointNames[i], isQueueShort, x+100, y-10);
             }
         }
     }
@@ -106,15 +126,15 @@ public class Visualisation extends Canvas implements IVisualisation {
             case ARRIVAL:
                 return new Position(600, 50);
             case CHECK_IN:
-                return new Position(50, 25);
+                return new Position(50, 5);
             case SECURITY_CHECK:
                 return new Position(50, 125);
             case PASSPORT_CONTROL:
-                return new Position(50, 225);
+                return new Position(50, 245);
             case EU_GATE:
-                return new Position(50, 325);
+                return new Position(50, 365);
             case NON_EU_GATE:
-                return new Position(50, 425);
+                return new Position(50, 485);
             default:
                 return new Position(600, 50); // Default to arrival
         }
@@ -136,18 +156,18 @@ public class Visualisation extends Canvas implements IVisualisation {
         // The actual visual creation happens in newCustomer(Customer customer).
     }
 
-    public void newCustomer(Customer customer) {
+    /*public void newCustomer(Customer customer) {
         customerLocations.put(customer.getId(), ARRIVAL);
         redrawCanvas();
-    }
+    }*/
 
-    public void moveCustomer(int customerId, String toLocation) {
+    /*public void moveCustomer(int customerId, String toLocation) {
         customerLocations.put(customerId, toLocation);
         redrawCanvas();
-    }
+    }*/
 
     @Override
-    public void updateQueueLengths(List<Integer> lengths) {
+    public void updateQueueLengths(List<List<Integer>> lengths) {
         this.queueLengths = lengths;
         redrawCanvas();
     }
@@ -159,10 +179,10 @@ public class Visualisation extends Canvas implements IVisualisation {
         // drawCustomers();
     }
 
-    @Override
+   /* @Override
     public void addCustomer(Customer customer) {
         // This method is called by the controller with a Customer object.
         // You can use it to add a new customer to the visualisation.
         newCustomer(customer);
-    }
+    }*/
 }

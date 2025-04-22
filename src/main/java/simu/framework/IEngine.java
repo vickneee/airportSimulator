@@ -7,5 +7,5 @@ public interface IEngine extends Runnable { // NEW
 	public long getDelay();
 	public void setEUFlightPercentage(double percentage);
 //    public void reset(); // Add this method
-    public void setArrivalInterval(int arrivalInterval); // NEW
+    //public void setArrivalInterval(int arrivalInterval); // NEW
 }

@@ -8,16 +8,16 @@ import simu.framework.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class MyEngine extends Engine implements IEngine {
     private ArrivalProcess arrivalProcess;
-    private double arrivalInterval;
+    //private double arrivalInterval;
 
     private boolean isRunning = true; // Flag to control running state
 
     public MyEngine(IControllerMtoV controller, int arrivalInterval, int checkinNum, int securityNum, int passportNum, int EUNum, int NonEUNum) { // NEW
         super(controller); // NEW
-        this.arrivalInterval = arrivalInterval; // Set the arrival interval NEW
         // Initialize the main list for all service points
         servicePoints = new ArrayList<>();
         // Separate lists for different categories of service points
@@ -148,13 +148,14 @@ public class MyEngine extends Engine implements IEngine {
     }
 
     private void updateQueueLengths() {
-        List<Integer> lengths = new ArrayList<>();
-        lengths.add(checkinPoints.stream().mapToInt(ServicePoint::getQueueLength).sum());
-        lengths.add(securityCheckPoints.stream().mapToInt(ServicePoint::getQueueLength).sum());
-        lengths.add(passportControlPoints.stream().mapToInt(ServicePoint::getQueueLength).sum());
-        lengths.add(EUGates.stream().mapToInt(ServicePoint::getQueueLength).sum());
-        lengths.add(NonEUGates.stream().mapToInt(ServicePoint::getQueueLength).sum());
-        controller.updateQueueLengths(lengths); // Call through the controller
+        List<List<Integer>> queueLengths = new ArrayList<>();
+        queueLengths.add(checkinPoints.stream().map(ServicePoint::getQueueLength).collect(Collectors.toList()));
+        queueLengths.add(securityCheckPoints.stream().map(ServicePoint::getQueueLength).collect(Collectors.toList()));
+        queueLengths.add(passportControlPoints.stream().map(ServicePoint::getQueueLength).collect(Collectors.toList()));
+        queueLengths.add(EUGates.stream().map(ServicePoint::getQueueLength).collect(Collectors.toList()));
+        queueLengths.add(NonEUGates.stream().map(ServicePoint::getQueueLength).collect(Collectors.toList()));
+
+        controller.updateQueueLengths(queueLengths); // Call through the controller
     }
 
     @Override
@@ -194,9 +195,9 @@ public class MyEngine extends Engine implements IEngine {
         return isRunning;
     }
 
-    @Override
+   /* @Override
     public void setArrivalInterval(int arrivalInterval) {
         this.arrivalInterval = arrivalInterval;
         arrivalProcess.setGenerator(new Negexp(arrivalInterval, 1)); // Update distribution
-    }
+    }*/
 }
