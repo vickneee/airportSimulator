@@ -1,7 +1,6 @@
 package simu.model;
 
 import controller.IControllerMtoV;
-import eduni.distributions.Bernoulli;
 import eduni.distributions.Negexp;
 import eduni.distributions.Normal;
 import simu.framework.*;
@@ -9,20 +8,16 @@ import simu.framework.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Random;
 
 public class MyEngine extends Engine implements IEngine {
     private ArrivalProcess arrivalProcess;
     private double arrivalInterval;
-    private Bernoulli euFlightGenerator; // Declare the generator
 
     private boolean isRunning = true; // Flag to control running state
 
     public MyEngine(IControllerMtoV controller, int arrivalInterval, int checkinNum, int securityNum, int passportNum, int EUNum, int NonEUNum) { // NEW
         super(controller); // NEW
         this.arrivalInterval = arrivalInterval; // Set the arrival interval NEW
-        // Initialize the generator with a probability (e.g., 0.5 for 50%)
-        euFlightGenerator = new Bernoulli(0.5, new Random().nextLong());
         // Initialize the main list for all service points
         servicePoints = new ArrayList<>();
         // Separate lists for different categories of service points
@@ -125,6 +120,7 @@ public class MyEngine extends Engine implements IEngine {
                 // Remove the customer from the EU gate queue.
                 a = t.getServicePoint().removeQueue();
                 a.setRemovalTime(Clock.getInstance().getTime());
+                a.reportResults();
                 // a.reportResults(controller.getSimulatorGUI()); // Pass the simulator GUI to the reportResults method
                 updateQueueLengths(); // Update queue lengths
                 break;
@@ -135,6 +131,7 @@ public class MyEngine extends Engine implements IEngine {
                 // Find the Non-EU gate with the shortest queue and move the customer there.
                 ServicePoint NonEUGate = Collections.min(NonEUGates);
                 NonEUGate.addQueue(a);
+                a.reportResults();
                 // a.reportResults(controller.getSimulatorGUI()); // Pass the simulator GUI to the reportResults method
                 updateQueueLengths(); // Update queue lengths
                 break;
@@ -143,6 +140,7 @@ public class MyEngine extends Engine implements IEngine {
                 // Remove the customer from the Non-EU gate queue.
                 a = t.getServicePoint().removeQueue();
                 a.setRemovalTime(Clock.getInstance().getTime());
+                a.reportResults();
                 // a.reportResults(controller.getSimulatorGUI()); // Pass the simulator GUI to the reportResults method
                 updateQueueLengths(); // Update queue lengths
                 break;

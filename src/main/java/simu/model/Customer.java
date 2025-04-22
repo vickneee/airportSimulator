@@ -49,7 +49,7 @@ public class Customer {
             return id;
         }
 
-        public void reportResults(SimulatorGUI simulatorGUI) {
+        public void reportResults() {
             // Log to Trace
             Trace.out(Trace.Level.INFO, "\nCustomer " + id + " ready! ");
             Trace.out(Trace.Level.INFO, "Customer "   + id + " arrived: " + arrivalTime);
@@ -58,16 +58,20 @@ public class Customer {
             Trace.out(Trace.Level.INFO, "Customer " + id + " flight type: " + (isEUFlight? "EU flight" : "Non-EU flight"));
 
             // Log to GUI
+            /*
             simulatorGUI.logEvent("\nCustomer " + id + " ready!");
             simulatorGUI.logEvent("Customer " + id + " arrived: " + arrivalTime);
             simulatorGUI.logEvent("Customer " + id + " removed: " + removalTime);
             simulatorGUI.logEvent("Customer " + id + " stayed: " + (removalTime - arrivalTime));
             simulatorGUI.logEvent("Customer " + id + " flight type: " + (isEUFlight ? "EU flight" : "Non-EU flight"));
+            */
 
             sum += (removalTime - arrivalTime);
             double mean = sum/id;
             System.out.println("Current mean of the customer service times " + mean);
+            /*
             simulatorGUI.logEvent("Current mean of the customer service times: " + mean);
+            */
         }
 
         public String getLocation() {
