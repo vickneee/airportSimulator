@@ -4,14 +4,15 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <BorderPane prefHeight="400.0" prefWidth="600.0">
+      <BorderPane layoutX="3.0" prefHeight="400.0" prefWidth="593.0">
          <top>
-            <HBox alignment="TOP_CENTER" prefHeight="100.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+            <HBox alignment="TOP_CENTER" prefHeight="29.0" prefWidth="600.0" BorderPane.alignment="CENTER">
                <children>
                   <Label text="Airport Simulator">
                      <font>
@@ -21,6 +22,17 @@
                </children>
             </HBox>
          </top>
+         <left>
+            <VBox alignment="TOP_CENTER" prefHeight="371.0" prefWidth="150.0" BorderPane.alignment="CENTER">
+               <children>
+                  <Label text="Parameters">
+                     <font>
+                        <Font name="System Bold" size="11.0" />
+                     </font>
+                  </Label>
+               </children>
+            </VBox>
+         </left>
       </BorderPane>
    </children>
 </AnchorPane>
