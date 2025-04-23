@@ -9,7 +9,7 @@ import simu.model.ServicePoint;
 import java.util.ArrayList;
 
 public abstract class Engine extends Thread implements IEngine {  // NEW DEFINITIONS
-	private double simulationTime = 0;	// time when the simulation will be stopped
+	protected double simulationTime = 0;	// time when the simulation will be stopped
 	private long delay = 0;
 	private Clock clock;				// in order to simplify the code (clock.getClock() instead Clock.getInstance().getClock())
 	
@@ -74,7 +74,6 @@ public abstract class Engine extends Thread implements IEngine {  // NEW DEFINIT
         }
 
 		results();
-        System.out.println("Simulation ended.");
     }
 
     public void stopSimulation() {
@@ -115,6 +114,7 @@ public abstract class Engine extends Thread implements IEngine {  // NEW DEFINIT
             System.out.println("Simulation interrupted during delay.");
         }
 	}
+
 
 	protected abstract void initialization(); 	// Defined in simu.model-package's class who is inheriting the Engine class
 	protected abstract void runEvent(Event t);	// Defined in simu.model-package's class who is inheriting the Engine class

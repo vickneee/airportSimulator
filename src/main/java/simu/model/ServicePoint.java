@@ -14,6 +14,7 @@ public class ServicePoint implements Comparable<ServicePoint>{
 	private ContinuousGenerator generator;
 	private EventList eventList;
 	private EventType eventTypeScheduled;
+	private double totalServiceTime;
 	// Queuestrategy strategy; // option: ordering of the customer
 	private boolean reserved = false;
 
@@ -42,7 +43,12 @@ public class ServicePoint implements Comparable<ServicePoint>{
 	public void beginService() {  		// Begins a new service, customer is on the queue during the service
 		reserved = true;
 		double serviceTime = generator.sample();
-		eventList.add(new Event(eventTypeScheduled, Clock.getInstance().getTime()+serviceTime, this));// Schedule the event and pass this ServicePoint instance.
+		totalServiceTime += serviceTime;
+		// Schedules a new event, including the service time, and passes this ServicePoint instance.
+		// The service time will later be provided to the Customer.
+		// When the Customer exits the gate, their total stayed time will be used to compute the total waiting time
+		// by subtracting the total service time.
+		eventList.add(new Event(eventTypeScheduled, Clock.getInstance().getTime()+serviceTime, this, serviceTime));
 	}
 
 	public boolean isReserved(){
@@ -76,5 +82,9 @@ public class ServicePoint implements Comparable<ServicePoint>{
     public int getQueueLength() {
         return this.jono.size();
     }
+
+	public double getTotalServiceTime(){
+		return totalServiceTime;
+	}
 
 }

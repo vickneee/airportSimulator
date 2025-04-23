@@ -44,7 +44,7 @@ public class Controller implements IControllerVtoM, IControllerMtoV {   // NEW
     }
 
     private void initializeEngine() {
-        // int arrivalTime = (int) simulatorGUI.getArrivalSlider().getValue();
+        int arrivalTime = (int) simulatorGUI.getArrivalSlider().getValue();
         /*No, the line int arrivalTime = (int) simulatorGUI.getArrivalSlider().getValue(); does not listen to the slider
          in real time. It only retrieves the current value of the slider at the moment this line is executed.*/
 
@@ -54,7 +54,7 @@ public class Controller implements IControllerVtoM, IControllerMtoV {   // NEW
         // for check-in, security, EU gates, passport control, and Non-EU gates, respectively.
         // The arrival frequency is set to 5, which means a new customer arrives every 5 time units.
         // Decrease the arrivalInterval (e.g., from 2 to 5) to decrease customer arrivals
-        engine = new MyEngine(this, 5, 5, 3, 5, 3, 5);
+        engine = new MyEngine(this, arrivalTime, 5, 3, 5, 3, 5);
         engine.setSimulationTime(ui.getTime());
         engine.setDelay(ui.getDelay());
         // Sets the percentage of flights within the EU
