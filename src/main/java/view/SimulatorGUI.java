@@ -8,7 +8,6 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import simu.framework.Trace;
@@ -42,6 +41,9 @@ public class SimulatorGUI extends Application implements ISimulatorUI {
 	private Button slowButton;
 	private Button speedUpButton;
     private Button restartButton;
+    private Button stopButton;
+    private Button resetButton;
+    private Button startNewButton;
 
 	private IVisualisation display;
 
@@ -53,7 +55,7 @@ public class SimulatorGUI extends Application implements ISimulatorUI {
     private TextArea logArea;
 
     private Label arrivalSliderLabel;
-    private Slider arrivalSlider = new Slider(1, 5, 2); // Min: 1, Max: 5, Default: 2
+    private Slider arrivalSlider = new Slider(1, 10, 5); // Min: 1, Max: 5, Default: 5
 
 	@Override
 	public void start(Stage primaryStage) {
@@ -83,7 +85,7 @@ public class SimulatorGUI extends Application implements ISimulatorUI {
 	            @Override
 	            public void handle(ActionEvent event) {
 	                controller.startSimulation();
-	                startButton.setDisable(true);
+	                startButton.setDisable(true); // Disable the button after starting
 
                     // Example: Add a customer when the simulation starts
                     // Use 0 or 1 for isEUFlight
@@ -109,13 +111,27 @@ public class SimulatorGUI extends Application implements ISimulatorUI {
                 }
             });
 
-            // Add a Restart button
-            restartButton = new Button();
-            restartButton.setText("Restart");
-            restartButton.setOnAction(e -> {
-                controller.restartSimulation();
-                startButton.setDisable(false);
-            });
+//            // Add a Stop button
+//            stopButton = new Button();
+//            stopButton.setText("Stop");
+//            stopButton.setOnAction(e -> {
+//                controller.stopSimulation();
+//            });
+
+//            // Add a Reset button
+//            resetButton = new Button();
+//            resetButton.setText("Reset");
+//            resetButton.setOnAction(e -> {
+//                controller.resetSimulation();
+//                startButton.setDisable(false); // Enable the button after resetting
+//            });
+
+//            // Add a Reset button
+//            startNewButton = new Button();
+//            startNewButton.setText("Start New");
+//            startButton.setOnAction(e -> {
+//                controller.startNewSimulation();
+//            });
 
 			slowButton = new Button();
 			slowButton.setText("Slow down");
@@ -220,7 +236,9 @@ public class SimulatorGUI extends Application implements ISimulatorUI {
             grid.add(playPauseButton, 1, 34);
 	        grid.add(speedUpButton, 0, 35);
 	        grid.add(slowButton, 1, 35);
-            grid.add(restartButton, 0, 36);
+            // grid.add(stopButton, 0, 36);
+            // grid.add(resetButton, 1, 36);
+            // grid.add(startNewButton, 1, 37);
 
 	        display = new Visualisation(500,620 , this);
 
