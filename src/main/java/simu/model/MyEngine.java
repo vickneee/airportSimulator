@@ -12,12 +12,13 @@ import java.util.stream.Collectors;
 
 public class MyEngine extends Engine implements IEngine {
     private ArrivalProcess arrivalProcess;
-    //private double arrivalInterval;
+    private int arrivalInterval;
 
     private boolean isRunning = true; // Flag to control running state
 
     public MyEngine(IControllerMtoV controller, int arrivalInterval, int checkinNum, int securityNum, int passportNum, int EUNum, int NonEUNum) { // NEW
         super(controller); // NEW
+        this.arrivalInterval = arrivalInterval; // Set the arrival interval
         // Initialize the main list for all service points
         servicePoints = new ArrayList<>();
         // Separate lists for different categories of service points
@@ -59,9 +60,14 @@ public class MyEngine extends Engine implements IEngine {
         }
     }
 
+
+    /**
+     * Initializes the simulation by generating the first arrival event.
+     * This method is called at the start of the simulation to kick off the event generation process.
+     */
     @Override
     protected void initialization() {
-        arrivalProcess.generateNext();     // First arrival in the system
+        arrivalProcess.generateNext();
     }
 
     /**
@@ -158,6 +164,9 @@ public class MyEngine extends Engine implements IEngine {
         controller.updateQueueLengths(queueLengths); // Call through the controller
     }
 
+    /**
+     * Handles the results of the simulation.
+     */
     @Override
     protected void results() {
         controller.showEndTime(Clock.getInstance().getTime());
@@ -175,10 +184,6 @@ public class MyEngine extends Engine implements IEngine {
 //        // Reinitialize the arrival process
 //        arrivalProcess.generateNext();
 //
-//        // Reset any other necessary state (e.g., service points)
-//        for (ServicePoint sp : servicePoints) {
-//            sp.resetQueue();
-//        }
 //        updateQueueLengths(); // Reset queue display to 0
 //    }
 
@@ -195,9 +200,15 @@ public class MyEngine extends Engine implements IEngine {
         return isRunning;
     }
 
-   /* @Override
+    /**
+     * Sets the arrival interval for the arrival process.
+     *
+     * @param arrivalInterval The new arrival interval in seconds.
+     */
+   @Override
     public void setArrivalInterval(int arrivalInterval) {
         this.arrivalInterval = arrivalInterval;
-        arrivalProcess.setGenerator(new Negexp(arrivalInterval, 1)); // Update distribution
-    }*/
+        arrivalProcess.setGenerator(new Negexp(arrivalInterval, 1));
+    }
+
 }
