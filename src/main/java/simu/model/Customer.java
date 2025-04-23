@@ -12,7 +12,14 @@ public class Customer {
         private static long sum = 0;
         private boolean isEUFlight;
         private String location;
+        private double servicedTime = 0;
 
+    /**
+     * Initializes a Customer instance and determines whether the customer is on an EU flight.
+     * The EU flight status is set based on the provided parameter.
+     *
+     * @param isEUFlight A numeric value indicating if the flight is an EU flight (1 for true, otherwise false).
+     */
         public Customer(long isEUFlight, SimulatorGUI simulatorGUI) {
             id = i++;
             if(isEUFlight == 1){
@@ -41,6 +48,11 @@ public class Customer {
             this.arrivalTime = arrivalTime;
         }
 
+    /**
+     * Determines whether the flight is an EU flight.
+     *
+     * @return {@code true} if the flight is an EU flight, {@code false} otherwise.
+     */
         public boolean getIsEUFlight(){
             return isEUFlight;
         }
@@ -80,6 +92,25 @@ public class Customer {
 
         public void setLocation(String location) {
             this.location = location;
+        }
+
+    /**
+     * Accumulates the total service time for a customer by adding the provided service duration.
+     *
+     * @param time The duration of the service to be added.
+     */
+        public void cumulateServicedTime(double time){
+            servicedTime += time;
+        }
+    /**
+     * Calculates the total waiting time of a customer.
+     * The waiting time is determined by subtracting the total service time from the
+     * difference between the removal time and the arrival time.
+     *
+     * @return The total waiting time of the customer.
+     */
+        public double calculateTotalWaitingTime(){
+            return removalTime - arrivalTime - servicedTime;
         }
 
     }
