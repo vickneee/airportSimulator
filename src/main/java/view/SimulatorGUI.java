@@ -55,7 +55,10 @@ public class SimulatorGUI extends Application implements ISimulatorUI {
     private TextArea logArea;
 
     private Label arrivalSliderLabel;
-    private Slider arrivalSlider = new Slider(1, 10, 5); // Min: 1, Max: 5, Default: 5
+    private Slider arrivalSlider = new Slider(1, 10, 5); // Min: 1, Max: 10, Default: 5
+
+    private Label euProcentSliderLabel;
+    private Slider euProcentSlider = new Slider(1, 99, 5); // Min: 1, Max: 99, Default: 50
 
 	@Override
 	public void start(Stage primaryStage) {
@@ -190,6 +193,20 @@ public class SimulatorGUI extends Application implements ISimulatorUI {
             arrivalSlider.setMajorTickUnit(1);
             arrivalSlider.setBlockIncrement(1);
 
+            euProcentSliderLabel = new Label();
+            euProcentSliderLabel.setText("Amount of EU Passengers (%):");
+            euProcentSliderLabel.setFont(Font.font("Tahoma", FontWeight.NORMAL, 12));
+            // Set the range and default value for the EU percentage slider
+            euProcentSlider.setMin(0);
+            euProcentSlider.setMax(100);
+            euProcentSlider.setValue(50); // Default value
+            euProcentSlider.setStyle("-fx-font-size: 14px;"); // Set font size for the Slider
+            // Set the tick marks and labels for the EU percentage slider
+            euProcentSlider.setShowTickLabels(true);
+            euProcentSlider.setShowTickMarks(true);
+            euProcentSlider.setMajorTickUnit(10);
+            // euProcentSlider.setBlockIncrement(10);
+
             // Create a VBox layout
             VBox vBox = new VBox();
             vBox.setAlignment(Pos.CENTER);
@@ -225,8 +242,10 @@ public class SimulatorGUI extends Application implements ISimulatorUI {
             grid.add(subTitle , 0, 0); // Add subtitle to the grid
             grid.add(arrivalSliderLabel, 0, 2); // Add the arrival slider label to the grid
             grid.add(arrivalSlider, 0, 3); // Add the arrival slider to the grid
+            grid.add(euProcentSliderLabel, 0, 4); // Add the arrival slider label to the grid
+            grid.add(euProcentSlider, 0, 5); // Add the arrival slider to the grid
             grid.add(timeLabel, 0, 31);   // column, row
-	        // grid.add(time, 1, 0);
+            // grid.add(time, 1, 0);
             grid.add(timeSpinner, 1, 31); // Use the initialized Spinner instead of the uninitialized TextField
 	        grid.add(delayLabel, 0, 32);
 	        grid.add(delay, 1, 32);

@@ -30,6 +30,7 @@ public class Controller implements IControllerVtoM, IControllerMtoV {   // NEW
                 engine.setArrivalInterval(newVal.intValue()); // Update arrival interval in engine
             }
         });
+
     }
 
     @Override
