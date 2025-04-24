@@ -84,7 +84,6 @@ public class MyEngine extends Engine implements IEngine {
         }
     }
 
-
     /**
      * Initializes the simulation by generating the first arrival event.
      * This method is called at the start of the simulation to kick off the event generation process.
@@ -114,7 +113,7 @@ public class MyEngine extends Engine implements IEngine {
                 ServicePoint checkinPoint = Collections.min(checkinPoints);
                 // Add a new customer to the chosen check-in point queue.
                 // Generates a value of either 1 or 0 using the Bernoulli distribution and passes it as a parameter to create a new Customer object
-                checkinPoint.addQueue(new Customer(euFlightGenerator.sample(), controller.getSimulatorGUI()));
+                checkinPoint.addQueue(new Customer(euFlightGenerator.sample(), controller.getSimulatorGUI())); // Kysy Ope APUA getSimulatorGUI
                 arrivalProcess.generateNext();
                 controller.visualiseCustomer(); // NEW
                 updateQueueLengths(); // Update queue lengths after arrival
@@ -242,32 +241,27 @@ public class MyEngine extends Engine implements IEngine {
         calculateAverageWaitingTime();
     }
 
-
-
-//    @Override
-//    public void reset() {
-//        // Clear the event list
-//        eventList.clear();
-//
-//        // Reset the clock
-//        Clock.getInstance().reset();
-//
-//        // Reinitialize the arrival process
-//        arrivalProcess.generateNext();
-//
-//        updateQueueLengths(); // Reset queue display to 0
-//    }
-
-
-    // Methods for controlling the simulation state (to be called from the Controller)
+    /**
+     * Pauses the simulation by setting the isRunning flag to false.
+     * This method can be called to temporarily halt the simulation process.
+     */
     public void pauseSimulation() {
         isRunning = false;
     }
 
+    /**
+     * Resumes the simulation by setting the isRunning flag to true.
+     * This method can be called to continue the simulation process after a pause.
+     */
     public void resumeSimulation() {
         isRunning = true;
     }
 
+    /**
+     * Checks if the simulation is currently running.
+     *
+     * @return {@code true} if the simulation is running, {@code false} otherwise.
+     */
     public boolean isRunning() {
         return isRunning;
     }
@@ -320,7 +314,7 @@ public class MyEngine extends Engine implements IEngine {
         double servicePointNum = sp.size();
         double totalSimulationTime = simulationTime * servicePointNum;
         double totalServiceTime = 0;
-        for(int i=0; i<servicePointNum; i++){
+        for (int i=0; i<servicePointNum; i++){
             totalServiceTime += sp.get(i).getTotalServiceTime();
         }
 
@@ -362,18 +356,18 @@ public class MyEngine extends Engine implements IEngine {
             totalServiceTime += sp.get(i).getTotalServiceTime();
         }
 
-        if(servicePointName == "Checkin-point" || servicePointName == "Security check"){
-            if(totalServicedCustomer != 0){
+        if (servicePointName == "Checkin-point" || servicePointName == "Security check"){
+            if (totalServicedCustomer != 0){
                 System.out.println(servicePointName + "'s average service time: " + totalServiceTime / totalServicedCustomer);
                 return totalServiceTime / totalServicedCustomer;
             }
-        } else if(servicePointName == "Passport control" || servicePointName == "Non-EU gate"){
-            if(totalNonEUServicedCustomer != 0){
+        } else if (servicePointName == "Passport control" || servicePointName == "Non-EU gate"){
+            if (totalNonEUServicedCustomer != 0){
                 System.out.println(servicePointName + "'s average service time: " + totalServiceTime / totalNonEUServicedCustomer);
                 return totalServiceTime / totalNonEUServicedCustomer;
             }
-        } else{
-            if(totalEUServicedCustomer != 0){
+        } else {
+            if (totalEUServicedCustomer != 0){
                 System.out.println(servicePointName + "'s average service time: " + totalServiceTime / totalEUServicedCustomer);
                 return totalServiceTime / totalEUServicedCustomer;
             }

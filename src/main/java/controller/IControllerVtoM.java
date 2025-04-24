@@ -7,6 +7,7 @@ public interface IControllerVtoM {
     public void decreaseSpeed();
     public void pauseSimulation(); // Add this method
     public void resumeSimulation(); // Add this method
+
     // public void restartSimulation();
     // public void stopSimulation();
     // public void resetSimulation();

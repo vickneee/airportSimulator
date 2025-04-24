@@ -7,15 +7,15 @@ import simu.framework.Clock;
 import simu.framework.Event;
 import simu.framework.EventList;
 
-// TODO:
 // Service Point functionalities & calculations (+ variables needed) and reporting to be implemented
-public class ServicePoint implements Comparable<ServicePoint>{
+public class
+ServicePoint implements Comparable<ServicePoint>{
 	private LinkedList<Customer> jono = new LinkedList<Customer>(); // Data Structure used
 	private ContinuousGenerator generator;
 	private EventList eventList;
 	private EventType eventTypeScheduled;
 	private double totalServiceTime;
-	// Queuestrategy strategy; // option: ordering of the customer
+	// Queue strategy; // option: ordering of the customer
 	private boolean reserved = false;
 
 	public ServicePoint(ContinuousGenerator generator, EventList tapahtumalista, EventType tyyppi){

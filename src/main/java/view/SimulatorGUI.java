@@ -86,13 +86,6 @@ public class SimulatorGUI extends Application implements ISimulatorUI {
 	            public void handle(ActionEvent event) {
 	                controller.startSimulation();
 	                startButton.setDisable(true); // Disable the button after starting
-
-                    // Example: Add a customer when the simulation starts
-                    // Use 0 or 1 for isEUFlight
-                    /*Customer customer = new Customer (0, SimulatorGUI.this);
-                    customers.add(customer);
-                    display.addCustomer(customer);*/
-
 	            }
 	        });
 
@@ -260,6 +253,10 @@ public class SimulatorGUI extends Application implements ISimulatorUI {
 		}
 	}
 
+    /**
+     * Initializes the GUI components and sets the trace level.
+     * This method is called when the application is launched.
+     */
     @Override
     public void init(){
         Trace.setTraceLevel(Level.INFO);
