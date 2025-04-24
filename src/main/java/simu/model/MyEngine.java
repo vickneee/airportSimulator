@@ -1,6 +1,8 @@
 package simu.model;
 
 import controller.IControllerMtoV;
+import eduni.distributions.Bernoulli;
+import eduni.distributions.DiscreteGenerator;
 import eduni.distributions.Negexp;
 import eduni.distributions.Normal;
 import simu.framework.*;
@@ -11,7 +13,13 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class MyEngine extends Engine implements IEngine {
+    private ArrayList<ServicePoint> checkinPoints;
+    private ArrayList<ServicePoint> securityCheckPoints;
+    private ArrayList<ServicePoint> passportControlPoints;
+    private ArrayList<ServicePoint> EUGates;
+    private ArrayList<ServicePoint> NonEUGates;
     private ArrivalProcess arrivalProcess;
+    private DiscreteGenerator euFlightGenerator;
     private int arrivalInterval;
     private double checkpointUsageRatio;
     private double securityCheckpointUsageRatio;
@@ -273,6 +281,20 @@ public class MyEngine extends Engine implements IEngine {
     public void setArrivalInterval(int arrivalInterval) {
         this.arrivalInterval = arrivalInterval;
         arrivalProcess.setGenerator(new Negexp(arrivalInterval, 1));
+    }
+
+    /**
+     * Sets the percentage of flights allocated to the EU region based on a Bernoulli distribution.
+     *
+     * <p>This method initializes a Bernoulli distribution generator with the given percentage,
+     * which simulates the likelihood of assigning a flight to the EU region.</p>
+     *
+     *  @param percentage The probability of success (0.0 <= prob <= 1.0).
+     *  *             Represents the likelihood of a "successful" outcome in the Bernoulli trial.
+     */
+    @Override
+    public void setEUFlightPercentage(double percentage){
+        euFlightGenerator = new Bernoulli(percentage);
     }
 
     /**

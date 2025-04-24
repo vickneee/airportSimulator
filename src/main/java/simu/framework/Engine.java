@@ -12,16 +12,10 @@ public abstract class Engine extends Thread implements IEngine {  // NEW DEFINIT
 	protected double simulationTime = 0;	// time when the simulation will be stopped
 	private long delay = 0;
 	private Clock clock;				// in order to simplify the code (clock.getClock() instead Clock.getInstance().getClock())
-	
 	protected EventList eventList;
 	protected ArrayList<ServicePoint> servicePoints;
-	protected ArrayList<ServicePoint> checkinPoints;
-	protected ArrayList<ServicePoint> securityCheckPoints;
-	protected ArrayList<ServicePoint> passportControlPoints;
-	protected ArrayList<ServicePoint> EUGates;
-	protected ArrayList<ServicePoint> NonEUGates;
 	protected IControllerMtoV controller; // NEW
-	protected DiscreteGenerator euFlightGenerator;
+
 
     private volatile boolean isRunning = true; // Use volatile for thread safety
 
@@ -45,20 +39,6 @@ public abstract class Engine extends Thread implements IEngine {  // NEW DEFINIT
 	@Override // NEW
 	public long getDelay() {
 		return delay;
-	}
-
-	/**
-	 * Sets the percentage of flights allocated to the EU region based on a Bernoulli distribution.
-	 *
-	 * <p>This method initializes a Bernoulli distribution generator with the given percentage,
-	 * which simulates the likelihood of assigning a flight to the EU region.</p>
-	 *
-	 *  @param percentage The probability of success (0.0 <= prob <= 1.0).
-	 *  *             Represents the likelihood of a "successful" outcome in the Bernoulli trial.
-	 */
-	@Override
-	public void setEUFlightPercentage(double percentage){
-		euFlightGenerator = new Bernoulli(percentage);
 	}
 	
 	@Override
