@@ -3,7 +3,6 @@ package view;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
-import simu.model.Customer;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -25,7 +24,7 @@ public class Visualisation extends Canvas implements IVisualisation {
     private String[] servicePointNames = {CHECK_IN, SECURITY_CHECK, PASSPORT_CONTROL, EU_GATE, NON_EU_GATE};
 
     private Map<Integer, String> customerLocations = new HashMap<>();
-    private static final double CUSTOMER_SIZE = 10;
+    // private static final double CUSTOMER_SIZE = 10;
     private final int QUEUE_HEIGHT=10;
     private final int QUEUE_WIDTH=100;
     private List<List<Integer>> queueLengths = new ArrayList<>();
@@ -48,17 +47,10 @@ public class Visualisation extends Canvas implements IVisualisation {
     }
 
     private void drawLocations() {
-        // drawLocation(ARRIVAL, 600, 50);
-        for (int i=0; i < servicePointNames.length; i++) {
+        for (int i = 0; i < servicePointNames.length; i++) {
             Position position = getLocationPosition(servicePointNames[i]);
             drawLocation(servicePointNames[i], position.x, position.y);
         }
-
-        /*drawLocation(CHECK_IN, 50, 25);
-        drawLocation(SECURITY_CHECK, 50, 125);
-        drawLocation(PASSPORT_CONTROL, 50, 225);
-        drawLocation(EU_GATE, 50, 325);
-        drawLocation(NON_EU_GATE, 50, 425);*/
     }
 
     private void drawLocation(String locationName, double x, double y) {
@@ -66,13 +58,20 @@ public class Visualisation extends Canvas implements IVisualisation {
         gc.fillText(locationName, x - 20, y + 25);
     }
 
-    private void drawCustomer(String location, boolean isQueueShort, double x, double y) {
+
+    private void drawCustomer(String location, int queueLength, double x, double y) {
         // Set color based on queue length
-        if (isQueueShort) {
-            gc.setFill(Color.LIGHTGREEN); // Green for short queues
+        Color queueColor;
+        if (queueLength == 0) {
+            queueColor = Color.WHITE;
+        } else if (queueLength < 6) {
+            queueColor = Color.LIGHTGREEN; // Green for short queues (1-5)
+        } else if (queueLength < 26) {
+            queueColor = Color.YELLOW; // Yellow for medium queues (6-25)
         } else {
-            gc.setFill(Color.LIGHTCORAL); // Red for long queues
+            queueColor = Color.LIGHTCORAL; // Red for long queues (26+)
         }
+        gc.setFill(queueColor);
         gc.fillRect(x, y, QUEUE_WIDTH, QUEUE_HEIGHT);
     }
 
@@ -81,12 +80,12 @@ public class Visualisation extends Canvas implements IVisualisation {
         double horizontalOffset = -20;
         double secondaryColumnOffset = 220;
         int maxColumns = 4;
-        //String[] servicePointNames = {CHECK_IN, SECURITY_CHECK, PASSPORT_CONTROL, EU_GATE, NON_EU_GATE};
+        // String[] servicePointNames = {CHECK_IN, SECURITY_CHECK, PASSPORT_CONTROL, EU_GATE, NON_EU_GATE};
 
         for (int i = 0; i < Math.min(queueLengths.size(), servicePointNames.length); i++) {
             List<Integer> servicePointQueues = queueLengths.get(i);
-            double x=0;
-            double y=0;
+            double x = 0;
+            double y = 0;
             for (int j = 0; j < servicePointQueues.size(); j++) {
                 String queueName = "Queue Length: " + servicePointQueues.get(j);
                 Position position = getLocationPosition(servicePointNames[i]);
@@ -96,7 +95,7 @@ public class Visualisation extends Canvas implements IVisualisation {
                 }else {
                     x = position.x + horizontalOffset + secondaryColumnOffset;
                 }
-                if(j==0 || j==maxColumns){
+                if(j == 0 || j == maxColumns){
                     y = position.y + verticalSpacing;
                 } else{
                     y += 20;
@@ -104,8 +103,8 @@ public class Visualisation extends Canvas implements IVisualisation {
 
                 drawQueue(queueName, x, y);
 
-                boolean isQueueShort = servicePointQueues.get(j) < 5;
-                drawCustomer(servicePointNames[i], isQueueShort, x+100, y-10);
+                int queueLength = servicePointQueues.get(j);
+                drawCustomer(servicePointNames[i], queueLength, x + 108, y - 10);
             }
         }
     }
