@@ -1,6 +1,7 @@
 package simu.framework;
 
 import simu.model.ServicePoint;
+
 /**
  * Represents an event that occurs within the simulation.
  * Includes an IEventType to classify the type of event, a timestamp indicating when it occurs,
@@ -14,11 +15,13 @@ public class Event implements Comparable<Event> {
 	private IEventType type;
 	private double time;
 	private ServicePoint servicePoint;// The associated ServicePoint for this event.
-	
-	public Event(IEventType type, double time, ServicePoint sp) {
+	private double serviceTime;
+
+	public Event(IEventType type, double time, ServicePoint sp, double serviceTime) {
 		this.type = type;
 		this.time = time;
 		servicePoint = sp;
+		this.serviceTime = serviceTime;
 	}
 	
 	public void setType(IEventType type) {
@@ -33,6 +36,7 @@ public class Event implements Comparable<Event> {
 	public double getTime() {
 		return time;
 	}
+
 	/**
 	 * Retrieves the associated ServicePoint for this event.
 	 * This provides a direct reference to the specific service point being utilized
@@ -42,10 +46,19 @@ public class Event implements Comparable<Event> {
 		return servicePoint;
 	}
 
+    /**
+     * Retrieves the service time associated with this event.
+     * This value indicates the duration of the service being performed at the ServicePoint.
+     */
+	public double getServiceTime(){
+		return serviceTime;
+	}
+
 	@Override
 	public int compareTo(Event arg) {
 		if (this.time < arg.time) return -1;
 		else if (this.time > arg.time) return 1;
 		return 0;
 	}
+
 }

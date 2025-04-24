@@ -1,7 +1,6 @@
 package controller;
 
 import javafx.application.Platform;
-import simu.framework.Engine;
 import simu.framework.IEngine;
 import simu.model.MyEngine;
 import view.ISimulatorUI;
@@ -15,6 +14,7 @@ public class Controller implements IControllerVtoM, IControllerMtoV {   // NEW
     private ISimulatorUI ui;
     private SimulatorGUI simulatorGUI; // Add SimulatorGUI field
     private boolean isPaused = false; // Flag to track pause state
+
 
     public Controller(ISimulatorUI ui, SimulatorGUI simulatorGUI) { // Constructor with SimulatorGUI parameter
         this.ui = ui;
@@ -33,6 +33,7 @@ public class Controller implements IControllerVtoM, IControllerMtoV {   // NEW
 
     }
 
+    /* UI control: */
     @Override
     public SimulatorGUI getSimulatorGUI() {
         return simulatorGUI;
@@ -44,10 +45,12 @@ public class Controller implements IControllerVtoM, IControllerMtoV {   // NEW
         initializeEngine();
     }
 
+    /**
+     * Initializes the simulation engine.
+     * This method creates a new instance of the MyEngine class and starts the simulation.
+     */
     private void initializeEngine() {
         // int arrivalTime = (int) simulatorGUI.getArrivalSlider().getValue();
-        /*No, the line int arrivalTime = (int) simulatorGUI.getArrivalSlider().getValue(); does not listen to the slider
-         in real time. It only retrieves the current value of the slider at the moment this line is executed.*/
 
         // A new Engine thread is created for every simulation.
         // The first integer parameter represents the arrival frequency for customer arrivals.
@@ -65,39 +68,50 @@ public class Controller implements IControllerVtoM, IControllerMtoV {   // NEW
         //((Thread)engine).run(); // Never like this, why?
     }
 
+    /**
+     * Decreases the speed of the simulation.
+     * This method increases the delay of the engine to slow down the simulation.
+     */
     @Override
     public void decreaseSpeed() { // Decrease motor speed
         engine.setDelay((long) (engine.getDelay() * 1.10));
     }
 
+    /**
+     * Increases the speed of the simulation.
+     * This method decreases the delay of the engine to speed up the simulation.
+     */
     @Override
     public void increaseSpeed() { // Increase motor speed
         engine.setDelay((long) (engine.getDelay() * 0.9));
     }
 
-    /* Simulation results passing to the UI
-     * Because FX-UI updates come from engine thread, they need to be directed to the JavaFX thread
+    /**
+     * Displays the end time of the simulation in the UI.
+     * This method is called from the engine to update the visualisation with the end time.
+     *
+     * @param time The end time of the simulation.
      */
     @Override
     public void showEndTime(double time) {
         Platform.runLater(() -> ui.setEndingTime(time));
     }
 
+    /**
+     * Visualises a new customer in the UI.
+     * This method is called from the engine to update the visualisation with a new customer.
+     */
     @Override
     public void visualiseCustomer() {
         Platform.runLater(() -> ui.getVisualisation().newCustomer());
     }
 
-    /*@Override
-    public void addCustomer(simu.model.Customer customer) {
-        Platform.runLater(() -> ui.getVisualisation().newCustomer(customer));
-    }*/
-
-    /*@Override
-    public void moveCustomer(int customerId, String toLocation) {
-        Platform.runLater(() -> ui.getVisualisation().moveCustomer(customerId, toLocation));
-    }*/
-
+    /**
+     * Updates the queue lengths in the UI.
+     * This method is called from the engine to update the visualisation with the current queue lengths.
+     *
+     * @param queueLengths A list of lists representing the lengths of different queues.
+     */
     @Override
     public void updateQueueLengths(List<List<Integer>> queueLengths) {
         Platform.runLater(() -> {
@@ -108,13 +122,21 @@ public class Controller implements IControllerVtoM, IControllerMtoV {   // NEW
         });
     }
 
-    /* Pause and Resume Simulation */
+    /**
+     * Pauses the simulation.
+     * This method sets the isPaused flag to true and notifies the engine to pause.
+     */
     public synchronized void pauseSimulation() {
         isPaused = true;
         if (engine instanceof MyEngine) {
             ((MyEngine) engine).pauseSimulation();
         }
     }
+
+    /**
+     * Resumes the simulation.
+     * This method sets the isPaused flag to false and notifies the engine to resume.
+     */
 
     public synchronized void resumeSimulation() {
         isPaused = false;
@@ -123,6 +145,11 @@ public class Controller implements IControllerVtoM, IControllerMtoV {   // NEW
             ((MyEngine) engine).resumeSimulation();
         }
     }
+
+    /**
+     * Checks if the simulation is paused.
+     * This method blocks the current thread until the simulation is resumed.
+     */
 
     public synchronized void checkPaused() {
         while (isPaused) {
@@ -177,7 +204,7 @@ public class Controller implements IControllerVtoM, IControllerMtoV {   // NEW
 //        // Reinitialize the engine with the current slider value
 //        int arrivalTime = (int) simulatorGUI.getArrivalSlider().getValue(); // Get the slider value
 //        System.out.println("Creating new engine with arrivalTime: " + arrivalTime);
-//        engine = new MyEngine(this, arrivalTime, 5, 3, 5, 3, 5); // Create a new engine instance
+//        engine = new MyEngine(this, 5, 5, 3, 5, 3, 5); // Create a new engine instance
 //        engine.setSimulationTime(ui.getTime());
 //        engine.setDelay(ui.getDelay());
 //        engine.setEUFlightPercentage(0.3); // Reset EU flight percentage

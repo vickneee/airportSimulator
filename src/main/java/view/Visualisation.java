@@ -13,7 +13,7 @@ import java.util.Map;
 public class Visualisation extends Canvas implements IVisualisation {
     private GraphicsContext gc;
     private int width, height;
-    private SimulatorGUI simulatorGUI; // Reference to SimulatorGUI
+    private SimulatorGUI simulatorGUI; // Reference to SimulatorGUI // Kysy Opelta APUA
 
     // Define locations as constants
     private static final String ARRIVAL = "Arrival";
@@ -30,22 +30,15 @@ public class Visualisation extends Canvas implements IVisualisation {
     private final int QUEUE_WIDTH=100;
     private List<List<Integer>> queueLengths = new ArrayList<>();
 
-    public Visualisation(int w, int h, SimulatorGUI simulatorGUI) {
+    public Visualisation(int w, int h, SimulatorGUI simulatorGUI) { // Kysy Opelta APUA
         super(w, h);
         this.width = w;
         this.height = h;
-        this.simulatorGUI = simulatorGUI;
+        this.simulatorGUI = simulatorGUI; // Kysy Opelta APUA
         gc = this.getGraphicsContext2D();
-
-        // Initialize queue lengths for each service point (adjust size as needed)
-        /*queueLengths = new ArrayList<>();
-        for (int i = 0; i < 5; i++) {
-            queueLengths.add(0);
-        }*/
 
         clearDisplay();
         drawLocations();
-        //drawQueues();
     }
 
     @Override
@@ -56,10 +49,11 @@ public class Visualisation extends Canvas implements IVisualisation {
 
     private void drawLocations() {
         // drawLocation(ARRIVAL, 600, 50);
-        for(int i=0; i < servicePointNames.length; i++) {
+        for (int i=0; i < servicePointNames.length; i++) {
             Position position = getLocationPosition(servicePointNames[i]);
             drawLocation(servicePointNames[i], position.x, position.y);
         }
+
         /*drawLocation(CHECK_IN, 50, 25);
         drawLocation(SECURITY_CHECK, 50, 125);
         drawLocation(PASSPORT_CONTROL, 50, 225);
@@ -156,16 +150,6 @@ public class Visualisation extends Canvas implements IVisualisation {
         // The actual visual creation happens in newCustomer(Customer customer).
     }
 
-    /*public void newCustomer(Customer customer) {
-        customerLocations.put(customer.getId(), ARRIVAL);
-        redrawCanvas();
-    }*/
-
-    /*public void moveCustomer(int customerId, String toLocation) {
-        customerLocations.put(customerId, toLocation);
-        redrawCanvas();
-    }*/
-
     @Override
     public void updateQueueLengths(List<List<Integer>> lengths) {
         this.queueLengths = lengths;
@@ -179,10 +163,4 @@ public class Visualisation extends Canvas implements IVisualisation {
         // drawCustomers();
     }
 
-   /* @Override
-    public void addCustomer(Customer customer) {
-        // This method is called by the controller with a Customer object.
-        // You can use it to add a new customer to the visualisation.
-        newCustomer(customer);
-    }*/
 }
