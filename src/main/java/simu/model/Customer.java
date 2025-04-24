@@ -1,18 +1,18 @@
 package simu.model;
 
-    import simu.framework.Clock;
-    import simu.framework.Trace;
-    import view.SimulatorGUI;
+import simu.framework.Clock;
+import simu.framework.Trace;
+import view.SimulatorGUI;
 
 public class Customer {
-        private double arrivalTime;
-        private double removalTime;
-        private int id;
-        private static int i = 1;
-        private static long sum = 0;
-        private boolean isEUFlight;
-        private String location;
-        private double servicedTime = 0;
+    private double arrivalTime;
+    private double removalTime;
+    private int id;
+    private static int i = 1;
+    private static long sum = 0;
+    private boolean isEUFlight;
+    private String location;
+    private double servicedTime = 0;
 
     /**
      * Initializes a Customer instance and determines whether the customer is on an EU flight.
@@ -20,56 +20,61 @@ public class Customer {
      *
      * @param isEUFlight A numeric value indicating if the flight is an EU flight (1 for true, otherwise false).
      */
-        public Customer(long isEUFlight, SimulatorGUI simulatorGUI) {
-            id = i++;
-            if(isEUFlight == 1){
-                this.isEUFlight = true;
-            }else{
-                this.isEUFlight = false;
-            }
-            arrivalTime = Clock.getInstance().getTime();
-            Trace.out(Trace.Level.INFO, "New customer #" + id + " arrived at  " + arrivalTime);
-            simulatorGUI.logEvent( "\nNew customer #" + id + " arrived at  " + arrivalTime);
+    public Customer(long isEUFlight, SimulatorGUI simulatorGUI) {
+        id = i++;
+        if (isEUFlight == 1) {
+            this.isEUFlight = true;
+        } else {
+            this.isEUFlight = false;
         }
+        arrivalTime = Clock.getInstance().getTime();
+        Trace.out(Trace.Level.INFO, "New customer #" + id + " arrived at  " + arrivalTime);
+        simulatorGUI.logEvent("\nNew customer #" + id + " arrived at  " + arrivalTime);
+    }
 
-        public double getRemovalTime() {
-            return removalTime;
-        }
+    public double getRemovalTime() {
+        return removalTime;
+    }
 
-        public void setRemovalTime(double removalTime) {
-            this.removalTime = removalTime;
-        }
+    /**
+     * Sets the removal time for the customer.
+     *
+     * @param removalTime The time when the customer is removed.
+     */
+    public void setRemovalTime(double removalTime) {
+        this.removalTime = removalTime;
+    }
 
-        public double getArrivalTime() {
-            return arrivalTime;
-        }
+    public double getArrivalTime() {
+        return arrivalTime;
+    }
 
-        public void setArrivalTime(double arrivalTime) {
-            this.arrivalTime = arrivalTime;
-        }
+    public void setArrivalTime(double arrivalTime) {
+        this.arrivalTime = arrivalTime;
+    }
 
     /**
      * Determines whether the flight is an EU flight.
      *
      * @return {@code true} if the flight is an EU flight, {@code false} otherwise.
      */
-        public boolean getIsEUFlight(){
-            return isEUFlight;
-        }
+    public boolean getIsEUFlight() {
+        return isEUFlight;
+    }
 
-        public int getId() {
-            return id;
-        }
+    public int getId() {
+        return id;
+    }
 
-        public void reportResults() {
-            // Log to Trace
-            Trace.out(Trace.Level.INFO, "\nCustomer " + id + " ready! ");
-            Trace.out(Trace.Level.INFO, "Customer "   + id + " arrived: " + arrivalTime);
-            Trace.out(Trace.Level.INFO,"Customer "    + id + " removed: " + removalTime);
-            Trace.out(Trace.Level.INFO,"Customer "    + id + " stayed: "  + (removalTime - arrivalTime));
-            Trace.out(Trace.Level.INFO, "Customer " + id + " flight type: " + (isEUFlight? "EU flight" : "Non-EU flight"));
+    public void reportResults() {
+        // Log to Trace
+        Trace.out(Trace.Level.INFO, "\nCustomer " + id + " ready! ");
+        Trace.out(Trace.Level.INFO, "Customer " + id + " arrived: " + arrivalTime);
+        Trace.out(Trace.Level.INFO, "Customer " + id + " removed: " + removalTime);
+        Trace.out(Trace.Level.INFO, "Customer " + id + " stayed: " + (removalTime - arrivalTime));
+        Trace.out(Trace.Level.INFO, "Customer " + id + " flight type: " + (isEUFlight ? "EU flight" : "Non-EU flight"));
 
-            // Log to GUI
+        // Log to GUI
             /*
             simulatorGUI.logEvent("\nCustomer " + id + " ready!");
             simulatorGUI.logEvent("Customer " + id + " arrived: " + arrivalTime);
@@ -78,30 +83,31 @@ public class Customer {
             simulatorGUI.logEvent("Customer " + id + " flight type: " + (isEUFlight ? "EU flight" : "Non-EU flight"));
             */
 
-            sum += (removalTime - arrivalTime);
-            double mean = sum/id;
-            System.out.println("Current mean of the customer service times " + mean);
+        sum += (removalTime - arrivalTime);
+        double mean = sum / id;
+        System.out.println("Current mean of the customer service times " + mean);
             /*
             simulatorGUI.logEvent("Current mean of the customer service times: " + mean);
             */
-        }
+    }
 
-        public String getLocation() {
-            return location;
-        }
+    public String getLocation() {
+        return location;
+    }
 
-        public void setLocation(String location) {
-            this.location = location;
-        }
+    public void setLocation(String location) {
+        this.location = location;
+    }
 
     /**
      * Accumulates the total service time for a customer by adding the provided service duration.
      *
      * @param time The duration of the service to be added.
      */
-        public void cumulateServicedTime(double time){
-            servicedTime += time;
-        }
+    public void cumulateServicedTime(double time) {
+        servicedTime += time;
+    }
+
     /**
      * Calculates the total waiting time of a customer.
      * The waiting time is determined by subtracting the total service time from the
@@ -109,8 +115,8 @@ public class Customer {
      *
      * @return The total waiting time of the customer.
      */
-        public double calculateTotalWaitingTime(){
-            return removalTime - arrivalTime - servicedTime;
-        }
-
+    public double calculateTotalWaitingTime() {
+        return removalTime - arrivalTime - servicedTime;
     }
+
+}
