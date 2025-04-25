@@ -37,6 +37,7 @@ public class MyEngine extends Engine implements IEngine {
     private double averageNonEUGateServiceTime;
     private double totalWaitingTime = 0;
     private double averageWaitingTime;
+    private String selectedAirport;
 
     private boolean isRunning = true; // Flag to control running state
 
@@ -51,6 +52,7 @@ public class MyEngine extends Engine implements IEngine {
         passportControlPoints = new ArrayList<>();
         EUGates = new ArrayList<>();
         NonEUGates = new ArrayList<>();
+        selectedAirport = ""; // NEW
 
         // Initialize each category with the specified number of service points
         initializeServicePoints(checkinPoints, checkinNum, 10, 10, EventType.DEP1);
@@ -72,11 +74,11 @@ public class MyEngine extends Engine implements IEngine {
     /**
      * Method to initialize a specific category of service points.
      *
-     * @param pointList  The list to store the service points.
-     * @param count      The number of service points to initialize.
-     * @param mean       The mean value for the Normal distribution.
-     * @param variance   The variance value for the Normal distribution.
-     * @param eventType  The event type associated with the service points.
+     * @param pointList The list to store the service points.
+     * @param count     The number of service points to initialize.
+     * @param mean      The mean value for the Normal distribution.
+     * @param variance  The variance value for the Normal distribution.
+     * @param eventType The event type associated with the service points.
      */
     private void initializeServicePoints(List<ServicePoint> pointList, int count, double mean, double variance, EventType eventType) {
         for (int i = 0; i < count; i++) {
@@ -141,11 +143,11 @@ public class MyEngine extends Engine implements IEngine {
                 // This step is necessary for calculating the waiting time later.
                 a.cumulateServicedTime(t.getServiceTime());
                 // Determine the next service point based on the customer's flight type.
-                if(a.getIsEUFlight()){
+                if (a.getIsEUFlight()) {
                     // Find the EU gate with the shortest queue and move the customer there.
                     ServicePoint EUGate = Collections.min(EUGates);
                     EUGate.addQueue(a);
-                } else{
+                } else {
                     // Find the passport control point with the shortest queue for Non-EU flights.
                     ServicePoint passportControlPoint = Collections.min(passportControlPoints);
                     passportControlPoint.addQueue(a);
@@ -180,7 +182,6 @@ public class MyEngine extends Engine implements IEngine {
                 // Find the Non-EU gate with the shortest queue and move the customer there.
                 ServicePoint NonEUGate = Collections.min(NonEUGates);
                 NonEUGate.addQueue(a);
-                // a.reportResults(controller.getSimulatorGUI()); // Pass the simulator GUI to the reportResults method
                 updateQueueLengths(); // Update queue lengths
                 break;
 
@@ -197,7 +198,6 @@ public class MyEngine extends Engine implements IEngine {
                 // When a customer exits the gate, their total waiting time is added to the overall totalWaitingTime.
                 // This accumulated value will later be used to calculate the average waiting time.
                 totalWaitingTime += a.calculateTotalWaitingTime();
-                // a.reportResults(controller.getSimulatorGUI()); // Pass the simulator GUI to the reportResults method
                 updateQueueLengths(); // Update queue lengths
                 break;
         }
@@ -226,19 +226,38 @@ public class MyEngine extends Engine implements IEngine {
     @Override
     protected void results() {
         controller.showEndTime(Clock.getInstance().getTime());
-        updateQueueLengths();// Final update
+        updateQueueLengths(); // Final update
 
         System.out.println("\nSimulation ended.");
+        String results = "\nSimulation ended.\n\n";
 
         calculateServiceTimesUsageRatio();
+        results += "Selected airport: " + selectedAirport + "\n\n";
+        results += "Checkin-point usage ratio: " + checkpointUsageRatio + "%\n\n";
+        results += "Security check usage ratio: " + securityCheckpointUsageRatio + "%\n\n";
+        results += "Passport control usage ratio: " + passportControlPointUsageRatio + "%\n\n";
+        results += "EU gate usage ratio: " + EUGateUsageRatio + "%\n\n";
+        results += "Non-EU gate usage ratio: " + NonEUGateUsageRatio + "%\n\n";
         System.out.println("Final count of passengers who exited through the EU gate: " + totalEUServicedCustomer);
         System.out.println("Final count of passengers who exited through the Non-EU gate: " + totalNonEUServicedCustomer);
+        results += "Final count of passengers who exited through the EU gate: " + totalEUServicedCustomer + "\n\n";
+        results += "Final count of passengers who exited through the Non-EU gate: " + totalNonEUServicedCustomer + "\n\n";
         totalServicedCustomer = totalEUServicedCustomer + totalNonEUServicedCustomer;
         System.out.println("Final total count of passengers who exited through gates: " + totalServicedCustomer);
+        results += "Final total count of passengers who exited through gates: " + totalServicedCustomer + "\n\n";
         calculateServiceThroughput();
         System.out.println("The service throughput, number of clients serviced related to the time: " + serviceThroughput);
+        results += "The service throughput, number of clients serviced related to the time: " + serviceThroughput + "\n\n";
         calculateAverageServiceTimes();
+        results += "Checkin-point average service time: " + averageCheckinServiceTime + "\n\n";
+        results += "Security check average service time: " + averageSecurityServiceTime + "\n\n";
+        results += "Passport control average service time: " + averagePassportControlServiceTime + "\n\n";
+        results += "EU gate average service time: " + averageEUGateServiceTime + "\n\n";
+        results += "Non-EU gate average service time: " + averageNonEUGateServiceTime + "\n\n";
         calculateAverageWaitingTime();
+        results += "The average waiting time: " + averageWaitingTime + "\n\n";
+
+        controller.showResults(results);
     }
 
     /**
@@ -271,7 +290,7 @@ public class MyEngine extends Engine implements IEngine {
      *
      * @param arrivalInterval The new arrival interval in seconds.
      */
-   @Override
+    @Override
     public void setArrivalInterval(int arrivalInterval) {
         this.arrivalInterval = arrivalInterval;
         arrivalProcess.setGenerator(new Negexp(arrivalInterval, 1));
@@ -283,11 +302,11 @@ public class MyEngine extends Engine implements IEngine {
      * <p>This method initializes a Bernoulli distribution generator with the given percentage,
      * which simulates the likelihood of assigning a flight to the EU region.</p>
      *
-     *  @param percentage The probability of success (0.0 <= prob <= 1.0).
-     *  *             Represents the likelihood of a "successful" outcome in the Bernoulli trial.
+     * @param percentage The probability of success (0.0 <= prob <= 1.0).
+     *                   *             Represents the likelihood of a "successful" outcome in the Bernoulli trial.
      */
     @Override
-    public void setEUFlightPercentage(double percentage){
+    public void setEUFlightPercentage(double percentage) {
         euFlightGenerator = new Bernoulli(percentage);
     }
 
@@ -295,26 +314,26 @@ public class MyEngine extends Engine implements IEngine {
      * Calculates the usage ratio for different service points in the airport simulation.
      * This method assigns the calculated usage ratio to corresponding variables.
      */
-    private void calculateServiceTimesUsageRatio(){
-        checkpointUsageRatio = calculateUsageRatio(checkinPoints,"Checkin-point");
-        securityCheckpointUsageRatio = calculateUsageRatio(securityCheckPoints,"Security check");
-        passportControlPointUsageRatio = calculateUsageRatio(passportControlPoints,"Passport control");
-        EUGateUsageRatio = calculateUsageRatio(EUGates,"EU gate");
-        NonEUGateUsageRatio = calculateUsageRatio(NonEUGates,"Non-EU gate");
+    private void calculateServiceTimesUsageRatio() {
+        checkpointUsageRatio = calculateUsageRatio(checkinPoints, "Checkin-point");
+        securityCheckpointUsageRatio = calculateUsageRatio(securityCheckPoints, "Security check");
+        passportControlPointUsageRatio = calculateUsageRatio(passportControlPoints, "Passport control");
+        EUGateUsageRatio = calculateUsageRatio(EUGates, "EU gate");
+        NonEUGateUsageRatio = calculateUsageRatio(NonEUGates, "Non-EU gate");
     }
 
     /**
      * Calculates the usage ratio of a given service point type.
      *
-     * @param sp List of service points.
+     * @param sp               List of service points.
      * @param servicePointName The name of the service point type.
      * @return The calculated usage ratio (percentage).
      */
-    private double calculateUsageRatio(ArrayList<ServicePoint> sp, String servicePointName){
+    private double calculateUsageRatio(ArrayList<ServicePoint> sp, String servicePointName) {
         double servicePointNum = sp.size();
         double totalSimulationTime = simulationTime * servicePointNum;
         double totalServiceTime = 0;
-        for (int i=0; i<servicePointNum; i++){
+        for (int i = 0; i < servicePointNum; i++) {
             totalServiceTime += sp.get(i).getTotalServiceTime();
         }
 
@@ -326,14 +345,14 @@ public class MyEngine extends Engine implements IEngine {
     /**
      * Calculates the service throughput based on the number of serviced customers and simulation time.
      */
-    private void calculateServiceThroughput(){
+    private void calculateServiceThroughput() {
         serviceThroughput = (totalEUServicedCustomer + totalNonEUServicedCustomer) / simulationTime;
     }
 
     /**
      * Calculates the average service times for different service points in the airport simulation.
      */
-    private void calculateAverageServiceTimes(){
+    private void calculateAverageServiceTimes() {
         averageCheckinServiceTime = calculateAverageServiceTime(checkinPoints, "Checkin-point");
         averageSecurityServiceTime = calculateAverageServiceTime(securityCheckPoints, "Security check");
         averagePassportControlServiceTime = calculateAverageServiceTime(passportControlPoints, "Passport control");
@@ -344,30 +363,30 @@ public class MyEngine extends Engine implements IEngine {
     /**
      * Calculates the average service time for a given service point type.
      *
-     * @param sp List of service points.
+     * @param sp               List of service points.
      * @param servicePointName The name of the service point type.
      * @return The calculated average service time.
      */
-    private double calculateAverageServiceTime(ArrayList<ServicePoint> sp, String servicePointName){
+    private double calculateAverageServiceTime(ArrayList<ServicePoint> sp, String servicePointName) {
         double servicePointNum = sp.size();
         double totalServiceTime = 0;
         double averageServicedTime = 0;
-        for(int i=0; i<servicePointNum; i++){
+        for (int i = 0; i < servicePointNum; i++) {
             totalServiceTime += sp.get(i).getTotalServiceTime();
         }
 
-        if (servicePointName == "Checkin-point" || servicePointName == "Security check"){
-            if (totalServicedCustomer != 0){
+        if (servicePointName == "Checkin-point" || servicePointName == "Security check") {
+            if (totalServicedCustomer != 0) {
                 System.out.println(servicePointName + "'s average service time: " + totalServiceTime / totalServicedCustomer);
                 return totalServiceTime / totalServicedCustomer;
             }
-        } else if (servicePointName == "Passport control" || servicePointName == "Non-EU gate"){
-            if (totalNonEUServicedCustomer != 0){
+        } else if (servicePointName == "Passport control" || servicePointName == "Non-EU gate") {
+            if (totalNonEUServicedCustomer != 0) {
                 System.out.println(servicePointName + "'s average service time: " + totalServiceTime / totalNonEUServicedCustomer);
                 return totalServiceTime / totalNonEUServicedCustomer;
             }
         } else {
-            if (totalEUServicedCustomer != 0){
+            if (totalEUServicedCustomer != 0) {
                 System.out.println(servicePointName + "'s average service time: " + totalServiceTime / totalEUServicedCustomer);
                 return totalServiceTime / totalEUServicedCustomer;
             }
@@ -380,9 +399,34 @@ public class MyEngine extends Engine implements IEngine {
     /**
      * Calculates the average waiting time based on total waiting time and total serviced customers.
      */
-    private void calculateAverageWaitingTime(){
-       averageWaitingTime = totalWaitingTime/totalServicedCustomer;
-       System.out.println("The average waiting time: " + averageWaitingTime);
+    private void calculateAverageWaitingTime() {
+        averageWaitingTime = totalWaitingTime / totalServicedCustomer;
+        System.out.println("The average waiting time: " + averageWaitingTime);
+    }
+
+    /**
+     * Sets the selected airport for the simulation.
+     *
+     * @param airport The name of the selected airport.
+     */
+    public void setSelectedAirport(String airport) {
+        this.selectedAirport = airport;
+    }
+
+    private void displayResults() {
+        // Generate the results string
+        String results = generateResultsString();
+        // Call the showResults method in the controller
+        controller.showResults(results);
+    }
+
+    private String generateResultsString() {
+        // Generate the results string based on your simulation data
+        StringBuilder sb = new StringBuilder();
+        sb.append("Simulation Results:\n");
+        sb.append("Average waiting time: ").append(averageWaitingTime).append("\n");
+        // Add more results as needed
+        return sb.toString();
     }
 
 }

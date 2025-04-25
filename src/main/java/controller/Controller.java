@@ -1,6 +1,7 @@
 package controller;
 
 import javafx.application.Platform;
+import simu.framework.Engine;
 import simu.framework.IEngine;
 import simu.model.MyEngine;
 import view.ISimulatorUI;
@@ -30,6 +31,28 @@ public class Controller implements IControllerVtoM, IControllerMtoV {   // NEW
                 engine.setArrivalInterval(newVal.intValue()); // Update arrival interval in engine
             }
         });
+
+        // EU flight percentage slider
+        if (simulatorGUI.getEUFlightPercentageSlider() == null) {
+            throw new IllegalStateException("EU flight percentage slider is not initialized in SimulatorGUI.");
+        }
+
+        simulatorGUI.getEUFlightPercentageSlider().valueProperty().addListener((obs, oldVal, newVal) -> {
+            if (engine != null) {
+                engine.setEUFlightPercentage(newVal.doubleValue() / 100); // Update EU flight percentage in engine
+            }
+        });
+
+//        // Bind airport choice
+//        if (simulatorGUI.getAirportChoiceBox() == null) {
+//            throw new IllegalStateException("Airport choice box is not initialized in SimulatorGUI.");
+//        }
+
+//        simulatorGUI.getAirportChoiceBox().valueProperty().addListener((obs, oldVal, newVal) -> {
+//            if (engine != null) {
+//                engine.setSelectedAirport(newVal);
+//            }
+//        });
     }
 
     /* UI control: */
@@ -160,8 +183,13 @@ public class Controller implements IControllerVtoM, IControllerMtoV {   // NEW
         }
     }
 
-//    public void stopSimulation() {
-//        System.out.println("Stopping simulation...");
+    /**
+     * Stops the simulation.
+     * This method stops the engine and clears the UI.
+     */
+    @Override
+    public void stopSimulation() {
+        System.out.println("Stopping simulation...");
 //        if (engine != null) {
 //            if (engine instanceof Engine) {
 //                ((Engine) engine).stopSimulation();
@@ -179,9 +207,9 @@ public class Controller implements IControllerVtoM, IControllerMtoV {   // NEW
 //        } else {
 //            System.out.println("No engine to stop.");
 //        }
-//    }
+    }
 
-//    public void resetSimulation() {
+    public void resetSimulation() {
 //        System.out.println("Resetting simulation...");
 //        ui.getVisualisation().clearDisplay();
 //        simulatorGUI.clearLogArea();
@@ -192,81 +220,15 @@ public class Controller implements IControllerVtoM, IControllerMtoV {   // NEW
 //            System.out.println("No engine to reset or engine is not MyEngine.");
 //        }
 //        System.out.println("Simulation reset complete.");
-//    }
+    }
 
-//    public void startNewSimulation() {
-//        System.out.println("Starting new simulation...");
-//        initializeEngine();
-//        // Reset the UI and logs
-//        ui.getVisualisation().clearDisplay();
-//        simulatorGUI.clearLogArea(); // Clear logs in the GUI
-//        // Reinitialize the engine with the current slider value
-//        int arrivalTime = (int) simulatorGUI.getArrivalSlider().getValue(); // Get the slider value
-//        System.out.println("Creating new engine with arrivalTime: " + arrivalTime);
-//        engine = new MyEngine(this, 5, 5, 3, 5, 3, 5); // Create a new engine instance
-//        engine.setSimulationTime(ui.getTime());
-//        engine.setDelay(ui.getDelay());
-//        engine.setEUFlightPercentage(0.3); // Reset EU flight percentage
-//        // Start the new engine in a new thread
-//        if (engine instanceof Runnable) {
-//            Thread engineThread = new Thread((Runnable) engine);
-//            System.out.println("Starting new engine thread.");
-//            engineThread.start(); // Start the engine thread
-//            System.out.println("New engine thread started.");
-//        } else {
-//            System.err.println("Engine is not runnable. Cannot start simulation.");
-//        }
-//        System.out.println("New simulation started.");
-//    }
+    /**
+     * Displays the results of the simulation.
+     * This method is called from the engine to update the visualisation with the results.
+     */
+    @Override
+    public void showResults(String results) {
+        Platform.runLater(() -> simulatorGUI.setResultsText(results));
+    }
 
-//    public void restartSimulation() {
-//        System.out.println("Restarting simulation...");
-//        // Stop the current engine if it exists
-//        if (engine != null) {
-//            System.out.println("Stopping old engine...");
-//            if (engine instanceof Engine) {
-//                ((Engine) engine).stopSimulation(); // Stop the simulation safely
-//                System.out.println("stopSimulation() called on old engine.");
-//            }
-//            if (engine instanceof Thread) {
-//                Thread currentThread = (Thread) engine;
-//                if (currentThread.isAlive()) {
-//                    currentThread.interrupt(); // Interrupt the thread if it's still running
-//                    System.out.println("interrupt() called on old engine thread.");
-//                }
-//            }
-//            // Wait a short time to allow the old thread to potentially stop (for debugging)
-//            try {
-//                Thread.sleep(100);
-//            } catch (InterruptedException e) {
-//                Thread.currentThread().interrupt();
-//            }
-//        } else {
-//            System.out.println("No old engine to stop.");
-//        }
-//
-//        // Clear the UI display and logs
-//        ui.getVisualisation().clearDisplay();
-//        simulatorGUI.clearLogArea(); // Clear logs in the GUI
-//        System.out.println("UI cleared.");
-//
-//        // Reinitialize the engine with the current slider value
-//        int arrivalTime = (int) simulatorGUI.getArrivalSlider().getValue(); // Get the slider value
-//        System.out.println("Creating new engine with arrivalTime: " + arrivalTime);
-//        engine = new MyEngine(this, arrivalTime, 5, 3, 5, 3, 5); // Create a new engine instance
-//        engine.setSimulationTime(ui.getTime());
-//        engine.setDelay(ui.getDelay());
-//        engine.setEUFlightPercentage(0.3); // Reset EU flight percentage
-//
-//        // Start the new engine in a new thread
-//        if (engine instanceof Runnable) {
-//            Thread engineThread = new Thread((Runnable) engine);
-//            System.out.println("Starting new engine thread.");
-//            engineThread.start(); // Start the engine thread
-//            System.out.println("New engine thread started.");
-//        } else {
-//            System.err.println("Engine is not runnable. Cannot start simulation.");
-//        }
-//        System.out.println("Restart process completed.");
-//    }
 }

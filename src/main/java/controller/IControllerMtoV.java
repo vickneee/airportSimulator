@@ -10,4 +10,5 @@ public interface IControllerMtoV {
     void updateQueueLengths(List<List<Integer>> queueLengths);
     void checkPaused(); // Check if the simulation is paused
     SimulatorGUI getSimulatorGUI(); // Kysy Opelta APUA
+    public void showResults(String results);
 }

@@ -4,7 +4,6 @@ import java.text.DecimalFormat;
 import controller.*;
 import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -22,6 +21,8 @@ import simu.model.Customer; // Import the correct Customer class
 
 import java.util.ArrayList;
 import java.util.List;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 
 public class SimulatorGUI extends Application implements ISimulatorUI {
 
@@ -29,7 +30,6 @@ public class SimulatorGUI extends Application implements ISimulatorUI {
 	private IControllerVtoM controller;
 
 	// UI Components:
-	// private TextField time;
     private Spinner<Integer> timeSpinner; // Use Spinner instead of TextField
 	private Spinner<Integer> delay;
 	private Label results;
@@ -40,22 +40,29 @@ public class SimulatorGUI extends Application implements ISimulatorUI {
 	private Button startButton;
 	private Button slowButton;
 	private Button speedUpButton;
-    private Button restartButton;
     private Button stopButton;
+    private ToggleButton playPauseButton;
     private Button resetButton;
-    private Button startNewButton;
 
 	private IVisualisation display;
 
     private Label mainTitle;
     private Label subTitle;
+    private Label subTitle2;
 
     private List<Customer> customers = new ArrayList<>();
 
     private TextArea logArea;
+    private TextArea resultArea;
 
     private Label arrivalSliderLabel;
-    private Slider arrivalSlider = new Slider(1, 10, 5); // Min: 1, Max: 5, Default: 5
+    private Slider arrivalSlider = new Slider(1, 10, 5); // Min: 1, Max: 10, Default: 5
+
+    private Label euProcentSliderLabel;
+    private Slider euProcentSlider = new Slider(1, 100, 50); // Min: 1, Max: 99, Default: 50
+
+    private Label airportChoiceLabel; // Label for the airport choice
+    private ChoiceBox<String> airportChoiceBox; // ChoiceBox for selecting the airport
 
 	@Override
 	public void start(Stage primaryStage) {
@@ -71,83 +78,46 @@ public class SimulatorGUI extends Application implements ISimulatorUI {
 
 			primaryStage.setTitle("Simulator");
 
-            // Initialize mainTitle here
             mainTitle = new Label("Airport Simulator");
             mainTitle.setFont(Font.font("Tahoma", FontWeight.BOLD, 20));
 
-            subTitle = new Label("Parameters:");
-            subTitle .setFont(Font.font("Tahoma", FontWeight.BOLD, 16));
+            subTitle = new Label("Parameters");
+            subTitle .setFont(Font.font("Tahoma", FontWeight.BOLD, 18));
 
-			startButton = new Button();
-			startButton.setText("Start");
-            startButton.setStyle("-fx-background-color: #7bb67d; -fx-text-fill: white; -fx-font-size: 12px;");
-			startButton.setOnAction(new EventHandler<ActionEvent>() {
-	            @Override
-	            public void handle(ActionEvent event) {
-	                controller.startSimulation();
-	                startButton.setDisable(true); // Disable the button after starting
-	            }
-	        });
-
-            // Add a ToggleButton for play/pause
-            ToggleButton playPauseButton = new ToggleButton("Play / Pause");
-            playPauseButton.setFont(Font.font("Tahoma", FontWeight.NORMAL, 12));
-            playPauseButton.setOnAction(event -> {
-                if (playPauseButton.isSelected()) {
-                    playPauseButton.setText("Play");
-                    controller.pauseSimulation(); // Resume the simulation
-                    logEvent("Simulation paused.");
-                } else {
-                    playPauseButton.setText("Pause");
-                    controller.resumeSimulation(); // Pause the simulation
-                    logEvent("Simulation resumed.");
-                }
-            });
-
-//            // Add a Stop button
-//            stopButton = new Button();
-//            stopButton.setText("Stop");
-//            stopButton.setOnAction(e -> {
-//                controller.stopSimulation();
-//            });
-
-//            // Add a Reset button
-//            resetButton = new Button();
-//            resetButton.setText("Reset");
-//            resetButton.setOnAction(e -> {
-//                controller.resetSimulation();
-//                startButton.setDisable(false); // Enable the button after resetting
-//            });
-
-//            // Add a Reset button
-//            startNewButton = new Button();
-//            startNewButton.setText("Start New");
-//            startButton.setOnAction(e -> {
-//                controller.startNewSimulation();
-//            });
+            subTitle2 = new Label("Results");
+            subTitle2 .setFont(Font.font("Tahoma", FontWeight.BOLD, 18));
 
 			slowButton = new Button();
 			slowButton.setText("Slow down");
+            slowButton.setFont(Font.font("Tahoma", FontWeight.NORMAL, 12));
 			slowButton.setOnAction(e -> controller.decreaseSpeed());
-            slowButton.setOnAction(e -> {
-                controller.decreaseSpeed();
-                logEvent("Simulation speed decreased."); // Log only when the button is pressed
-            });
 
             speedUpButton = new Button();
 			speedUpButton.setText("Speed up");
-			speedUpButton.setOnAction(e -> controller.increaseSpeed());
-            speedUpButton.setOnAction(e -> {
-                controller.increaseSpeed();
-                logEvent("Simulation speed increased."); // Log only when the button is pressed
-            });
+            speedUpButton.setFont(Font.font("Tahoma", FontWeight.NORMAL, 12));
+            speedUpButton.setOnAction(e -> controller.increaseSpeed());
+
+            startButton = new Button();
+            startButton.setText("Start");
+            startButton.setStyle("-fx-background-color: #7bb67d; -fx-text-fill: white; -fx-font-size: 12px;");
+
+            playPauseButton = new ToggleButton("Play / Pause");
+            playPauseButton.setFont(Font.font("Tahoma", FontWeight.NORMAL, 12));
+
+            stopButton = new Button();
+            stopButton.setText("Stop");
+            stopButton.setStyle("-fx-background-color: rgba(240,93,93,0.8); -fx-text-fill: white; -fx-font-size: 12px;");
+
+            resetButton = new Button();
+            resetButton.setText("Reset");
+            resetButton.setStyle("-fx-font-size: 12px;");
 
             timeLabel = new Label("Simulation time:");
 			timeLabel.setFont(Font.font("Tahoma", FontWeight.NORMAL, 12));
             if (timeLabel == null) {
                 throw new IllegalStateException("timeLabel is not initialized");
             }
-            // Create a Spinner for number selection
+
             timeSpinner = new Spinner<>();
             timeSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 10000, 1000)); // Min: 1, Max: 1000, Initial: 10
             timeSpinner.setEditable(true); // Allow manual input
@@ -174,6 +144,13 @@ public class SimulatorGUI extends Application implements ISimulatorUI {
             logArea = new TextArea();
             logArea.setEditable(false); // Make it read-only
             logArea.setWrapText(true);
+            logArea.setPrefWidth(450); // Set a preferred width for the log area
+
+            resultArea = new TextArea();
+            resultArea.setEditable(false); // Make it read-only
+            resultArea.setWrapText(true);
+            resultArea.setPrefWidth(450); // Set a preferred height for the result area
+            resultArea.setPrefHeight(300); // Set a preferred height for the result area
 
             arrivalSliderLabel = new Label();
             arrivalSliderLabel.setText("Arrival interval (time units):");
@@ -183,29 +160,82 @@ public class SimulatorGUI extends Application implements ISimulatorUI {
             arrivalSlider.setMajorTickUnit(1);
             arrivalSlider.setBlockIncrement(1);
 
-            // Create a VBox layout
-            VBox vBox = new VBox();
-            vBox.setAlignment(Pos.CENTER);
-            vBox.setPadding(new Insets(10));
-            vBox.setSpacing(10); // Set spacing between elements
-            vBox.getChildren().add(mainTitle);
+            euProcentSliderLabel = new Label();
+            euProcentSliderLabel.setText("Amount of EU Passengers (%):");
+            euProcentSliderLabel.setFont(Font.font("Tahoma", FontWeight.NORMAL, 12));
+            euProcentSlider.setMin(0);
+            euProcentSlider.setMax(100);
+            euProcentSlider.setValue(50); // Default value
+            euProcentSlider.setStyle("-fx-font-size: 14px;"); // Set font size for the Slider
+            euProcentSlider.setShowTickLabels(true);
+            euProcentSlider.setShowTickMarks(true);
+            euProcentSlider.setMajorTickUnit(10);
+            euProcentSlider.setBlockIncrement(10);
 
-            // Create a VBox layout
-            VBox vBoxSubTitle = new VBox();
-            vBoxSubTitle.setAlignment(Pos.CENTER);
-            vBoxSubTitle.setPadding(new Insets(10));
-            vBoxSubTitle.setSpacing(10); // Set spacing between elements
-            vBoxSubTitle.getChildren().add(subTitle);
+            // Initialize the airport choice components
+            airportChoiceLabel = new Label("Choose Airport:"); // Label for the dropdown
+            airportChoiceLabel.setFont(Font.font("Tahoma", FontWeight.NORMAL, 12));
+            airportChoiceBox = new ChoiceBox<>();
+            ObservableList<String> airportOptions = FXCollections.observableArrayList("Helsinki Airport", "Oslo Airport", "Stockholm Airport"); // Replace with actual airport names
+            airportChoiceBox.setItems(airportOptions);
+            airportChoiceBox.setValue("Helsinki Airport"); // Set a default value
+            airportChoiceBox.setStyle("-fx-font-size: 12px;");
 
-            // Create a hBox layout
-	        HBox hBox = new HBox();
-	        hBox.setPadding(new Insets(15, 12, 15, 12)); // margins up, right, bottom, left
-	        hBox.setSpacing(10);   // Node distance 10 pixels
+            // Event Handlers
+            slowButton.setOnAction(e -> {
+                controller.decreaseSpeed();
+                logEvent("Simulation speed decreased.");
+            });
 
-            VBox logAreaBox = new VBox();
+            speedUpButton.setOnAction(e -> {
+                controller.increaseSpeed();
+                logEvent("Simulation speed increased.");
+            });
+
+            startButton.setOnAction(event -> {
+                controller.startSimulation();
+                startButton.setDisable(true);
+            });
+
+            playPauseButton.setOnAction(event -> {
+                if (playPauseButton.isSelected()) {
+                    playPauseButton.setText("Play");
+                    controller.pauseSimulation();
+                    logEvent("Simulation paused.");
+                } else {
+                    playPauseButton.setText("Pause");
+                    controller.resumeSimulation();
+                    logEvent("Simulation resumed.");
+                }
+            });
+
+            stopButton.setOnAction(e -> {
+                controller.stopSimulation();
+            });
+
+            resetButton.setOnAction(e -> {
+                controller.resetSimulation();
+                startButton.setDisable(false); // Enable the button after resetting
+            });
+
+            // Layouts
+            HBox canvas1 = new HBox();
+            canvas1.setPadding(new Insets(0, 15, 15, 15)); // margins up, right, bottom, left
+            canvas1.setSpacing(20); // Node distance 10 pixels
+
+            VBox titleBox = new VBox();
+            titleBox.setAlignment(Pos.CENTER);
+            titleBox.setPadding(new Insets(10));
+            titleBox.setSpacing(10); // Set spacing between elements
+            titleBox.getChildren().add(mainTitle);
+
+            VBox parametersBox = new VBox();
+            parametersBox.setAlignment(Pos.CENTER);
+            parametersBox.setPadding(new Insets(10));
+            parametersBox.setSpacing(10); // Set spacing between elements
+            parametersBox.getChildren().add(subTitle);
 
             GridPane grid = new GridPane();
-//	        grid.setAlignment(Pos.BOTTOM_CENTER);
 	        grid.setVgap(10);
 	        grid.setHgap(5);
             grid.setPadding(new Insets(15, 15, 15, 15));
@@ -213,39 +243,88 @@ public class SimulatorGUI extends Application implements ISimulatorUI {
                     + "-fx-border-color: #d3d1d1; "
                     + "-fx-border-width: 1px; "
                     + "-fx-border-radius: 5px; "
-                    + "-fx-border-style: solid;");// Set border style
+                    + "-fx-border-style: solid;");
 
             grid.add(subTitle , 0, 0); // Add subtitle to the grid
-            grid.add(arrivalSliderLabel, 0, 2); // Add the arrival slider label to the grid
-            grid.add(arrivalSlider, 0, 3); // Add the arrival slider to the grid
-            grid.add(timeLabel, 0, 31);   // column, row
-	        // grid.add(time, 1, 0);
-            grid.add(timeSpinner, 1, 31); // Use the initialized Spinner instead of the uninitialized TextField
-	        grid.add(delayLabel, 0, 32);
-	        grid.add(delay, 1, 32);
-	        grid.add(resultLabel, 0, 33);
-	        grid.add(results, 1, 33);
-	        grid.add(startButton,0, 34);
-            grid.add(playPauseButton, 1, 34);
-	        grid.add(speedUpButton, 0, 35);
-	        grid.add(slowButton, 1, 35);
-            // grid.add(stopButton, 0, 36);
-            // grid.add(resetButton, 1, 36);
-            // grid.add(startNewButton, 1, 37);
+            grid.add(new Separator(), 0, 1, 2, 1); // Add a separator line
+            grid.add(airportChoiceLabel, 0, 3); // Add the airport choice label
+            grid.add(airportChoiceBox, 0, 4); // Add the airport choice box
+            grid.add(new Separator(), 0, 6, 2, 1); // Add a separator line
+            grid.add(arrivalSliderLabel, 0, 8); // Add the arrival slider label to the grid
+            grid.add(arrivalSlider, 0, 9); // Add the arrival slider to the grid
+            grid.add(euProcentSliderLabel, 0, 11); // Add the arrival slider label to the grid
+            grid.add(euProcentSlider, 0, 12); // Add the arrival slider to the grid
+            grid.add(new Separator(), 0, 14, 2, 1); // Add a separator line
+            grid.add(timeLabel, 0, 16);   // column, row
+            grid.add(timeSpinner, 1, 16);
+            grid.add(delayLabel, 0, 18);
+            grid.add(delay, 1, 18);
+            grid.add(slowButton, 0, 20);
+	        grid.add(speedUpButton, 1, 20);
+            grid.add(startButton,0, 22);
+            grid.add(playPauseButton, 1, 22);
+            grid.add(stopButton, 0, 24);
+            grid.add(resetButton, 1, 24);
+            grid.add(new Separator(), 0, 26, 2, 1); // Add a separator line
+            grid.add(resultLabel, 0, 28);
+            grid.add(results, 1, 28);
 
-	        display = new Visualisation(500,620 , this);
+            VBox resultsBox = new VBox();
+            resultsBox.setSpacing(10); // Node distance 10 pixels
+            resultsBox.getChildren().add(subTitle2);
+
+            GridPane grid2 = new GridPane();
+            grid2.setVgap(10);
+            grid2.setHgap(5);
+            grid2.setPadding(new Insets(15, 15, 15, 15));
+            grid2.setStyle("-fx-background-color: #f0f0f0; "
+                    + "-fx-border-color: #d3d1d1; "
+                    + "-fx-border-width: 1px; "
+                    + "-fx-border-radius: 5px; "
+                    + "-fx-border-style: solid;");
+
+            grid2.add(subTitle2 , 0, 0); // Add subtitle to the grid
+            grid2.add(new Separator(), 0, 1, 2, 1); // Add a separator line
+            grid2.add(resultArea, 0, 3); // Add the result area to the grid
+
+            VBox logAreaBox = new VBox();
+            logAreaBox.setPadding(new Insets(15, 15, 15, 15)); // margins up, right, bottom, left
+            logAreaBox.setSpacing(10); // Node distance 10 pixels
+            logAreaBox.setAlignment(Pos.CENTER);
+            logAreaBox.setPrefHeight(210);
+            logAreaBox.setPrefWidth(450);
+            logAreaBox.setStyle("-fx-background-color: #eae9e9; "
+                    + "-fx-prompt-text-fill: #d3d1d1; "
+                    + "-fx-border-color: #d3d1d1; "
+                    + "-fx-border-width: 1px; "
+                    + "-fx-border-radius: 5px; "
+                    + "-fx-border-style: solid;");
+
+//            HBox footer = new HBox();
+//            footer.setPadding(new Insets(15, 15, 15, 15)); // margins up, right, bottom, left
+//            footer.setSpacing(10); // Node distance 10 pixels
+//            footer.setAlignment(Pos.CENTER);
+//            footer.setStyle("-fx-background-color: #833b3b; "
+//                    + "-fx-border-color: #d3d1d1; "
+//                    + "-fx-border-width: 1px; "
+//                    + "-fx-border-radius: 5px; "
+//                    + "-fx-border-style: solid;");
+
+            display = new Visualisation(500,620 , this);
 
 	        // Fill the box:
-	        hBox.getChildren().addAll(grid, (Canvas) display);
+	        canvas1.getChildren().addAll(grid, (Canvas) display, resultsBox);
             logAreaBox.getChildren().addAll(logArea);
+            resultsBox.getChildren().addAll(grid2);
 
             // Create a root BorderPane and set the VBox and HBox
             BorderPane root = new BorderPane();
-            root.setTop(vBox); // Place the title at the top
-            root.setCenter(hBox); // Place the grid and canvas in the center
-            root.setBottom(logAreaBox);
+            root.setTop(titleBox); // Place the title at the top
+            root.setCenter(canvas1); // Place the grid and canvas in the center
+            root.setBottom(logAreaBox); // Place the log area on the left
+            // root.setBottom(footer);
 
-	        Scene scene = new Scene(root, 1000, 800);
+	        Scene scene = new Scene(root, 1370, 890);
 	        primaryStage.setScene(scene);
 	        primaryStage.show();
 		} catch(Exception e) {
@@ -289,13 +368,17 @@ public class SimulatorGUI extends Application implements ISimulatorUI {
 		 return display;
 	}
 
-	/* JavaFX-application (UI) start-up */
-	public static void main(String[] args) {
-		launch(args);
-	}
 
     public void logEvent(String message) {
         Platform.runLater(() -> logArea.appendText(message + "\n"));
+    }
+
+    public void setResultsText(String results) {
+        resultArea.setText(results);
+    }
+
+    public TextArea getResultArea() {
+        return resultArea;
     }
 
     public void clearLogArea() {
@@ -304,5 +387,21 @@ public class SimulatorGUI extends Application implements ISimulatorUI {
 
     public Slider getArrivalSlider() {
         return arrivalSlider; // Ensure `arrivalSlider` is properly initialized in the GUI
+    }
+
+    public Slider getEUFlightPercentageSlider() {
+        return euProcentSlider; // Ensure `euProcentSlider` is properly initialized in the GUI
+    }
+
+    public ChoiceBox<String> getAirportChoiceBox() { return airportChoiceBox; }
+
+    public SimulatorGUI() {
+        // Initialize resultsArea
+        resultArea = new TextArea();
+    }
+
+    /* JavaFX-application (UI) start-up */
+    public static void main(String[] args) {
+        launch(args);
     }
 }

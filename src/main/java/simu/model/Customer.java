@@ -74,21 +74,28 @@ public class Customer {
         Trace.out(Trace.Level.INFO, "Customer " + id + " stayed: " + (removalTime - arrivalTime));
         Trace.out(Trace.Level.INFO, "Customer " + id + " flight type: " + (isEUFlight ? "EU flight" : "Non-EU flight"));
 
-        // Log to GUI
-            /*
-            simulatorGUI.logEvent("\nCustomer " + id + " ready!");
-            simulatorGUI.logEvent("Customer " + id + " arrived: " + arrivalTime);
-            simulatorGUI.logEvent("Customer " + id + " removed: " + removalTime);
-            simulatorGUI.logEvent("Customer " + id + " stayed: " + (removalTime - arrivalTime));
-            simulatorGUI.logEvent("Customer " + id + " flight type: " + (isEUFlight ? "EU flight" : "Non-EU flight"));
-            */
-
         sum += (removalTime - arrivalTime);
         double mean = sum / id;
         System.out.println("Current mean of the customer service times " + mean);
             /*
             simulatorGUI.logEvent("Current mean of the customer service times: " + mean);
             */
+    }
+
+    public void reportResultsGUI(SimulatorGUI simulatorGUI) {
+
+        // Log to GUI
+        simulatorGUI.logEvent("\nCustomer " + id + " ready!");
+        simulatorGUI.logEvent("Customer " + id + " arrived: " + arrivalTime);
+        simulatorGUI.logEvent("Customer " + id + " removed: " + removalTime);
+        simulatorGUI.logEvent("Customer " + id + " stayed: " + (removalTime - arrivalTime));
+        simulatorGUI.logEvent("Customer " + id + " flight type: " + (isEUFlight ? "EU flight" : "Non-EU flight"));
+
+        sum += (removalTime - arrivalTime);
+        double mean = sum / id;
+        System.out.println("Current mean of the customer service times " + mean);
+        simulatorGUI.logEvent("Current mean of the customer service times: " + mean);
+
     }
 
     public String getLocation() {
