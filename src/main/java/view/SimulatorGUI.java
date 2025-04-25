@@ -150,7 +150,7 @@ public class SimulatorGUI extends Application implements ISimulatorUI {
             resultArea.setEditable(false); // Make it read-only
             resultArea.setWrapText(true);
             resultArea.setPrefWidth(450); // Set a preferred height for the result area
-            resultArea.setPrefHeight(300); // Set a preferred height for the result area
+            resultArea.setPrefHeight(310); // Set a preferred height for the result area
 
             arrivalSliderLabel = new Label();
             arrivalSliderLabel.setText("Arrival interval (time units):");
@@ -165,11 +165,11 @@ public class SimulatorGUI extends Application implements ISimulatorUI {
             euProcentSliderLabel.setFont(Font.font("Tahoma", FontWeight.NORMAL, 12));
             euProcentSlider.setMin(0);
             euProcentSlider.setMax(100);
-            euProcentSlider.setValue(50); // Default value
+            euProcentSlider.setValue(30); // Default value
             euProcentSlider.setStyle("-fx-font-size: 14px;"); // Set font size for the Slider
             euProcentSlider.setShowTickLabels(true);
             euProcentSlider.setShowTickMarks(true);
-            euProcentSlider.setMajorTickUnit(10);
+            euProcentSlider.setMajorTickUnit(20);
             euProcentSlider.setBlockIncrement(10);
 
             // Initialize the airport choice components
@@ -184,12 +184,12 @@ public class SimulatorGUI extends Application implements ISimulatorUI {
             // Event Handlers
             slowButton.setOnAction(e -> {
                 controller.decreaseSpeed();
-                logEvent("Simulation speed decreased.");
+                logEvent("\nSimulation speed decreased.");
             });
 
             speedUpButton.setOnAction(e -> {
                 controller.increaseSpeed();
-                logEvent("Simulation speed increased.");
+                logEvent("\nSimulation speed increased.");
             });
 
             startButton.setOnAction(event -> {
@@ -201,11 +201,11 @@ public class SimulatorGUI extends Application implements ISimulatorUI {
                 if (playPauseButton.isSelected()) {
                     playPauseButton.setText("Play");
                     controller.pauseSimulation();
-                    logEvent("Simulation paused.");
+                    logEvent("\nSimulation paused.");
                 } else {
                     playPauseButton.setText("Pause");
                     controller.resumeSimulation();
-                    logEvent("Simulation resumed.");
+                    logEvent("\nSimulation resumed.");
                 }
             });
 
@@ -225,20 +225,24 @@ public class SimulatorGUI extends Application implements ISimulatorUI {
 
             VBox titleBox = new VBox();
             titleBox.setAlignment(Pos.CENTER);
-            titleBox.setPadding(new Insets(10));
+            titleBox.setPadding(new Insets(20));
             titleBox.setSpacing(10); // Set spacing between elements
             titleBox.getChildren().add(mainTitle);
 
             VBox parametersBox = new VBox();
-            parametersBox.setAlignment(Pos.CENTER);
-            parametersBox.setPadding(new Insets(10));
             parametersBox.setSpacing(10); // Set spacing between elements
             parametersBox.getChildren().add(subTitle);
+            parametersBox.setPrefHeight(620);
+            parametersBox.setMaxHeight(620);
+            parametersBox.setPrefWidth(450);
+            parametersBox.setMinWidth(450);
 
             GridPane grid = new GridPane();
 	        grid.setVgap(10);
 	        grid.setHgap(5);
-            grid.setPadding(new Insets(15, 15, 15, 15));
+            grid.setPadding(new Insets(15));
+            grid.setMinWidth(320); // Set a preferred height for the grid
+            grid.setMaxHeight(620); // Set a preferred height for the grid
             grid.setStyle("-fx-background-color: #f0f0f0; "
                     + "-fx-border-color: #d3d1d1; "
                     + "-fx-border-width: 1px; "
@@ -273,10 +277,15 @@ public class SimulatorGUI extends Application implements ISimulatorUI {
             resultsBox.setSpacing(10); // Node distance 10 pixels
             resultsBox.getChildren().add(subTitle2);
 
+            resultsBox.setPrefHeight(620);
+            resultsBox.setMaxHeight(620);
+            resultsBox.setPrefWidth(500);
+            resultsBox.setMinWidth(500);
+
             GridPane grid2 = new GridPane();
             grid2.setVgap(10);
             grid2.setHgap(5);
-            grid2.setPadding(new Insets(15, 15, 15, 15));
+            grid2.setPadding(new Insets(15));
             grid2.setStyle("-fx-background-color: #f0f0f0; "
                     + "-fx-border-color: #d3d1d1; "
                     + "-fx-border-width: 1px; "
@@ -286,13 +295,13 @@ public class SimulatorGUI extends Application implements ISimulatorUI {
             grid2.add(subTitle2 , 0, 0); // Add subtitle to the grid
             grid2.add(new Separator(), 0, 1, 2, 1); // Add a separator line
             grid2.add(resultArea, 0, 3); // Add the result area to the grid
+            grid2.add(new Separator(), 0, 5, 2, 1); // Add a separator line
+            grid2.add(logArea, 0, 7); // Add the log area to the grid
 
             VBox logAreaBox = new VBox();
-            logAreaBox.setPadding(new Insets(15, 15, 15, 15)); // margins up, right, bottom, left
+            logAreaBox.setPadding(new Insets(15)); // margins up, right, bottom, left
             logAreaBox.setSpacing(10); // Node distance 10 pixels
             logAreaBox.setAlignment(Pos.CENTER);
-            logAreaBox.setPrefHeight(210);
-            logAreaBox.setPrefWidth(450);
             logAreaBox.setStyle("-fx-background-color: #eae9e9; "
                     + "-fx-prompt-text-fill: #d3d1d1; "
                     + "-fx-border-color: #d3d1d1; "
@@ -300,31 +309,27 @@ public class SimulatorGUI extends Application implements ISimulatorUI {
                     + "-fx-border-radius: 5px; "
                     + "-fx-border-style: solid;");
 
-//            HBox footer = new HBox();
-//            footer.setPadding(new Insets(15, 15, 15, 15)); // margins up, right, bottom, left
-//            footer.setSpacing(10); // Node distance 10 pixels
-//            footer.setAlignment(Pos.CENTER);
-//            footer.setStyle("-fx-background-color: #833b3b; "
-//                    + "-fx-border-color: #d3d1d1; "
-//                    + "-fx-border-width: 1px; "
-//                    + "-fx-border-radius: 5px; "
-//                    + "-fx-border-style: solid;");
+            HBox footer = new HBox();
+            footer.setPadding(new Insets ((15))); // margins up, right, bottom, left
+            footer.setSpacing(10); // Node distance 10 pixels
+            footer.setAlignment(Pos.CENTER);
+            footer.setPrefHeight(50);
+            footer.setMaxHeight(50);
 
             display = new Visualisation(500,620 , this);
 
 	        // Fill the box:
 	        canvas1.getChildren().addAll(grid, (Canvas) display, resultsBox);
-            logAreaBox.getChildren().addAll(logArea);
+            // logAreaBox.getChildren().addAll(logArea);
             resultsBox.getChildren().addAll(grid2);
 
             // Create a root BorderPane and set the VBox and HBox
             BorderPane root = new BorderPane();
             root.setTop(titleBox); // Place the title at the top
             root.setCenter(canvas1); // Place the grid and canvas in the center
-            root.setBottom(logAreaBox); // Place the log area on the left
-            // root.setBottom(footer);
+            root.setBottom(footer);
 
-	        Scene scene = new Scene(root, 1370, 890);
+	        Scene scene = new Scene(root, 1390, 750);
 	        primaryStage.setScene(scene);
 	        primaryStage.show();
 		} catch(Exception e) {
