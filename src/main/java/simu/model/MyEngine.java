@@ -240,22 +240,22 @@ public class MyEngine extends Engine implements IEngine {
         results += "Non-EU gate usage ratio: " + NonEUGateUsageRatio + "%\n\n";
         System.out.println("Final count of passengers who exited through the EU gate: " + totalEUServicedCustomer);
         System.out.println("Final count of passengers who exited through the Non-EU gate: " + totalNonEUServicedCustomer);
-        results += "Final count of passengers who exited through the EU gate: " + totalEUServicedCustomer + "\n";
-        results += "Final count of passengers who exited through the Non-EU gate: " + totalNonEUServicedCustomer + "\n";
+        results += "Final count of passengers who exited through the EU gate: " + totalEUServicedCustomer + "\n\n";
+        results += "Final count of passengers who exited through the Non-EU gate: " + totalNonEUServicedCustomer + "\n\n";
         totalServicedCustomer = totalEUServicedCustomer + totalNonEUServicedCustomer;
         System.out.println("Final total count of passengers who exited through gates: " + totalServicedCustomer);
-        results += "Final total count of passengers who exited through gates: " + totalServicedCustomer + "\n";
+        results += "Final total count of passengers who exited through gates: " + totalServicedCustomer + "\n\n";
         calculateServiceThroughput();
         System.out.println("The service throughput, number of clients serviced related to the time: " + serviceThroughput);
-        results += "The service throughput, number of clients serviced related to the time: " + serviceThroughput + "\n";
+        results += "The service throughput, number of clients serviced related to the time: " + serviceThroughput + "\n\n";
         calculateAverageServiceTimes();
-        results += "Checkin-point average service time: " + averageCheckinServiceTime + "\n";
-        results += "Security check average service time: " + averageSecurityServiceTime + "\n";
-        results += "Passport control average service time: " + averagePassportControlServiceTime + "\n";
-        results += "EU gate average service time: " + averageEUGateServiceTime + "\n";
-        results += "Non-EU gate average service time: " + averageNonEUGateServiceTime + "\n";
+        results += "Checkin-point average service time: " + averageCheckinServiceTime + "\n\n";
+        results += "Security check average service time: " + averageSecurityServiceTime + "\n\n";
+        results += "Passport control average service time: " + averagePassportControlServiceTime + "\n\n";
+        results += "EU gate average service time: " + averageEUGateServiceTime + "\n\n";
+        results += "Non-EU gate average service time: " + averageNonEUGateServiceTime + "\n\n";
         calculateAverageWaitingTime();
-        results += "The average waiting time: " + averageWaitingTime + "\n";
+        results += "The average waiting time: " + averageWaitingTime + "\n\n";
 
         controller.showResults(results);
     }

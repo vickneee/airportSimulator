@@ -150,7 +150,7 @@ public class SimulatorGUI extends Application implements ISimulatorUI {
             resultArea.setEditable(false); // Make it read-only
             resultArea.setWrapText(true);
             resultArea.setPrefWidth(450); // Set a preferred height for the result area
-            resultArea.setPrefHeight(400); // Set a preferred height for the result area
+            resultArea.setPrefHeight(300); // Set a preferred height for the result area
 
             arrivalSliderLabel = new Label();
             arrivalSliderLabel.setText("Arrival interval (time units):");
