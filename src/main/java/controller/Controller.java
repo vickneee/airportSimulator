@@ -6,6 +6,11 @@ import simu.model.MyEngine;
 import view.ISimulatorUI;
 import view.SimulatorGUI;
 import view.Visualisation;
+import database.ServicePointConfig;
+import database.AirportDAO;
+import database.ServicePointConfigDAO;
+import database.Airport;
+import org.bson.types.ObjectId;
 
 import java.util.List;
 
@@ -14,6 +19,9 @@ public class Controller implements IControllerVtoM, IControllerMtoV {   // NEW
     private ISimulatorUI ui;
     private SimulatorGUI simulatorGUI; // Add SimulatorGUI field
     private boolean isPaused = false; // Flag to track pause state
+    private List<ServicePointConfig> servicePointConfigs;
+    private AirportDAO airportDAO = new AirportDAO();
+    private ServicePointConfigDAO servicePointConfigDAO = new ServicePointConfigDAO();
 
 
     public Controller(ISimulatorUI ui, SimulatorGUI simulatorGUI) { // Constructor with SimulatorGUI parameter
@@ -49,22 +57,21 @@ public class Controller implements IControllerVtoM, IControllerMtoV {   // NEW
      * This method creates a new instance of the MyEngine class and starts the simulation.
      */
     private void initializeEngine() {
-        // int arrivalTime = (int) simulatorGUI.getArrivalSlider().getValue();
-
-        // A new Engine thread is created for every simulation.
-        // The first integer parameter represents the arrival frequency for customer arrivals.
-        // The subsequent integer parameters represent the number of service points
-        // for check-in, security, EU gates, passport control, and Non-EU gates, respectively.
-        // The arrival frequency is set to 5, which means a new customer arrives every 5 time units.
-        // Decrease the arrivalInterval (e.g., from 2 to 5) to decrease customer arrivals
-        engine = new MyEngine(this, 5, 5, 3, 5, 3, 5);
+        // Use configs from DB if available, otherwise fallback to hardcoded
+        if (servicePointConfigs != null && !servicePointConfigs.isEmpty()) {
+            engine = new MyEngine(this, servicePointConfigs);
+        } else {
+            engine = new MyEngine(this, 5, 5, 3, 5, 3, 5);
+        }
         engine.setSimulationTime(ui.getTime());
         engine.setDelay(ui.getDelay());
-        // Sets the percentage of flights within the EU
         engine.setEUFlightPercentage(0.3);
         ui.getVisualisation().clearDisplay();
         ((Thread) engine).start();
-        //((Thread)engine).run(); // Never like this, why?
+    }
+
+    public void setServicePointConfigs(List<ServicePointConfig> configs) {
+        this.servicePointConfigs = configs;
     }
 
     /**
@@ -158,6 +165,16 @@ public class Controller implements IControllerVtoM, IControllerMtoV {   // NEW
                 Thread.currentThread().interrupt();
             }
         }
+    }
+
+    @Override
+    public List<Airport> getAllAirports() {
+        return airportDAO.getAllAirports();
+    }
+
+    @Override
+    public List<ServicePointConfig> getConfigsByAirportId(ObjectId airportId) {
+        return servicePointConfigDAO.getConfigsByAirportId(airportId);
     }
 
 //    public void stopSimulation() {

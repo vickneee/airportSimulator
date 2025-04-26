@@ -6,6 +6,9 @@ import eduni.distributions.DiscreteGenerator;
 import eduni.distributions.Negexp;
 import eduni.distributions.Normal;
 import simu.framework.*;
+import database.ServicePointConfig;
+import eduni.distributions.Uniform;
+import eduni.distributions.ContinuousGenerator;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -66,6 +69,73 @@ public class MyEngine extends Engine implements IEngine {
         servicePoints.addAll(EUGates);
         servicePoints.addAll(NonEUGates);
 
+        arrivalProcess = new ArrivalProcess(new Negexp(arrivalInterval, 1), eventList, EventType.ARR1);
+    }
+
+    public MyEngine(IControllerMtoV controller, List<ServicePointConfig> configs) {
+        super(controller);
+        // Initialize the main list for all service points
+        servicePoints = new ArrayList<>();
+        checkinPoints = new ArrayList<>();
+        securityCheckPoints = new ArrayList<>();
+        passportControlPoints = new ArrayList<>();
+        EUGates = new ArrayList<>();
+        NonEUGates = new ArrayList<>();
+        arrivalInterval = 5; // Default, can be overridden by config or UI
+
+        // Map configs to service points
+        for (ServicePointConfig config : configs) {
+            int count = config.getNumberOfServers();
+            ContinuousGenerator generator = null;
+            String dist = config.getDistributionType();
+            if ("NORMAL".equalsIgnoreCase(dist)) {
+                double mean = config.getMeanServiceTime();
+                double stddev = config.getParam1() != null ? config.getParam1() : 1.0;
+                generator = new Normal(mean, stddev * stddev); // Normal expects variance
+            } else if ("UNIFORM".equalsIgnoreCase(dist)) {
+                double min = config.getParam1() != null ? config.getParam1() : 1.0;
+                double max = config.getParam2() != null ? config.getParam2() : 2.0;
+                generator = new Uniform(min, max);
+            } else if ("NEGEXP".equalsIgnoreCase(dist) || "EXPONENTIAL".equalsIgnoreCase(dist)) {
+                double mean = config.getMeanServiceTime();
+                generator = new Negexp(mean);
+            } else {
+                // Default to Normal if unknown
+                generator = new Normal(config.getMeanServiceTime(), 1.0);
+            }
+            EventType eventType;
+            List<ServicePoint> targetList;
+            switch (config.getPointType().toUpperCase()) {
+                case "CHECKIN":
+                    eventType = EventType.DEP1;
+                    targetList = checkinPoints;
+                    break;
+                case "SECURITY":
+                    eventType = EventType.DEP2;
+                    targetList = securityCheckPoints;
+                    break;
+                case "PASSPORT":
+                    eventType = EventType.DEP4;
+                    targetList = passportControlPoints;
+                    break;
+                case "GATE_EU":
+                    eventType = EventType.DEP3;
+                    targetList = EUGates;
+                    break;
+                case "GATE_NONEU":
+                    eventType = EventType.DEP5;
+                    targetList = NonEUGates;
+                    break;
+                default:
+                    continue; // Skip unknown types
+            }
+            for (int i = 0; i < count; i++) {
+                ServicePoint sp = new ServicePoint(generator, eventList, eventType);
+                targetList.add(sp);
+                servicePoints.add(sp);
+            }
+        }
+        // Default to 5 if not set by configs
         arrivalProcess = new ArrivalProcess(new Negexp(arrivalInterval, 1), eventList, EventType.ARR1);
     }
 

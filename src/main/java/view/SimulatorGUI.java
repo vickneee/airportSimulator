@@ -19,9 +19,14 @@ import javafx.scene.layout.*;
 import javafx.scene.text.*;
 
 import simu.model.Customer; // Import the correct Customer class
+import database.Airport;
+import org.bson.types.ObjectId;
+import java.util.stream.Collectors;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import database.ServicePointConfig;
 
 public class SimulatorGUI extends Application implements ISimulatorUI {
 
@@ -56,6 +61,9 @@ public class SimulatorGUI extends Application implements ISimulatorUI {
 
     private Label arrivalSliderLabel;
     private Slider arrivalSlider = new Slider(1, 10, 5); // Min: 1, Max: 5, Default: 5
+
+    private ComboBox<Airport> airportComboBox;
+    private List<ServicePointConfig> currentConfigs = new ArrayList<>();
 
 	@Override
 	public void start(Stage primaryStage) {
@@ -183,6 +191,41 @@ public class SimulatorGUI extends Application implements ISimulatorUI {
             arrivalSlider.setMajorTickUnit(1);
             arrivalSlider.setBlockIncrement(1);
 
+            // Add airport ComboBox
+            airportComboBox = new ComboBox<>();
+            airportComboBox.setPromptText("Choose Airport");
+            airportComboBox.setMinWidth(200);
+            // Populate ComboBox from database
+            List<Airport> airports = controller.getAllAirports();
+            airportComboBox.getItems().addAll(airports);
+            // Show airport name in ComboBox
+            airportComboBox.setCellFactory(lv -> new ListCell<>() {
+                @Override
+                protected void updateItem(Airport item, boolean empty) {
+                    super.updateItem(item, empty);
+                    setText(empty || item == null ? null : item.getName());
+                }
+            });
+            airportComboBox.setButtonCell(new ListCell<>() {
+                @Override
+                protected void updateItem(Airport item, boolean empty) {
+                    super.updateItem(item, empty);
+                    setText(empty || item == null ? null : item.getName());
+                }
+            });
+
+            // Listen for airport selection changes
+            airportComboBox.setOnAction(event -> {
+                Airport selectedAirport = airportComboBox.getValue();
+                if (selectedAirport != null) {
+                    // Fetch configs from DB
+                    currentConfigs = controller.getConfigsByAirportId(selectedAirport.getId());
+                    // Pass configs to controller (add a method if needed)
+                    controller.setServicePointConfigs(currentConfigs);
+                    logEvent("Loaded service point configs for: " + selectedAirport.getName());
+                }
+            });
+
             // Create a VBox layout
             VBox vBox = new VBox();
             vBox.setAlignment(Pos.CENTER);
@@ -216,6 +259,8 @@ public class SimulatorGUI extends Application implements ISimulatorUI {
                     + "-fx-border-style: solid;");// Set border style
 
             grid.add(subTitle , 0, 0); // Add subtitle to the grid
+            grid.add(new Label("Airport:"), 0, 1);
+            grid.add(airportComboBox, 1, 1);
             grid.add(arrivalSliderLabel, 0, 2); // Add the arrival slider label to the grid
             grid.add(arrivalSlider, 0, 3); // Add the arrival slider to the grid
             grid.add(timeLabel, 0, 31);   // column, row
@@ -304,5 +349,10 @@ public class SimulatorGUI extends Application implements ISimulatorUI {
 
     public Slider getArrivalSlider() {
         return arrivalSlider; // Ensure `arrivalSlider` is properly initialized in the GUI
+    }
+
+    // Add a getter for the selected configs if needed
+    public List<ServicePointConfig> getCurrentConfigs() {
+        return currentConfigs;
     }
 }

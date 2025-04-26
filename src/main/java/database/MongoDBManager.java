@@ -9,7 +9,7 @@ public class MongoDBManager {
     private static MongoDatabase database;
 
     // connection string to MongoDB Atlas
-    private static final String CONNECTION_STRING = "<your-mongodb-atlas-connection-string>";
+    private static final String CONNECTION_STRING = "mongodb+srv://admin:admin@cluster0.deiexe5.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
     private static final String DB_NAME = "airport_simulator";
 
     public static MongoDatabase getDatabase() {
