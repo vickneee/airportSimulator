@@ -197,6 +197,8 @@ public class SimulatorGUI extends Application implements ISimulatorUI {
                     // Pass configs to controller (add a method if needed)
                     controller.setServicePointConfigs(currentConfigs);
                     logEvent("Loaded service point configs for: " + selectedAirport.getName());
+                    // Print service point summary to GUI log area
+                    printServicePointSummaryToLog(currentConfigs);
                 }
             });
 
@@ -426,6 +428,37 @@ public class SimulatorGUI extends Application implements ISimulatorUI {
     public SimulatorGUI() {
         // Initialize resultsArea
         resultArea = new TextArea();
+    }
+
+    // Removed servicePointSummaryLabel and UI label update. Only print to console.
+    private void updateServicePointSummaryLabel(List<ServicePointConfig> configs) {
+        if (configs == null || configs.isEmpty()) {
+            System.out.println("No service point configs found for this airport.");
+            return;
+        }
+        StringBuilder sb = new StringBuilder("Service points for selected airport:\n");
+        for (ServicePointConfig config : configs) {
+            sb.append(config.getPointType())
+              .append(": ")
+              .append(config.getNumberOfServers())
+              .append("\n");
+        }
+        System.out.println(sb.toString());
+    }
+
+    private void printServicePointSummaryToLog(List<ServicePointConfig> configs) {
+        if (configs == null || configs.isEmpty()) {
+            logEvent("No service point configs found for this airport.");
+            return;
+        }
+        StringBuilder sb = new StringBuilder("Service points for selected airport:\n");
+        for (ServicePointConfig config : configs) {
+            sb.append(config.getPointType())
+              .append(": ")
+              .append(config.getNumberOfServers())
+              .append("\n");
+        }
+        logEvent(sb.toString());
     }
 
     /* JavaFX-application (UI) start-up */
