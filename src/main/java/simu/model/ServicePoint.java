@@ -3,6 +3,7 @@ package simu.model;
 import java.util.LinkedList;
 
 import eduni.distributions.ContinuousGenerator;
+
 import simu.framework.Clock;
 import simu.framework.Event;
 import simu.framework.EventList;
@@ -15,7 +16,6 @@ ServicePoint implements Comparable<ServicePoint>{
 	private EventList eventList;
 	private EventType eventTypeScheduled;
 	private double totalServiceTime;
-	// Queue strategy; // option: ordering of the customer
 	private boolean reserved = false;
 
 	public ServicePoint(ContinuousGenerator generator, EventList tapahtumalista, EventType tyyppi){
@@ -28,7 +28,7 @@ ServicePoint implements Comparable<ServicePoint>{
 		jono.add(a);
 	}
 
-	public Customer removeQueue(){		// Remove serviced customer
+	public Customer removeQueue(){ // Removes the first customer from the queue
 		reserved = false;
 		return jono.poll();
 	}
@@ -40,7 +40,7 @@ ServicePoint implements Comparable<ServicePoint>{
 	 * This ServicePoint instance is passed as a parameter to the Event object, allowing the Event
 	 * to reference the specific ServicePoint where the service is being executed.
 	 */
-	public void beginService() {  		// Begins a new service, customer is on the queue during the service
+	public void beginService() { // Begins a new service, customer is on the queue during the service
 		reserved = true;
 		double serviceTime = generator.sample();
 		totalServiceTime += serviceTime;
@@ -56,7 +56,7 @@ ServicePoint implements Comparable<ServicePoint>{
 	}
 
 	public boolean isOnQueue(){
-		return jono.size() != 0;
+		return !jono.isEmpty();
 	}
 
 	/**
@@ -76,7 +76,7 @@ ServicePoint implements Comparable<ServicePoint>{
 	 */
 	@Override
 	public int compareTo(ServicePoint other){
-		return Integer.compare(this.jono.size(), other.jono.size());//compare the size of the queue.
+		return Integer.compare(this.jono.size(), other.jono.size()); //compare the size of the queue.
 	}
 
     public int getQueueLength() {
@@ -86,5 +86,4 @@ ServicePoint implements Comparable<ServicePoint>{
 	public double getTotalServiceTime(){
 		return totalServiceTime;
 	}
-
 }

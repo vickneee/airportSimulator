@@ -1,7 +1,7 @@
 package view;
 
 import java.text.DecimalFormat;
-import controller.*;
+
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.EventHandler;
@@ -9,63 +9,65 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
-import simu.framework.Trace;
-import simu.framework.Trace.Level;
 import javafx.scene.*;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.text.*;
 
-import simu.model.Customer; // Import the correct Customer class
+import controller.*;
+
+import simu.framework.Trace;
+import simu.framework.Trace.Level;
+
 import database.Airport;
-import org.bson.types.ObjectId;
-import java.util.stream.Collectors;
+import database.ServicePointConfig;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import database.ServicePointConfig;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 
 public class SimulatorGUI extends Application implements ISimulatorUI {
 
 	// Controller object (UI needs)
 	private IControllerVtoM controller;
 
-	// UI Components:
-    private Spinner<Integer> timeSpinner; // Use Spinner instead of TextField
-	private Spinner<Integer> delay;
-	private Label results;
+    // Labels + Spinners
 	private Label timeLabel;
+    private Spinner<Integer> timeSpinner; // Use Spinner instead of TextField
 	private Label delayLabel;
+    private Spinner<Integer> delay;
 	private Label resultLabel;
+    private Label results;
 
+    // UI buttons
 	private Button startButton;
 	private Button slowButton;
 	private Button speedUpButton;
-    private Button stopButton;
     private ToggleButton playPauseButton;
+    private Button stopButton;
     private Button resetButton;
 
+    // UI display components
 	private IVisualisation display;
 
+    // Title and subtitles
     private Label mainTitle;
     private Label subTitle;
     private Label subTitle2;
 
-    private List<Customer> customers = new ArrayList<>();
-
+    // Log and result areas
     private TextArea logArea;
     private TextArea resultArea;
 
-    private Label arrivalSliderLabel;
-    private Slider arrivalSlider = new Slider(1, 10, 5); // Min: 1, Max: 5, Default: 5
-
+    // Airport selection
     private ComboBox<Airport> airportComboBox;
     private List<ServicePointConfig> currentConfigs = new ArrayList<>();
 
+    // Arrival interval slider
+    private Label arrivalSliderLabel;
+    private Slider arrivalSlider = new Slider(1, 10, 5); // Min: 1, Max: 10, Default: 5
+
+    // EU flight percentage slider
     private Slider euPercentSlider = new Slider(0, 100, 30);
     private Label euPercentSliderLabel = new Label("Amount of EU Passengers (%):");
 
@@ -117,19 +119,18 @@ public class SimulatorGUI extends Application implements ISimulatorUI {
             resetButton.setText("Reset");
             resetButton.setStyle("-fx-font-size: 12px;");
 
-            timeLabel = new Label("Simulation time:");
+            timeLabel = new Label("Simulation time (time units):");
 			timeLabel.setFont(Font.font("Tahoma", FontWeight.NORMAL, 12));
             if (timeLabel == null) {
                 throw new IllegalStateException("timeLabel is not initialized");
             }
-
             timeSpinner = new Spinner<>();
-            timeSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 10000, 1000)); // Min: 1, Max: 1000, Initial: 10
+            timeSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 10000, 1000)); // Min: 1, Max: 10000, Initial: 1000
             timeSpinner.setEditable(true); // Allow manual input
             timeSpinner.setPrefWidth(100);
             timeSpinner.setStyle("-fx-font-size: 12px;"); // Set font size for the Spinner
 
-	        delayLabel = new Label("Delay:");
+	        delayLabel = new Label("Delay (time units):");
 			delayLabel.setFont(Font.font("Tahoma", FontWeight.NORMAL, 12));
 	        if (delayLabel == null) {
                 throw new IllegalStateException("delayLabel is not initialized");
@@ -331,17 +332,6 @@ public class SimulatorGUI extends Application implements ISimulatorUI {
             grid2.add(new Separator(), 0, 5, 2, 1); // Add a separator line
             grid2.add(logArea, 0, 7); // Add the log area to the grid
 
-            VBox logAreaBox = new VBox();
-            logAreaBox.setPadding(new Insets(15)); // margins up, right, bottom, left
-            logAreaBox.setSpacing(10); // Node distance 10 pixels
-            logAreaBox.setAlignment(Pos.CENTER);
-            logAreaBox.setStyle("-fx-background-color: #eae9e9; "
-                    + "-fx-prompt-text-fill: #d3d1d1; "
-                    + "-fx-border-color: #d3d1d1; "
-                    + "-fx-border-width: 1px; "
-                    + "-fx-border-radius: 5px; "
-                    + "-fx-border-style: solid;");
-
             HBox footer = new HBox();
             footer.setPadding(new Insets ((15))); // margins up, right, bottom, left
             footer.setSpacing(10); // Node distance 10 pixels
@@ -349,18 +339,17 @@ public class SimulatorGUI extends Application implements ISimulatorUI {
             footer.setPrefHeight(50);
             footer.setMaxHeight(50);
 
-            display = new Visualisation(500,620 , this);
+            display = new Visualisation(500,620);
 
 	        // Fill the box:
 	        canvas1.getChildren().addAll(grid, (Canvas) display, resultsBox);
-            // logAreaBox.getChildren().addAll(logArea);
             resultsBox.getChildren().addAll(grid2);
 
             // Create a root BorderPane and set the VBox and HBox
             BorderPane root = new BorderPane();
             root.setTop(titleBox); // Place the title at the top
             root.setCenter(canvas1); // Place the grid and canvas in the center
-            root.setBottom(footer);
+            root.setBottom(footer); // Place the footer at the bottom
 
 	        Scene scene = new Scene(root, 1390, 750);
 	        primaryStage.setScene(scene);
@@ -377,10 +366,15 @@ public class SimulatorGUI extends Application implements ISimulatorUI {
     @Override
     public void init(){
         Trace.setTraceLevel(Level.INFO);
-        controller = new Controller(this, this);
+        controller = new Controller(this);
+        controller.setSimulatorGUI(this);
 
         if (arrivalSlider == null) {
             throw new IllegalStateException("Arrival slider is not initialized in SimulatorGUI.");
+        }
+
+        if (euPercentSlider == null) {
+            throw new IllegalStateException("EU flight percentage slider is not initialized in SimulatorGUI.");
         }
     }
 
@@ -406,7 +400,6 @@ public class SimulatorGUI extends Application implements ISimulatorUI {
 		 return display;
 	}
 
-
     public void logEvent(String message) {
         Platform.runLater(() -> logArea.appendText(message + "\n"));
     }
@@ -424,7 +417,7 @@ public class SimulatorGUI extends Application implements ISimulatorUI {
     }
 
     public Slider getArrivalSlider() {
-        return arrivalSlider; // Ensure `arrivalSlider` is properly initialized in the GUI
+        return arrivalSlider;
     }
 
     // Add a getter for the selected configs if needed
@@ -434,11 +427,6 @@ public class SimulatorGUI extends Application implements ISimulatorUI {
 
     public Slider getEUFlightPercentageSlider() {
         return euPercentSlider; // Ensure `euPercentSlider` is properly initialized in the GUI
-    }
-
-    public SimulatorGUI() {
-        // Initialize resultsArea
-        resultArea = new TextArea();
     }
 
     // Removed servicePointSummaryLabel and UI label update. Only print to console.

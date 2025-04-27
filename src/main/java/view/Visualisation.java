@@ -5,14 +5,11 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class Visualisation extends Canvas implements IVisualisation {
     private GraphicsContext gc;
     private int width, height;
-    private SimulatorGUI simulatorGUI; // Reference to SimulatorGUI // Kysy Opelta APUA
 
     // Define locations as constants
     private static final String ARRIVAL = "Arrival";
@@ -23,17 +20,14 @@ public class Visualisation extends Canvas implements IVisualisation {
     private static final String NON_EU_GATE = "Boarding Gate for non-EU flights";
     private String[] servicePointNames = {CHECK_IN, SECURITY_CHECK, PASSPORT_CONTROL, EU_GATE, NON_EU_GATE};
 
-    private Map<Integer, String> customerLocations = new HashMap<>();
-    // private static final double CUSTOMER_SIZE = 10;
     private final int QUEUE_HEIGHT = 10;
     private final int QUEUE_WIDTH = 100;
     private List<List<Integer>> queueLengths = new ArrayList<>();
 
-    public Visualisation(int w, int h, SimulatorGUI simulatorGUI) { // Kysy Opelta APUA
+    public Visualisation(int w, int h) {
         super(w, h);
         this.width = w;
         this.height = h;
-        this.simulatorGUI = simulatorGUI; // Kysy Opelta APUA
         gc = this.getGraphicsContext2D();
 
         clearDisplay();
@@ -57,7 +51,6 @@ public class Visualisation extends Canvas implements IVisualisation {
         gc.setFill(Color.BLACK);
         gc.fillText(locationName, x - 20, y + 25);
     }
-
 
     private void drawCustomer(int queueLength, double x, double y) {
         // Set color based on queue length
@@ -152,5 +145,4 @@ public class Visualisation extends Canvas implements IVisualisation {
         drawLocations();
         drawQueues();
     }
-
 }
