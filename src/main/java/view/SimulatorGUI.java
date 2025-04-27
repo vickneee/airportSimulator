@@ -235,11 +235,11 @@ public class SimulatorGUI extends Application implements ISimulatorUI {
                 if (playPauseButton.isSelected()) {
                     playPauseButton.setText("Play");
                     controller.pauseSimulation();
-                    logEvent("\nSimulation paused.");
+                    logEvent("Simulation paused.\n");
                 } else {
                     playPauseButton.setText("Pause");
                     controller.resumeSimulation();
-                    logEvent("\nSimulation resumed.");
+                    logEvent("Simulation resumed.\n");
                 }
             });
 
@@ -332,17 +332,6 @@ public class SimulatorGUI extends Application implements ISimulatorUI {
             grid2.add(new Separator(), 0, 5, 2, 1); // Add a separator line
             grid2.add(logArea, 0, 7); // Add the log area to the grid
 
-//            VBox logAreaBox = new VBox();
-//            logAreaBox.setPadding(new Insets(15)); // margins up, right, bottom, left
-//            logAreaBox.setSpacing(10); // Node distance 10 pixels
-//            logAreaBox.setAlignment(Pos.CENTER);
-//            logAreaBox.setStyle("-fx-background-color: #ae5555; "
-//                    + "-fx-prompt-text-fill: #d3d1d1; "
-//                    + "-fx-border-color: #d3d1d1; "
-//                    + "-fx-border-width: 1px; "
-//                    + "-fx-border-radius: 5px; "
-//                    + "-fx-border-style: solid;");
-
             HBox footer = new HBox();
             footer.setPadding(new Insets ((15))); // margins up, right, bottom, left
             footer.setSpacing(10); // Node distance 10 pixels
@@ -350,7 +339,7 @@ public class SimulatorGUI extends Application implements ISimulatorUI {
             footer.setPrefHeight(50);
             footer.setMaxHeight(50);
 
-            display = new Visualisation(500,620 , this);
+            display = new Visualisation(500,620);
 
 	        // Fill the box:
 	        canvas1.getChildren().addAll(grid, (Canvas) display, resultsBox);

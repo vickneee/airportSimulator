@@ -58,11 +58,11 @@ public class Controller implements IControllerVtoM, IControllerMtoV {   // NEW
         });
     }
 
-    /* UI control: */
-    @Override
-    public SimulatorGUI getSimulatorGUI() {
-        return simulatorGUI;
-    }
+//    /* UI control: */
+//    @Override
+//    public SimulatorGUI getSimulatorGUI() {
+//        return simulatorGUI;
+//    }
 
     /* Engine control: */
     @Override
@@ -243,4 +243,8 @@ public class Controller implements IControllerVtoM, IControllerMtoV {   // NEW
         Platform.runLater(() -> simulatorGUI.setResultsText(results));
     }
 
+    @Override
+    public void showLogArea(String log) {
+        Platform.runLater(() -> simulatorGUI.logEvent(log));
+    }
 }

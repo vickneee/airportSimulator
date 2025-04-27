@@ -5,14 +5,11 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class Visualisation extends Canvas implements IVisualisation {
     private GraphicsContext gc;
     private int width, height;
-    private SimulatorGUI simulatorGUI; // Reference to SimulatorGUI // Kysy Opelta APUA
 
     // Define locations as constants
     private static final String ARRIVAL = "Arrival";
@@ -27,11 +24,10 @@ public class Visualisation extends Canvas implements IVisualisation {
     private final int QUEUE_WIDTH = 100;
     private List<List<Integer>> queueLengths = new ArrayList<>();
 
-    public Visualisation(int w, int h, SimulatorGUI simulatorGUI) { // Kysy Opelta APUA
+    public Visualisation(int w, int h) {
         super(w, h);
         this.width = w;
         this.height = h;
-        this.simulatorGUI = simulatorGUI; // Kysy Opelta APUA
         gc = this.getGraphicsContext2D();
 
         clearDisplay();

@@ -7,7 +7,7 @@ import view.SimulatorGUI;
 
 import java.util.List;
 
-/* interface for the UI */
+/* Interface for the UI */
 public interface IControllerVtoM {
     void startSimulation();
     void increaseSpeed();
@@ -16,11 +16,11 @@ public interface IControllerVtoM {
     void pauseSimulation();
     void resumeSimulation();
 
-    void setServicePointConfigs(List<ServicePointConfig> configs);
-    List<Airport> getAllAirports();
-    List<ServicePointConfig> getConfigsByAirportId(ObjectId airportId);
-
     void stopSimulation();
     void resetSimulation();
     void setSimulatorGUI(SimulatorGUI simulatorGUI);
+
+    void setServicePointConfigs(List<ServicePointConfig> configs);
+    List<Airport> getAllAirports();
+    List<ServicePointConfig> getConfigsByAirportId(ObjectId airportId);
 }
