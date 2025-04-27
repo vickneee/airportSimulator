@@ -274,9 +274,10 @@ public class SimulatorGUI extends Application implements ISimulatorUI {
                     + "-fx-border-style: solid;");
 
             grid.add(subTitle , 0, 0); // Add subtitle to the grid
-            grid.add(new Label("Airport:"), 0, 1);
-            grid.add(airportComboBox, 1, 1);
             grid.add(new Separator(), 0, 1, 2, 1); // Add a separator line
+            grid.add(new Label("Choose Airport:"), 0, 3);
+            grid.add(airportComboBox, 1, 4);
+            grid.add(new Separator(), 0, 6, 2, 1); // Add a separator line
             grid.add(arrivalSliderLabel, 0, 8); // Add the arrival slider label to the grid
             grid.add(arrivalSlider, 0, 9); // Add the arrival slider to the grid
             grid.add(euPercentSliderLabel, 0, 11); // Add the EU percent slider label to the grid
