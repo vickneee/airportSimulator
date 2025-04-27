@@ -2,6 +2,7 @@ package simu.model;
 
 import simu.framework.Clock;
 import simu.framework.Trace;
+
 import view.SimulatorGUI;
 
 public class Customer {
@@ -29,7 +30,7 @@ public class Customer {
         }
         arrivalTime = Clock.getInstance().getTime();
         Trace.out(Trace.Level.INFO, "New customer #" + id + " arrived at  " + arrivalTime);
-        simulatorGUI.logEvent("\nNew customer #" + id + " arrived at  " + arrivalTime);
+        simulatorGUI.logEvent("New customer #" + id + " arrived at  " + arrivalTime + "\n");
     }
 
     public double getRemovalTime() {
@@ -74,12 +75,9 @@ public class Customer {
         Trace.out(Trace.Level.INFO, "Customer " + id + " stayed: " + (removalTime - arrivalTime));
         Trace.out(Trace.Level.INFO, "Customer " + id + " flight type: " + (isEUFlight ? "EU flight" : "Non-EU flight"));
 
-        sum += (removalTime - arrivalTime);
-        double mean = sum / id;
+        sum += (long) (removalTime - arrivalTime);
+        double mean = (double) sum / id;
         System.out.println("Current mean of the customer service times " + mean);
-            /*
-            simulatorGUI.logEvent("Current mean of the customer service times: " + mean);
-            */
     }
 
     public void reportResultsGUI(SimulatorGUI simulatorGUI) {
@@ -91,8 +89,8 @@ public class Customer {
         simulatorGUI.logEvent("Customer " + id + " stayed: " + (removalTime - arrivalTime));
         simulatorGUI.logEvent("Customer " + id + " flight type: " + (isEUFlight ? "EU flight" : "Non-EU flight"));
 
-        sum += (removalTime - arrivalTime);
-        double mean = sum / id;
+        sum += (long) (removalTime - arrivalTime);
+        double mean = (double) sum / id;
         System.out.println("Current mean of the customer service times " + mean);
         simulatorGUI.logEvent("Current mean of the customer service times: " + mean);
 

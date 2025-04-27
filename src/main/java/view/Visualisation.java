@@ -23,8 +23,6 @@ public class Visualisation extends Canvas implements IVisualisation {
     private static final String NON_EU_GATE = "Boarding Gate for non-EU flights";
     private String[] servicePointNames = {CHECK_IN, SECURITY_CHECK, PASSPORT_CONTROL, EU_GATE, NON_EU_GATE};
 
-    private Map<Integer, String> customerLocations = new HashMap<>();
-    // private static final double CUSTOMER_SIZE = 10;
     private final int QUEUE_HEIGHT = 10;
     private final int QUEUE_WIDTH = 100;
     private List<List<Integer>> queueLengths = new ArrayList<>();
@@ -57,7 +55,6 @@ public class Visualisation extends Canvas implements IVisualisation {
         gc.setFill(Color.BLACK);
         gc.fillText(locationName, x - 20, y + 25);
     }
-
 
     private void drawCustomer(int queueLength, double x, double y) {
         // Set color based on queue length
@@ -152,5 +149,4 @@ public class Visualisation extends Canvas implements IVisualisation {
         drawLocations();
         drawQueues();
     }
-
 }

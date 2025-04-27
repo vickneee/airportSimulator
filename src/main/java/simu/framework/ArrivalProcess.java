@@ -1,6 +1,7 @@
 package simu.framework;
-import eduni.distributions.*;
 import simu.model.EventType;
+
+import eduni.distributions.*;
 
 /**
  * ArrivalProcess is responsible for generating events based on a given continuous distribution.

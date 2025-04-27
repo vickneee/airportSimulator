@@ -460,8 +460,6 @@ public class MyEngine extends Engine implements IEngine {
                 System.out.println(servicePointName + "'s average service time: " + totalServiceTime / totalEUServicedCustomer);
                 return totalServiceTime / totalEUServicedCustomer;
             }
-
-
         }
         return averageServicedTime;
     }
@@ -472,31 +470,6 @@ public class MyEngine extends Engine implements IEngine {
     private void calculateAverageWaitingTime() {
         averageWaitingTime = totalWaitingTime / totalServicedCustomer;
         System.out.println("The average waiting time: " + averageWaitingTime);
-    }
-
-    /**
-     * Sets the selected airport for the simulation.
-     *
-     * @param airport The name of the selected airport.
-     */
-    public void setSelectedAirport(String airport) {
-        this.selectedAirport = airport;
-    }
-
-    private void displayResults() {
-        // Generate the results string
-        String results = generateResultsString();
-        // Call the showResults method in the controller
-        controller.showResults(results);
-    }
-
-    private String generateResultsString() {
-        // Generate the results string based on your simulation data
-        StringBuilder sb = new StringBuilder();
-        sb.append("Simulation Results:\n");
-        sb.append("Average waiting time: ").append(averageWaitingTime).append("\n");
-        // Add more results as needed
-        return sb.toString();
     }
 
 }

@@ -1,7 +1,6 @@
 package controller;
 
 import javafx.application.Platform;
-import simu.framework.Engine;
 import simu.framework.IEngine;
 import simu.model.MyEngine;
 import view.ISimulatorUI;
@@ -18,17 +17,23 @@ import java.util.List;
 public class Controller implements IControllerVtoM, IControllerMtoV {   // NEW
     private IEngine engine;
     private ISimulatorUI ui;
-    private SimulatorGUI simulatorGUI; // Add SimulatorGUI field
+    private boolean isRunning = false; // Flag to track running state
     private boolean isPaused = false; // Flag to track pause state
     private List<ServicePointConfig> servicePointConfigs;
     private AirportDAO airportDAO = new AirportDAO();
     private ServicePointConfigDAO servicePointConfigDAO = new ServicePointConfigDAO();
+    private SimulatorGUI simulatorGUI;
 
 
-    public Controller(ISimulatorUI ui, SimulatorGUI simulatorGUI) { // Constructor with SimulatorGUI parameter
+    public Controller(ISimulatorUI ui) {
         this.ui = ui;
-        this.simulatorGUI = simulatorGUI; // Initialize SimulatorGUI
 
+    }
+
+    public void setSimulatorGUI(SimulatorGUI simulatorGUI) {
+        this.simulatorGUI = simulatorGUI;
+
+        // Arrival interval slider
         if (simulatorGUI.getArrivalSlider() == null) {
             throw new IllegalStateException("Arrival slider is not initialized in SimulatorGUI.");
         }
@@ -45,22 +50,12 @@ public class Controller implements IControllerVtoM, IControllerMtoV {   // NEW
             throw new IllegalStateException("EU flight percentage slider is not initialized in SimulatorGUI.");
         }
 
+        // Bind slider to EU flight percentage
         simulatorGUI.getEUFlightPercentageSlider().valueProperty().addListener((obs, oldVal, newVal) -> {
             if (engine != null) {
                 engine.setEUFlightPercentage(newVal.doubleValue() / 100); // Update EU flight percentage in engine
             }
         });
-
-//        // Bind airport choice
-//        if (simulatorGUI.getAirportChoiceBox() == null) {
-//            throw new IllegalStateException("Airport choice box is not initialized in SimulatorGUI.");
-//        }
-
-//        simulatorGUI.getAirportChoiceBox().valueProperty().addListener((obs, oldVal, newVal) -> {
-//            if (engine != null) {
-//                engine.setSelectedAirport(newVal);
-//            }
-//        });
     }
 
     /* UI control: */
@@ -206,7 +201,7 @@ public class Controller implements IControllerVtoM, IControllerMtoV {   // NEW
      */
     @Override
     public void stopSimulation() {
-        System.out.println("Stopping simulation...");
+//        System.out.println("Stopping simulation...");
 //        if (engine != null) {
 //            if (engine instanceof Engine) {
 //                ((Engine) engine).stopSimulation();

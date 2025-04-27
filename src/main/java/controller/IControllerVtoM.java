@@ -3,20 +3,24 @@ package controller;
 import database.ServicePointConfig;
 import database.Airport;
 import org.bson.types.ObjectId;
+import view.SimulatorGUI;
+
 import java.util.List;
 
 /* interface for the UI */
 public interface IControllerVtoM {
-    public void startSimulation();
-    public void increaseSpeed();
-    public void decreaseSpeed();
-    public void pauseSimulation(); // Add this method
-    public void resumeSimulation(); // Add this method
+    void startSimulation();
+    void increaseSpeed();
+    void decreaseSpeed();
+
+    void pauseSimulation();
+    void resumeSimulation();
 
     void setServicePointConfigs(List<ServicePointConfig> configs);
-
     List<Airport> getAllAirports();
     List<ServicePointConfig> getConfigsByAirportId(ObjectId airportId);
-    public void stopSimulation();
-    public void resetSimulation();
+
+    void stopSimulation();
+    void resetSimulation();
+    void setSimulatorGUI(SimulatorGUI simulatorGUI);
 }
