@@ -79,11 +79,11 @@ public class Customer {
 
         // Log to GUI
         if (controller != null) {
-            controller.showLogArea("\nCustomer " + id + " ready! ");
-            controller.showLogArea("Customer " + id + " arrived: " +  String.format("%.2f", arrivalTime) + " (time units)");
-            controller.showLogArea("Customer " + id + " removed: " + String.format("%.2f", removalTime) + " (time units)");
-            controller.showLogArea("Customer " + id + " stayed: " + String.format("%.2f",(removalTime - arrivalTime))+ " (time units)");
-            controller.showLogArea("Customer " + id + " flight type: " + (isEUFlight ? "EU flight" : "Non-EU flight"));
+            controller.showLogArea("\nCustomer #" + id + " ready! ");
+            controller.showLogArea("Customer #" + id + " arrived: " +  String.format("%.2f", arrivalTime) + " (time units)");
+            controller.showLogArea("Customer #" + id + " removed: " + String.format("%.2f", removalTime) + " (time units)");
+            controller.showLogArea("Customer #" + id + " stayed: " + String.format("%.2f",(removalTime - arrivalTime))+ " (time units)");
+            controller.showLogArea("Customer #" + id + " flight type: " + (isEUFlight ? "EU flight" : "Non-EU flight"));
         }
 
         sum += (long) (removalTime - arrivalTime);
