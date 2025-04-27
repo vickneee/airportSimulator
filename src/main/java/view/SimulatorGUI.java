@@ -165,17 +165,17 @@ public class SimulatorGUI extends Application implements ISimulatorUI {
             arrivalSlider.setMajorTickUnit(1);
             arrivalSlider.setBlockIncrement(1);
 
-            euProcentSliderLabel = new Label();
-            euProcentSliderLabel.setText("Amount of EU Passengers (%):");
-            euProcentSliderLabel.setFont(Font.font("Tahoma", FontWeight.NORMAL, 12));
-            euProcentSlider.setMin(0);
-            euProcentSlider.setMax(100);
-            euProcentSlider.setValue(30); // Default value
-            euProcentSlider.setStyle("-fx-font-size: 14px;"); // Set font size for the Slider
-            euProcentSlider.setShowTickLabels(true);
-            euProcentSlider.setShowTickMarks(true);
-            euProcentSlider.setMajorTickUnit(20);
-            euProcentSlider.setBlockIncrement(10);
+            euPercentSliderLabel = new Label();
+            euPercentSliderLabel.setText("Amount of EU Passengers (%):");
+            euPercentSliderLabel.setFont(Font.font("Tahoma", FontWeight.NORMAL, 12));
+            euPercentSlider.setMin(0);
+            euPercentSlider.setMax(100);
+            euPercentSlider.setValue(30); // Default value
+            euPercentSlider.setStyle("-fx-font-size: 14px;"); // Set font size for the Slider
+            euPercentSlider.setShowTickLabels(true);
+            euPercentSlider.setShowTickMarks(true);
+            euPercentSlider.setMajorTickUnit(20);
+            euPercentSlider.setBlockIncrement(10);
 
             // Add airport ComboBox
             airportComboBox = new ComboBox<>();
@@ -284,8 +284,8 @@ public class SimulatorGUI extends Application implements ISimulatorUI {
 
             grid.add(subTitle , 0, 0); // Add subtitle to the grid
             grid.add(new Separator(), 0, 1, 2, 1); // Add a separator line
-            grid.add(new Label("Choose Airport:"), 0, 3);
-            grid.add(airportComboBox, 1, 4);
+            grid.add(new Label("Airports:"), 0, 3);
+            grid.add(airportComboBox, 0, 4);
             grid.add(new Separator(), 0, 6, 2, 1); // Add a separator line
             grid.add(arrivalSliderLabel, 0, 8); // Add the arrival slider label to the grid
             grid.add(arrivalSlider, 0, 9); // Add the arrival slider to the grid
