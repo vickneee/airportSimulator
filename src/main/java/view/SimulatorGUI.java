@@ -235,11 +235,11 @@ public class SimulatorGUI extends Application implements ISimulatorUI {
                 if (playPauseButton.isSelected()) {
                     playPauseButton.setText("Play");
                     controller.pauseSimulation();
-                    logEvent("Simulation paused.\n");
+                    logEvent("\nSimulation paused.");
                 } else {
                     playPauseButton.setText("Pause");
                     controller.resumeSimulation();
-                    logEvent("Simulation resumed.\n");
+                    logEvent("\nSimulation resumed.");
                 }
             });
 

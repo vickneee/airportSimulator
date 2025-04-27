@@ -337,7 +337,7 @@ public class MyEngine extends Engine implements IEngine {
         controller.showResults(results);
 
         // Print the results to the logArea in the GUI
-        controller.showLogArea("\nSimulation ended.");
+        controller.showLogArea("\nSimulation ended.\n");
     }
 
     /**
