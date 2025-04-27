@@ -1,9 +1,11 @@
 package controller;
 
+import view.SimulatorGUI;
+
 import database.ServicePointConfig;
 import database.Airport;
+
 import org.bson.types.ObjectId;
-import view.SimulatorGUI;
 
 import java.util.List;
 
@@ -12,7 +14,6 @@ public interface IControllerVtoM {
     void startSimulation();
     void increaseSpeed();
     void decreaseSpeed();
-
     void pauseSimulation();
     void resumeSimulation();
 

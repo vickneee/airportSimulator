@@ -24,7 +24,6 @@ public class Controller implements IControllerVtoM, IControllerMtoV {   // NEW
     private ServicePointConfigDAO servicePointConfigDAO = new ServicePointConfigDAO();
     private SimulatorGUI simulatorGUI;
 
-
     public Controller(ISimulatorUI ui) {
         this.ui = ui;
 
@@ -57,12 +56,6 @@ public class Controller implements IControllerVtoM, IControllerMtoV {   // NEW
             }
         });
     }
-
-//    /* UI control: */
-//    @Override
-//    public SimulatorGUI getSimulatorGUI() {
-//        return simulatorGUI;
-//    }
 
     /* Engine control: */
     @Override

@@ -10,7 +10,6 @@ import simu.framework.*;
 import database.ServicePointConfig;
 import eduni.distributions.Uniform;
 import eduni.distributions.ContinuousGenerator;
-import view.SimulatorGUI;
 
 import java.util.ArrayList;
 import java.util.Collections;

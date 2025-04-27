@@ -13,7 +13,6 @@ public class Customer {
     private static long sum = 0;
     private boolean isEUFlight;
     private double servicedTime = 0;
-    private Controller controller;
 
     /**
      * Initializes a Customer instance and determines whether the customer is on an EU flight.
@@ -71,11 +70,11 @@ public class Customer {
 
     public void reportResults(Controller controller) {
         // Log to Trace
-        Trace.out(Trace.Level.INFO, "\nCustomer " + id + " ready! ");
-        Trace.out(Trace.Level.INFO, "Customer " + id + " arrived: " + String.format("%.2f", arrivalTime) + " (time units)");
-        Trace.out(Trace.Level.INFO, "Customer " + id + " removed: " + String.format("%.2f", removalTime) + " (time units)");
-        Trace.out(Trace.Level.INFO, "Customer " + id + " stayed: " + (removalTime - arrivalTime));
-        Trace.out(Trace.Level.INFO, "Customer " + id + " flight type: " + (isEUFlight ? "EU flight" : "Non-EU flight"));
+        Trace.out(Trace.Level.INFO, "\nCustomer #" + id + " ready! ");
+        Trace.out(Trace.Level.INFO, "Customer #" + id + " arrived: " + String.format("%.2f", arrivalTime) + " (time units)");
+        Trace.out(Trace.Level.INFO, "Customer #" + id + " removed: " + String.format("%.2f", removalTime) + " (time units)");
+        Trace.out(Trace.Level.INFO, "Customer #" + id + " stayed: " + String.format("%.2f",(removalTime - arrivalTime))+ " (time units)");
+        Trace.out(Trace.Level.INFO, "Customer #" + id + " flight type: " + (isEUFlight ? "EU flight" : "Non-EU flight"));
 
         // Log to GUI
         if (controller != null) {
@@ -89,6 +88,10 @@ public class Customer {
         sum += (long) (removalTime - arrivalTime);
         double mean = (double) sum / id;
         System.out.println("Current mean of the customer service times " + mean);
+        // Log to GUI
+        if (controller != null) {
+            controller.showLogArea("Current mean of the customer service times " + String.format("%.2f", mean) + " (time units)");
+        }
     }
 
     /**
@@ -110,5 +113,4 @@ public class Customer {
     public double calculateTotalWaitingTime() {
         return removalTime - arrivalTime - servicedTime;
     }
-
 }
