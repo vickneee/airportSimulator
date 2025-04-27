@@ -18,9 +18,14 @@ import javafx.scene.layout.*;
 import javafx.scene.text.*;
 
 import simu.model.Customer; // Import the correct Customer class
+import database.Airport;
+import org.bson.types.ObjectId;
+import java.util.stream.Collectors;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import database.ServicePointConfig;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -56,13 +61,13 @@ public class SimulatorGUI extends Application implements ISimulatorUI {
     private TextArea resultArea;
 
     private Label arrivalSliderLabel;
-    private Slider arrivalSlider = new Slider(1, 10, 5); // Min: 1, Max: 10, Default: 5
+    private Slider arrivalSlider = new Slider(1, 10, 5); // Min: 1, Max: 5, Default: 5
 
-    private Label euProcentSliderLabel;
-    private Slider euProcentSlider = new Slider(1, 100, 50); // Min: 1, Max: 99, Default: 50
+    private ComboBox<Airport> airportComboBox;
+    private List<ServicePointConfig> currentConfigs = new ArrayList<>();
 
-    private Label airportChoiceLabel; // Label for the airport choice
-    private ChoiceBox<String> airportChoiceBox; // ChoiceBox for selecting the airport
+    private Slider euPercentSlider = new Slider(0, 100, 30);
+    private Label euPercentSliderLabel = new Label("Amount of EU Passengers (%):");
 
 	@Override
 	public void start(Stage primaryStage) {
@@ -172,14 +177,42 @@ public class SimulatorGUI extends Application implements ISimulatorUI {
             euProcentSlider.setMajorTickUnit(20);
             euProcentSlider.setBlockIncrement(10);
 
-            // Initialize the airport choice components
-            airportChoiceLabel = new Label("Choose Airport:"); // Label for the dropdown
-            airportChoiceLabel.setFont(Font.font("Tahoma", FontWeight.NORMAL, 12));
-            airportChoiceBox = new ChoiceBox<>();
-            ObservableList<String> airportOptions = FXCollections.observableArrayList("Helsinki Airport", "Oslo Airport", "Stockholm Airport"); // Replace with actual airport names
-            airportChoiceBox.setItems(airportOptions);
-            airportChoiceBox.setValue("Helsinki Airport"); // Set a default value
-            airportChoiceBox.setStyle("-fx-font-size: 12px;");
+            // Add airport ComboBox
+            airportComboBox = new ComboBox<>();
+            airportComboBox.setPromptText("Choose Airport");
+            airportComboBox.setMinWidth(200);
+            // Populate ComboBox from database
+            List<Airport> airports = controller.getAllAirports();
+            airportComboBox.getItems().addAll(airports);
+            // Show airport name in ComboBox
+            airportComboBox.setCellFactory(lv -> new ListCell<>() {
+                @Override
+                protected void updateItem(Airport item, boolean empty) {
+                    super.updateItem(item, empty);
+                    setText(empty || item == null ? null : item.getName());
+                }
+            });
+            airportComboBox.setButtonCell(new ListCell<>() {
+                @Override
+                protected void updateItem(Airport item, boolean empty) {
+                    super.updateItem(item, empty);
+                    setText(empty || item == null ? null : item.getName());
+                }
+            });
+
+            // Listen for airport selection changes
+            airportComboBox.setOnAction(event -> {
+                Airport selectedAirport = airportComboBox.getValue();
+                if (selectedAirport != null) {
+                    // Fetch configs from DB
+                    currentConfigs = controller.getConfigsByAirportId(selectedAirport.getId());
+                    // Pass configs to controller (add a method if needed)
+                    controller.setServicePointConfigs(currentConfigs);
+                    logEvent("Loaded service point configs for: " + selectedAirport.getName());
+                    // Print service point summary to GUI log area
+                    printServicePointSummaryToLog(currentConfigs);
+                }
+            });
 
             // Event Handlers
             slowButton.setOnAction(e -> {
@@ -251,13 +284,13 @@ public class SimulatorGUI extends Application implements ISimulatorUI {
 
             grid.add(subTitle , 0, 0); // Add subtitle to the grid
             grid.add(new Separator(), 0, 1, 2, 1); // Add a separator line
-            grid.add(airportChoiceLabel, 0, 3); // Add the airport choice label
-            grid.add(airportChoiceBox, 0, 4); // Add the airport choice box
+            grid.add(new Label("Choose Airport:"), 0, 3);
+            grid.add(airportComboBox, 1, 4);
             grid.add(new Separator(), 0, 6, 2, 1); // Add a separator line
             grid.add(arrivalSliderLabel, 0, 8); // Add the arrival slider label to the grid
             grid.add(arrivalSlider, 0, 9); // Add the arrival slider to the grid
-            grid.add(euProcentSliderLabel, 0, 11); // Add the arrival slider label to the grid
-            grid.add(euProcentSlider, 0, 12); // Add the arrival slider to the grid
+            grid.add(euPercentSliderLabel, 0, 11); // Add the EU percent slider label to the grid
+            grid.add(euPercentSlider, 0, 12); // Add the EU percent slider to the grid
             grid.add(new Separator(), 0, 14, 2, 1); // Add a separator line
             grid.add(timeLabel, 0, 16);   // column, row
             grid.add(timeSpinner, 1, 16);
@@ -394,15 +427,49 @@ public class SimulatorGUI extends Application implements ISimulatorUI {
         return arrivalSlider; // Ensure `arrivalSlider` is properly initialized in the GUI
     }
 
-    public Slider getEUFlightPercentageSlider() {
-        return euProcentSlider; // Ensure `euProcentSlider` is properly initialized in the GUI
+    // Add a getter for the selected configs if needed
+    public List<ServicePointConfig> getCurrentConfigs() {
+        return currentConfigs;
     }
 
-    public ChoiceBox<String> getAirportChoiceBox() { return airportChoiceBox; }
+    public Slider getEUFlightPercentageSlider() {
+        return euPercentSlider; // Ensure `euPercentSlider` is properly initialized in the GUI
+    }
 
     public SimulatorGUI() {
         // Initialize resultsArea
         resultArea = new TextArea();
+    }
+
+    // Removed servicePointSummaryLabel and UI label update. Only print to console.
+    private void updateServicePointSummaryLabel(List<ServicePointConfig> configs) {
+        if (configs == null || configs.isEmpty()) {
+            System.out.println("No service point configs found for this airport.");
+            return;
+        }
+        StringBuilder sb = new StringBuilder("Service points for selected airport:\n");
+        for (ServicePointConfig config : configs) {
+            sb.append(config.getPointType())
+              .append(": ")
+              .append(config.getNumberOfServers())
+              .append("\n");
+        }
+        System.out.println(sb.toString());
+    }
+
+    private void printServicePointSummaryToLog(List<ServicePointConfig> configs) {
+        if (configs == null || configs.isEmpty()) {
+            logEvent("No service point configs found for this airport.");
+            return;
+        }
+        StringBuilder sb = new StringBuilder("Service points for selected airport:\n");
+        for (ServicePointConfig config : configs) {
+            sb.append(config.getPointType())
+              .append(": ")
+              .append(config.getNumberOfServers())
+              .append("\n");
+        }
+        logEvent(sb.toString());
     }
 
     /* JavaFX-application (UI) start-up */
