@@ -228,7 +228,8 @@ public class SimulatorGUI extends Application implements ISimulatorUI {
 
             startButton.setOnAction(event -> {
                 controller.startSimulation();
-                startButton.setDisable(true);
+                startButton.setDisable(true); // Disable the button after starting
+                airportComboBox.setDisable(true); // Disable airport selection after starting
             });
 
             playPauseButton.setOnAction(event -> {
