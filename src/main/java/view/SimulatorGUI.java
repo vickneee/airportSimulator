@@ -36,8 +36,8 @@ public class SimulatorGUI extends Application implements ISimulatorUI {
     private Spinner<Integer> timeSpinner; // Use Spinner instead of TextField
 	private Label delayLabel;
     private Spinner<Integer> delay;
-	private Label resultLabel;
-    private Label results;
+	private Label totalTimeLabel;
+    public Label totalTime;
 
     // UI buttons
 	private Button startButton;
@@ -141,11 +141,11 @@ public class SimulatorGUI extends Application implements ISimulatorUI {
             delay.setPrefWidth(100);
             delay.setStyle("-fx-font-size: 12px;"); // Set font size for the Spinner
 
-	        resultLabel = new Label("Total time:");
-			resultLabel.setFont(Font.font("Tahoma", FontWeight.BOLD, 12));
-	        results = new Label();
-	        results.setFont(Font.font("Tahoma", FontWeight.NORMAL, 12));
-	        results.setPrefWidth(100);
+	        totalTimeLabel = new Label("Total time:");
+			totalTimeLabel.setFont(Font.font("Tahoma", FontWeight.BOLD, 12));
+	        totalTime = new Label();
+	        totalTime.setFont(Font.font("Tahoma", FontWeight.NORMAL, 12));
+	        totalTime.setPrefWidth(100);
 
             logArea = new TextArea();
             logArea.setEditable(false); // Make it read-only
@@ -227,6 +227,7 @@ public class SimulatorGUI extends Application implements ISimulatorUI {
             });
 
             startButton.setOnAction(event -> {
+                // controller.startSimulation();
                 controller.startSimulation();
                 startButton.setDisable(true); // Disable the button after starting
                 airportComboBox.setDisable(true); // Disable airport selection after starting
@@ -302,11 +303,11 @@ public class SimulatorGUI extends Application implements ISimulatorUI {
 	        grid.add(speedUpButton, 1, 20);
             grid.add(startButton,0, 22);
             grid.add(playPauseButton, 1, 22);
-            grid.add(stopButton, 0, 24);
-            grid.add(resetButton, 1, 24);
+            // grid.add(stopButton, 0, 24);
+            grid.add(resetButton, 0, 24);
             grid.add(new Separator(), 0, 26, 2, 1); // Add a separator line
-            grid.add(resultLabel, 0, 28);
-            grid.add(results, 1, 28);
+            grid.add(totalTimeLabel, 0, 28);
+            grid.add(totalTime, 1, 28);
 
             VBox resultsBox = new VBox();
             resultsBox.setSpacing(10); // Node distance 10 pixels
@@ -393,7 +394,7 @@ public class SimulatorGUI extends Application implements ISimulatorUI {
 	@Override
 	public void setEndingTime(double time) {
 		 DecimalFormat formatter = new DecimalFormat("#0.00");
-		 this.results.setText(formatter.format(time));
+		 this.totalTime.setText(formatter.format(time));
 	}
 
 	@Override
@@ -415,6 +416,10 @@ public class SimulatorGUI extends Application implements ISimulatorUI {
 
     public void clearLogArea() {
         Platform.runLater(() -> logArea.clear());
+    }
+
+    public void clearResultsArea() {
+        Platform.runLater(() -> resultArea.clear());
     }
 
     public Slider getArrivalSlider() {
@@ -461,8 +466,33 @@ public class SimulatorGUI extends Application implements ISimulatorUI {
         logEvent(sb.toString());
     }
 
+    public Node getPauseButton() {
+        return playPauseButton; // Return the play/pause button in Node format
+    }
+    
+    public Node getStartButton() {
+        return startButton; // Return the start button in Node format
+    }
+
+    public Node getStopButton() {
+        return stopButton; // Return the stop button in Node format
+    }
+
+    public Node getResetButton() {
+        return resetButton; // Return the reset button in Node format
+    }
+
+    public Node getAirportComboBox() {
+        return airportComboBox; // Return the airport ComboBox in Node format
+    }
+
+    public Node getPlayPauseButton() {
+        return playPauseButton; // Return the play/pause button in Node format
+    }
+
     /* JavaFX-application (UI) start-up */
     public static void main(String[] args) {
         launch(args);
     }
+
 }

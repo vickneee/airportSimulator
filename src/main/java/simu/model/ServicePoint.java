@@ -86,4 +86,11 @@ ServicePoint implements Comparable<ServicePoint>{
 	public double getTotalServiceTime(){
 		return totalServiceTime;
 	}
+
+    public void reset() {
+    }
+
+    public void clear() {
+
+    }
 }

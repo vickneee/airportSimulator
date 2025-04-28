@@ -10,4 +10,7 @@ public interface IControllerMtoV {
     void checkPaused();
     void showResults(String results);
     void showLogArea(String log);
+    void clearLogArea();
+    void clearVisualisation();
+    void updateUIAfterReset();
 }

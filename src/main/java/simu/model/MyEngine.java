@@ -44,6 +44,7 @@ public class MyEngine extends Engine implements IEngine {
     private double averageWaitingTime;
 
     private boolean isRunning = true; // Flag to control running state
+    private boolean isResetting = false; // Flag to control resetting state
 
     public MyEngine(IControllerMtoV controller, int arrivalInterval, int checkinNum, int securityNum, int passportNum, int EUNum, int NonEUNum) { // NEW
         super(controller); // NEW
@@ -490,6 +491,67 @@ public class MyEngine extends Engine implements IEngine {
     private void calculateAverageWaitingTime() {
         averageWaitingTime = totalWaitingTime / totalServicedCustomer;
         System.out.printf("The average waiting time: %.2f", averageWaitingTime);
+    }
+
+    /**
+     * Resets the simulation by clearing all service points and resetting the engine.
+     */
+    public void reset() {
+        if (isResetting) return;
+        isResetting = true;
+
+        // Stop the simulation if it's running
+        try {
+            // Stop simulation first
+            isRunning = false;
+
+            // Reset clock
+            Clock.getInstance().setTime(0);
+
+            // Clear event list
+            eventList.clear();
+
+            // Clear all service points
+            for (ServicePoint sp : servicePoints) {
+                sp.clear(); // Clear the service point queues
+            }
+
+            // Reset counters and statistics
+            totalEUServicedCustomer = 0;
+            totalNonEUServicedCustomer = 0;
+            totalServicedCustomer = 0;
+            totalWaitingTime = 0;
+            averageWaitingTime = 0;
+            averageCheckinServiceTime = 0;
+            averageSecurityServiceTime = 0;
+            averagePassportControlServiceTime = 0;
+            averageEUGateServiceTime = 0;
+            averageNonEUGateServiceTime = 0;
+            serviceThroughput = 0;
+            checkpointUsageRatio = 0;
+            securityCheckpointUsageRatio = 0;
+            passportControlPointUsageRatio = 0;
+            EUGateUsageRatio = 0;
+            NonEUGateUsageRatio = 0;
+
+            // Reset the arrival process Id-s
+            ArrivalProcess.setId(1);
+
+            // Reinitialize arrival process with fresh random generators
+            arrivalProcess = new ArrivalProcess(new Negexp(arrivalInterval, 1), eventList, EventType.ARR1);
+
+            // Update UI - first call all the individual methods
+            controller.clearLogArea();
+            controller.clearVisualisation();
+            controller.showLogArea("Simulation reset completed");
+
+            // Update UI - then call the update method
+            controller.updateUIAfterReset();
+        } catch (Exception e) {
+            Trace.out(Trace.Level.ERR, "Error during simulation reset: " + e.getMessage());
+        } finally {
+            isResetting = false; // Reset the flag
+        }
     }
 
 }

@@ -145,4 +145,5 @@ public class Visualisation extends Canvas implements IVisualisation {
         drawLocations();
         drawQueues();
     }
+
 }
