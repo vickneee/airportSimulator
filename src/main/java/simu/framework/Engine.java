@@ -142,7 +142,10 @@ public abstract class Engine extends Thread implements IEngine {  // NEW DEFINIT
         }
 	}
 
-	protected abstract void initialization(); 	// Defined in simu.model-package's class who is inheriting the Engine class
+    protected void reset() {
+    }
+
+    protected abstract void initialization(); 	// Defined in simu.model-package's class who is inheriting the Engine class
 	protected abstract void runEvent(Event t);	// Defined in simu.model-package's class who is inheriting the Engine class
 	protected abstract void results(); 			// Defined in simu.model-package's class who is inheriting the Engine class
 }

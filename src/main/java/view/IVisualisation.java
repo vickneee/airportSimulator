@@ -7,4 +7,3 @@ public interface IVisualisation {
     void newCustomer(); // Called by Controller, doesn't have Customer object
     void updateQueueLengths(List<List<Integer>> lengths);
 }
-

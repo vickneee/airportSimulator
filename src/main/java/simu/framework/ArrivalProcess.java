@@ -26,6 +26,14 @@ public class ArrivalProcess {
 	}
 
     /**
+     * Sets the ID of the ArrivalProcess. This method is not implemented and does nothing.
+     *
+     * @param i The ID to be set.
+     */
+    public static void setId(int i) {
+    }
+
+    /**
      * Generates the next event based on the current time and the sampled time from the generator.
      * The generated event is added to the event list.
      */
@@ -42,5 +50,4 @@ public class ArrivalProcess {
     public void setGenerator(ContinuousGenerator newGenerator) {
         this.generator = newGenerator;
     }
-
 }

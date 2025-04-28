@@ -23,12 +23,18 @@ public class Controller implements IControllerVtoM, IControllerMtoV {   // NEW
     private AirportDAO airportDAO = new AirportDAO();
     private ServicePointConfigDAO servicePointConfigDAO = new ServicePointConfigDAO();
     private SimulatorGUI simulatorGUI;
+    private boolean isStopping = false; // Flag to track stopping state
 
     public Controller(ISimulatorUI ui) {
         this.ui = ui;
-
     }
 
+    /**
+     * Sets the SimulatorGUI instance for this controller.
+     * This method binds the arrival interval and EU flight percentage sliders to the engine.
+     *
+     * @param simulatorGUI The SimulatorGUI instance to be set.
+     */
     public void setSimulatorGUI(SimulatorGUI simulatorGUI) {
         this.simulatorGUI = simulatorGUI;
 
@@ -60,7 +66,7 @@ public class Controller implements IControllerVtoM, IControllerMtoV {   // NEW
     /* Engine control: */
     @Override
     public void startSimulation() {
-        initializeEngine();
+        start();
     }
 
     /**
@@ -68,19 +74,39 @@ public class Controller implements IControllerVtoM, IControllerMtoV {   // NEW
      * This method creates a new instance of the MyEngine class and starts the simulation.
      */
     private void initializeEngine() {
-        // Use configs from DB if available, otherwise fallback to hardcoded
+        // Use the service point configurations if they are available
         if (servicePointConfigs != null && !servicePointConfigs.isEmpty()) {
             engine = new MyEngine(this, servicePointConfigs);
         } else {
-            engine = new MyEngine(this, 5, 5, 3, 5, 3, 5);
+            // Get the current slider value for arrival interval
+            int arrivalInterval = (int) simulatorGUI.getArrivalSlider().getValue();
+            engine = new MyEngine(this, arrivalInterval, 5, 3, 5, 3, 5);
         }
+
+        // Then set all engine properties
         engine.setSimulationTime(ui.getTime());
         engine.setDelay(ui.getDelay());
-        engine.setEUFlightPercentage(0.3);
+
+        // Set arrival interval if it wasn't passed to constructor
+        int arrivalInterval = (int) simulatorGUI.getArrivalSlider().getValue();
+        engine.setArrivalInterval(arrivalInterval);
+
+        // Set EU flight percentage
+        double euPercentage = simulatorGUI.getEUFlightPercentageSlider().getValue() / 100.0;
+        engine.setEUFlightPercentage(euPercentage);
+
+        // Finally clear display and start engine
         ui.getVisualisation().clearDisplay();
         ((Thread) engine).start();
     }
 
+
+    /**
+     * Sets the service point configurations for the simulation.
+     * This method is used to set the configurations for the service points in the simulation.
+     *
+     * @param configs A list of ServicePointConfig objects representing the configurations.
+     */
     public void setServicePointConfigs(List<ServicePointConfig> configs) {
         this.servicePointConfigs = configs;
     }
@@ -154,7 +180,6 @@ public class Controller implements IControllerVtoM, IControllerMtoV {   // NEW
      * Resumes the simulation.
      * This method sets the isPaused flag to false and notifies the engine to resume.
      */
-
     public synchronized void resumeSimulation() {
         isPaused = false;
         notify();
@@ -167,7 +192,6 @@ public class Controller implements IControllerVtoM, IControllerMtoV {   // NEW
      * Checks if the simulation is paused.
      * This method blocks the current thread until the simulation is resumed.
      */
-
     public synchronized void checkPaused() {
         while (isPaused) {
             try {
@@ -178,11 +202,24 @@ public class Controller implements IControllerVtoM, IControllerMtoV {   // NEW
         }
     }
 
+    /**
+     * Retrieves all airports from the database.
+     * This method queries the database for all airports and returns them as a list.
+     *
+     * @return A list of Airport objects representing all airports in the database.
+     */
     @Override
     public List<Airport> getAllAirports() {
         return airportDAO.getAllAirports();
     }
 
+    /**
+     * Retrieves service point configurations by airport ID.
+     * This method queries the database for service point configurations associated with a specific airport ID.
+     *
+     * @param airportId The ObjectId of the airport for which to retrieve service point configurations.
+     * @return A list of ServicePointConfig objects associated with the specified airport ID.
+     */
     @Override
     public List<ServicePointConfig> getConfigsByAirportId(ObjectId airportId) {
         return servicePointConfigDAO.getConfigsByAirportId(airportId);
@@ -194,37 +231,56 @@ public class Controller implements IControllerVtoM, IControllerMtoV {   // NEW
      */
     @Override
     public void stopSimulation() {
-//        System.out.println("Stopping simulation...");
-//        if (engine != null) {
-//            if (engine instanceof Engine) {
-//                ((Engine) engine).stopSimulation();
-//                System.out.println("stopSimulation() called on engine.");
-//            }
-//            if (engine instanceof Thread) {
-//                Thread currentThread = (Thread) engine;
-//                if (currentThread.isAlive()) {
-//                    currentThread.interrupt();
-//                    System.out.println("interrupt() called on engine thread.");
-//                }
-//            }
-//            engine = null; // Dereference the old engine
-//            System.out.println("Old engine stopped and dereferenced.");
-//        } else {
-//            System.out.println("No engine to stop.");
-//        }
+        if (isStopping) return;
+        isStopping = true;
+
+        try {
+            System.out.println("Stopping simulation...");
+            if (engine != null) {
+                // Don't call engine.stopSimulation() if it calls back to Controller
+                if (engine instanceof Thread) {
+                    ((Thread) engine).interrupt();
+                }
+                engine = null;
+            }
+            // Reset the running state flag
+            isRunning = false;
+            isPaused = false;
+        } finally {
+            isStopping = false;
+        }
     }
 
+    /**
+     * Resets the simulation.
+     * This method clears the UI elements and resets the engine if it exists.
+     */
     public void resetSimulation() {
-//        System.out.println("Resetting simulation...");
-//        ui.getVisualisation().clearDisplay();
-//        simulatorGUI.clearLogArea();
-//        if (engine instanceof MyEngine) {
-//            ((MyEngine) engine).reset();
-//            System.out.println("Engine reset.");
-//        } else {
-//            System.out.println("No engine to reset or engine is not MyEngine.");
-//        }
-//        System.out.println("Simulation reset complete.");
+        System.out.println("Resetting simulation...");
+        // Clear the UI elements
+        ui.getVisualisation().clearDisplay();
+        simulatorGUI.clearResultsArea();
+        simulatorGUI.clearLogArea();
+
+        // Reset the simulation time display to empty
+        Platform.runLater(() -> {
+            // Access the text field directly through simulatorGUI if possible
+            if (simulatorGUI != null && simulatorGUI instanceof SimulatorGUI) {
+                simulatorGUI.totalTime.setText("");  // Clear the field completely
+            }
+        });
+
+        // Reset the engine if it exists
+        if (engine instanceof MyEngine) {
+            ((MyEngine) engine).reset();
+            System.out.println("Engine reset.");
+        } else {
+            System.out.println("No engine to reset or engine is not MyEngine.");
+        }
+        // Reset the running state flag so we can start a new simulation
+        isRunning = false;
+        isPaused = false;
+        System.out.println("Simulation reset complete.");
     }
 
     /**
@@ -236,8 +292,85 @@ public class Controller implements IControllerVtoM, IControllerMtoV {   // NEW
         Platform.runLater(() -> simulatorGUI.setResultsText(results));
     }
 
+    /**
+     * Displays a log message in the UI.
+     * This method is called from the engine to update the visualisation with a log message.
+     *
+     * @param log The log message to be displayed.
+     */
     @Override
     public void showLogArea(String log) {
         Platform.runLater(() -> simulatorGUI.logEvent(log));
+    }
+
+    /**
+     * Clears the log area in the UI.
+     * This method is called from the engine to clear the log area.
+     */
+    @Override
+    public void clearLogArea() {
+        Platform.runLater(() -> simulatorGUI.clearLogArea());
+    }
+
+    /**
+     * Clears the visualisation display.
+     * This method is called from the engine to clear the visualisation.
+     */
+    @Override
+    public void clearVisualisation() {
+        Platform.runLater(() -> ui.getVisualisation().clearDisplay());
+    }
+
+    /**
+     * Updates the UI after resetting the simulation.
+     * This method is called from the engine to update the UI elements after a reset.
+     */
+    @Override
+    public void updateUIAfterReset() {
+        Platform.runLater(() -> {
+            // Update UI using the simulatorGUI reference
+            simulatorGUI.getStartButton().setDisable(false);
+            simulatorGUI.getPlayPauseButton().setDisable(false);
+            // Update airport selection
+            simulatorGUI.getAirportComboBox().setDisable(false);
+            // Reset other UI elements
+            simulatorGUI.getPauseButton().setDisable(false);
+            simulatorGUI.getStopButton().setDisable(false);
+
+            simulatorGUI.getResetButton().setDisable(false); // Only for simulation time
+
+            // Enable sliders
+            simulatorGUI.getArrivalSlider().setDisable(false);
+            simulatorGUI.getEUFlightPercentageSlider().setDisable(false);
+        });
+    }
+
+    /**
+     * Starts the simulation.
+     * This method creates a new engine instance and initializes it.
+     */
+    public void start() {
+        // Make sure any old engine is properly cleaned up
+        if (engine != null) {
+            // If there's an existing engine instance, make sure it's fully stopped
+            if (engine instanceof Thread && ((Thread) engine).isAlive()) {
+                ((Thread) engine).interrupt();
+            }
+            // Clear reference to old engine
+            engine = null;
+        }
+
+        // Create a completely new engine instance and initialize it
+        initializeEngine();
+
+        // Update UI
+        Platform.runLater(() -> {
+            simulatorGUI.getStartButton().setDisable(true);
+            simulatorGUI.getPlayPauseButton().setDisable(false);
+            simulatorGUI.getAirportComboBox().setDisable(true);
+            simulatorGUI.getStopButton().setDisable(false);
+            simulatorGUI.getResetButton().setDisable(false);
+        });
+
     }
 }

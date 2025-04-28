@@ -12,6 +12,7 @@ import java.util.List;
 /* Interface for the UI */
 public interface IControllerVtoM {
     void startSimulation();
+    // void start();
     void increaseSpeed();
     void decreaseSpeed();
     void pauseSimulation();
