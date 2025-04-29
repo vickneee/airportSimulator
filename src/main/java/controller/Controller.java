@@ -137,7 +137,11 @@ public class Controller implements IControllerVtoM, IControllerMtoV {   // NEW
      */
     @Override
     public void showEndTime(double time) {
-        Platform.runLater(() -> ui.setEndingTime(time));
+        Platform.runLater(() -> {
+            ui.setEndingTime(time);
+            // Enable reset button when simulation shows end time
+            simulatorGUI.setResetButtonDisabled(false);
+        });
     }
 
     /**
@@ -369,7 +373,7 @@ public class Controller implements IControllerVtoM, IControllerMtoV {   // NEW
             simulatorGUI.getPlayPauseButton().setDisable(false);
             simulatorGUI.getAirportComboBox().setDisable(true);
             simulatorGUI.getStopButton().setDisable(false);
-            simulatorGUI.getResetButton().setDisable(false);
+            simulatorGUI.getResetButton().setDisable(true);
         });
 
     }
