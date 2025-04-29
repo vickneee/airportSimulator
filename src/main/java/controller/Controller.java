@@ -141,6 +141,9 @@ public class Controller implements IControllerVtoM, IControllerMtoV {   // NEW
             ui.setEndingTime(time);
             // Enable reset button when simulation shows end time
             simulatorGUI.setResetButtonDisabled(false);
+
+            // Disable play/pause button when simulation ends
+            simulatorGUI.getPlayPauseButton().setDisable(true);
         });
     }
 
@@ -375,6 +378,6 @@ public class Controller implements IControllerVtoM, IControllerMtoV {   // NEW
             simulatorGUI.getStopButton().setDisable(false);
             simulatorGUI.getResetButton().setDisable(true);
         });
-
     }
+
 }
