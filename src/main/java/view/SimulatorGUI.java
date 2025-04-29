@@ -490,6 +490,11 @@ public class SimulatorGUI extends Application implements ISimulatorUI {
         return playPauseButton; // Return the play/pause button in Node format
     }
 
+    // Add this method to the SimulatorGUI class
+    public void setResetButtonDisabled(boolean disabled) {
+        Platform.runLater(() -> resetButton.setDisable(disabled));
+    }
+
     /* JavaFX-application (UI) start-up */
     public static void main(String[] args) {
         launch(args);
