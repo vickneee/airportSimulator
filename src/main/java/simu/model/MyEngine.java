@@ -537,7 +537,7 @@ public class MyEngine extends Engine implements IEngine {
             // Reset the arrival process Id-s
             ArrivalProcess.setId(1);
 
-            // Reinitialize arrival process with fresh random generators
+            // Reinitialize the arrival process with fresh random generators
             arrivalProcess = new ArrivalProcess(new Negexp(arrivalInterval, 1), eventList, EventType.ARR1);
 
             // Update UI - first call all the individual methods

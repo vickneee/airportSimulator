@@ -1,10 +1,10 @@
 package view;
 
-public interface ISimulatorUI {
+public interface ISimulatorGUI {
 	// The Controller needs input which is passed to the Engine
 	double getTime();
     long getDelay();
-	
+
 	// Controller gives Engine produced results to the UI
 	void setEndingTime(double time);
 

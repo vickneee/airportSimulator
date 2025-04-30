@@ -3,7 +3,8 @@ package controller;
 import javafx.application.Platform;
 import simu.framework.IEngine;
 import simu.model.MyEngine;
-import view.ISimulatorUI;
+import view.ISimulatorGUI;
+import view.IVisualisation;
 import view.SimulatorGUI;
 import view.Visualisation;
 import database.ServicePointConfig;
@@ -16,8 +17,8 @@ import java.util.List;
 
 public class Controller implements IControllerVtoM, IControllerMtoV {   // NEW
     private IEngine engine;
-    private ISimulatorUI ui;
-    private boolean isRunning = false; // Flag to track running state
+    private ISimulatorGUI ui;
+    private boolean isRunning = false; // Flag to track the running state
     private boolean isPaused = false; // Flag to track pause state
     private List<ServicePointConfig> servicePointConfigs;
     private AirportDAO airportDAO = new AirportDAO();
@@ -25,7 +26,7 @@ public class Controller implements IControllerVtoM, IControllerMtoV {   // NEW
     private SimulatorGUI simulatorGUI;
     private boolean isStopping = false; // Flag to track stopping state
 
-    public Controller(ISimulatorUI ui) {
+    public Controller(ISimulatorGUI ui) {
         this.ui = ui;
     }
 
@@ -87,7 +88,7 @@ public class Controller implements IControllerVtoM, IControllerMtoV {   // NEW
         engine.setSimulationTime(ui.getTime());
         engine.setDelay(ui.getDelay());
 
-        // Set arrival interval if it wasn't passed to constructor
+        // Set an arrival interval if it wasn't passed to constructor
         int arrivalInterval = (int) simulatorGUI.getArrivalSlider().getValue();
         engine.setArrivalInterval(arrivalInterval);
 
@@ -131,7 +132,7 @@ public class Controller implements IControllerVtoM, IControllerMtoV {   // NEW
 
     /**
      * Displays the end time of the simulation in the UI.
-     * This method is called from the engine to update the visualisation with the end time.
+     * This method is called from the engine to update the visualization with the end time.
      *
      * @param time The end time of the simulation.
      */
@@ -139,10 +140,10 @@ public class Controller implements IControllerVtoM, IControllerMtoV {   // NEW
     public void showEndTime(double time) {
         Platform.runLater(() -> {
             ui.setEndingTime(time);
-            // Enable reset button when simulation shows end time
+            // Enable the reset button when simulation shows end time
             simulatorGUI.setResetButtonDisabled(false);
 
-            // Disable play/pause button when simulation ends
+            // Disable the play / pause button when simulation ends
             simulatorGUI.getPlayPauseButton().setDisable(true);
         });
     }
@@ -292,7 +293,7 @@ public class Controller implements IControllerVtoM, IControllerMtoV {   // NEW
 
     /**
      * Displays the results of the simulation.
-     * This method is called from the engine to update the visualisation with the results.
+     * This method is called from the engine to update the visualization with the results.
      */
     @Override
     public void showResults(String results) {
@@ -320,8 +321,8 @@ public class Controller implements IControllerVtoM, IControllerMtoV {   // NEW
     }
 
     /**
-     * Clears the visualisation display.
-     * This method is called from the engine to clear the visualisation.
+     * Clears the visualization display.
+     * This method is called from the engine to clear the visualization.
      */
     @Override
     public void clearVisualisation() {
@@ -363,7 +364,7 @@ public class Controller implements IControllerVtoM, IControllerMtoV {   // NEW
             if (engine instanceof Thread && ((Thread) engine).isAlive()) {
                 ((Thread) engine).interrupt();
             }
-            // Clear reference to old engine
+            // Clear reference to the old engine
             engine = null;
         }
 
