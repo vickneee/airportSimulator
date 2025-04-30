@@ -313,10 +313,10 @@ public class SimulatorGUI extends Application implements ISimulatorUI {
             resultsBox.setSpacing(10); // Node distance 10 pixels
             resultsBox.getChildren().add(subTitle2);
 
-            resultsBox.setPrefHeight(620);
-            resultsBox.setMaxHeight(620);
-            resultsBox.setPrefWidth(500);
-            resultsBox.setMinWidth(500);
+            resultsBox.setPrefHeight(630);
+            resultsBox.setMaxHeight(630);
+            resultsBox.setPrefWidth(485);
+            resultsBox.setMinWidth(485);
 
             GridPane grid2 = new GridPane();
             grid2.setVgap(10);
@@ -338,13 +338,29 @@ public class SimulatorGUI extends Application implements ISimulatorUI {
             footer.setPadding(new Insets ((15))); // margins up, right, bottom, left
             footer.setSpacing(10); // Node distance 10 pixels
             footer.setAlignment(Pos.CENTER);
-            footer.setPrefHeight(50);
-            footer.setMaxHeight(50);
+            footer.setPrefHeight(40);
+            footer.setMaxHeight(40);
 
             display = new Visualisation(500,620);
 
+            // Add a container for the visualization canvas with rounded corners
+            StackPane displayContainer = new StackPane();
+            displayContainer.getChildren().add((Canvas)display);
+            displayContainer.setPrefHeight(630);
+            displayContainer.setMaxHeight(630);
+            displayContainer.setPrefWidth(500);
+            displayContainer.setMinWidth(500);
+            displayContainer.setStyle(
+                    "-fx-background-color: white; " +
+                            "-fx-border-color: #d3d1d1; " +
+                            "-fx-border-width: 1px; " +
+                            "-fx-border-radius: 5px; " +
+                            "-fx-background-radius: 5px; " +
+                            "-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 1);"
+            );
+
 	        // Fill the box:
-	        canvas1.getChildren().addAll(grid, (Canvas) display, resultsBox);
+	        canvas1.getChildren().addAll(grid, displayContainer, resultsBox);
             resultsBox.getChildren().addAll(grid2);
 
             // Create a root BorderPane and set the VBox and HBox
@@ -353,7 +369,7 @@ public class SimulatorGUI extends Application implements ISimulatorUI {
             root.setCenter(canvas1); // Place the grid and canvas in the center
             root.setBottom(footer); // Place the footer at the bottom
 
-	        Scene scene = new Scene(root, 1390, 750);
+	        Scene scene = new Scene(root, 1400, 750);
 	        primaryStage.setScene(scene);
 	        primaryStage.show();
 		} catch(Exception e) {
