@@ -4,6 +4,7 @@ import java.text.DecimalFormat;
 
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -26,7 +27,7 @@ import database.ServicePointConfig;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SimulatorGUI extends Application implements ISimulatorUI {
+public class SimulatorGUI extends Application implements ISimulatorGUI {
 
 	// Controller object (UI needs)
 	private IControllerVtoM controller;
@@ -46,6 +47,7 @@ public class SimulatorGUI extends Application implements ISimulatorUI {
     private ToggleButton playPauseButton;
     private Button stopButton;
     private Button resetButton;
+    private Button externalViewButton; // New button for showing graphs
 
     // UI display components
 	private IVisualisation display;
@@ -118,6 +120,12 @@ public class SimulatorGUI extends Application implements ISimulatorUI {
             resetButton = new Button();
             resetButton.setText("Reset");
             resetButton.setStyle("-fx-font-size: 12px;");
+
+            // External view button
+            externalViewButton = new Button("Graphical View");
+            externalViewButton.setFont(Font.font("Tahoma", FontWeight.NORMAL, 12));
+            externalViewButton.setStyle("-fx-background-color: #7bb67d; -fx-text-fill: white; -fx-font-size: 12px;");
+            externalViewButton.setOnAction(e -> openExternalView()); // Pass the data to the external view
 
             timeLabel = new Label("Simulation time (time units):");
 			timeLabel.setFont(Font.font("Tahoma", FontWeight.NORMAL, 12));
@@ -210,7 +218,7 @@ public class SimulatorGUI extends Application implements ISimulatorUI {
                     // Pass configs to controller (add a method if needed)
                     controller.setServicePointConfigs(currentConfigs);
                     logEvent("Loaded service point configs for: " + selectedAirport.getName());
-                    // Print service point summary to GUI log area
+                    // Print service point summary to the GUI log area
                     printServicePointSummaryToLog(currentConfigs);
                 }
             });
@@ -231,6 +239,8 @@ public class SimulatorGUI extends Application implements ISimulatorUI {
                 controller.startSimulation();
                 startButton.setDisable(true); // Disable the button after starting
                 airportComboBox.setDisable(true); // Disable airport selection after starting
+                timeSpinner.setDisable(true); // Disable time spinner after starting
+                delay.setDisable(true); // Disable delay spinner after starting
             });
 
             playPauseButton.setOnAction(event -> {
@@ -252,6 +262,9 @@ public class SimulatorGUI extends Application implements ISimulatorUI {
             resetButton.setOnAction(e -> {
                 controller.resetSimulation();
                 startButton.setDisable(false); // Enable the button after resetting
+                airportComboBox.setDisable(false); // Enable airport selection after resetting
+                timeSpinner.setDisable(false); // Enable time spinner after resetting
+                delay.setDisable(false); // Enable delay spinner after resetting
             });
 
             // Layouts
@@ -313,6 +326,10 @@ public class SimulatorGUI extends Application implements ISimulatorUI {
             resultsBox.setSpacing(10); // Node distance 10 pixels
             resultsBox.getChildren().add(subTitle2);
 
+            HBox resultsTitleBox = new HBox(10);
+            resultsTitleBox.setAlignment(Pos.CENTER_LEFT);
+            resultsTitleBox.getChildren().addAll(subTitle2, externalViewButton);
+
             resultsBox.setPrefHeight(630);
             resultsBox.setMaxHeight(630);
             resultsBox.setPrefWidth(485);
@@ -328,7 +345,7 @@ public class SimulatorGUI extends Application implements ISimulatorUI {
                     + "-fx-border-radius: 5px; "
                     + "-fx-border-style: solid;");
 
-            grid2.add(subTitle2 , 0, 0); // Add subtitle to the grid
+            grid2.add(resultsTitleBox, 0, 0); // Add subtitle to the grid
             grid2.add(new Separator(), 0, 1, 2, 1); // Add a separator line
             grid2.add(resultArea, 0, 3); // Add the result area to the grid
             grid2.add(new Separator(), 0, 5, 2, 1); // Add a separator line
@@ -376,6 +393,9 @@ public class SimulatorGUI extends Application implements ISimulatorUI {
 			e.printStackTrace();
 		}
 	}
+
+    private void handleShowGraphs(ActionEvent actionEvent) {
+    }
 
     /**
      * Initializes the GUI components and sets the trace level.
@@ -509,6 +529,25 @@ public class SimulatorGUI extends Application implements ISimulatorUI {
     // Add this method to the SimulatorGUI class
     public void setResetButtonDisabled(boolean disabled) {
         Platform.runLater(() -> resetButton.setDisable(disabled));
+    }
+
+    private void openExternalView() {
+        Stage externalStage = new Stage(); // New window
+        externalStage.setTitle("Graphical View");
+
+        // Content of the new window
+        Label label = new Label("Grpaphical View");
+        label.setStyle("-fx-font-size: 14px;");
+
+        VBox layout = new VBox(10);
+        layout.setPadding(new Insets(20));
+        layout.getChildren().add(label);
+
+        Scene scene = new Scene(layout, 500, 400);
+        externalStage.setScene(scene);
+
+        // Show the window
+        externalStage.show();
     }
 
     /* JavaFX-application (UI) start-up */

@@ -4,6 +4,6 @@ import java.util.List;
 
 public interface IVisualisation {
     void clearDisplay();
-    void newCustomer(); // Called by Controller, doesn't have Customer object
+    void newCustomer(); // Called by Controller, doesn't have a Customer object
     void updateQueueLengths(List<List<Integer>> lengths);
 }
