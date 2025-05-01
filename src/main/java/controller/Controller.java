@@ -1,6 +1,7 @@
 package controller;
 
 import javafx.application.Platform;
+import javafx.scene.control.ComboBox;
 import simu.framework.IEngine;
 import simu.model.MyEngine;
 import view.ISimulatorGUI;
@@ -98,20 +99,17 @@ public class Controller implements IControllerVtoM, IControllerMtoV {   // NEW
         double euPercentage = simulatorGUI.getEUFlightPercentageSlider().getValue() / 100.0;
         engine.setEUFlightPercentage(euPercentage);
 
+        // Pass the airport name if available
+        ComboBox<Airport> airportComboBox = (ComboBox<Airport>) simulatorGUI.getAirportComboBox();
+        if (airportComboBox.getValue() != null) {
+            ((MyEngine) engine).setSelectedAirport(
+                    airportComboBox.getValue().getName()
+            );
+        }
+
         // Finally, clear display and start engine
         ui.getVisualisation().clearDisplay();
         ((Thread) engine).start();
-    }
-
-
-    /**
-     * Sets the service point configurations for the simulation.
-     * This method is used to set the configurations for the service points in the simulation.
-     *
-     * @param configs A list of ServicePointConfig objects representing the configurations.
-     */
-    public void setServicePointConfigs(List<ServicePointConfig> configs) {
-        this.servicePointConfigs = configs;
     }
 
     /**
@@ -389,6 +387,18 @@ public class Controller implements IControllerVtoM, IControllerMtoV {   // NEW
 
         // Create a completely new engine instance and initialize it
         initializeEngine();
+    }
+
+    @Override
+    public void setServicePointConfigs(List<ServicePointConfig> configs) {
+        this.servicePointConfigs = configs;
+        // If the engine exists, we need to also pass the selected airport name
+        if (engine instanceof MyEngine && simulatorGUI != null) {
+            ComboBox<Airport> airportComboBox = (ComboBox<Airport>) simulatorGUI.getAirportComboBox();
+            if (airportComboBox.getValue() != null) {
+                ((MyEngine) engine).setSelectedAirport(airportComboBox.getValue().getName());
+            }
+        }
     }
 
 }
