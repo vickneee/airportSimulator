@@ -389,20 +389,6 @@ public class Controller implements IControllerVtoM, IControllerMtoV {   // NEW
 
         // Create a completely new engine instance and initialize it
         initializeEngine();
-
-//        // Update UI
-//        Platform.runLater(() -> {
-//            simulatorGUI.getAirportComboBox().setDisable(false);
-//            simulatorGUI.getArrivalSlider().setDisable(false);
-//            simulatorGUI.getEUFlightPercentageSlider().setDisable(false);
-//            simulatorGUI.getTimeSpinner().setDisable(false);
-//            simulatorGUI.getDelaySpinner().setDisable(false);
-//            simulatorGUI.getSlowDownButton().setDisable(true);
-//            simulatorGUI.getSpeedUpButton().setDisable(true);
-//            simulatorGUI.getStartButton().setDisable(false);
-//            simulatorGUI.getPlayPauseButton().setDisable(true);
-//            simulatorGUI.getResetButton().setDisable(true);
-//        });
     }
 
 }
