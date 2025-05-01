@@ -40,9 +40,10 @@ public class MyEngine extends Engine implements IEngine {
     private double averagePassportControlServiceTime;
     private double averageEUGateServiceTime;
     private double averageNonEUGateServiceTime;
+    private String selectedAirport;
 
     private boolean isRunning = true; // Flag to control running state
-    private boolean isResetting = false; // Flag to control resetting state
+    private boolean isResetting = false; // Flag to control resetting state;
 
     public MyEngine(IControllerMtoV controller, int arrivalInterval, int checkinNum, int securityNum, int passportNum, int EUNum, int NonEUNum) { // NEW
         super(controller); // NEW
@@ -55,6 +56,7 @@ public class MyEngine extends Engine implements IEngine {
         passportControlPoints = new ArrayList<>();
         EUGates = new ArrayList<>();
         NonEUGates = new ArrayList<>();
+        selectedAirport = ""; // Initialize selected airport
 
         // Initialize each category with the specified number of service points
         initializeServicePoints(checkinPoints, checkinNum, 10, 10, EventType.DEP1);
@@ -245,7 +247,6 @@ public class MyEngine extends Engine implements IEngine {
         }
     }
 
-
     /**
      * Updates the queue lengths for various service points in the airport simulation.
      * This method gathers the queue lengths from different service points and passes
@@ -276,6 +277,7 @@ public class MyEngine extends Engine implements IEngine {
 
         // Log the final results
         String results = "Simulation ended.\n\n";
+        results += "Selected airport: " + selectedAirport + "\n\n";
         // Calculate the total number of serviced customers
         System.out.println("Final count of passengers who exited through the EU gate: " + totalEUServicedCustomer);
         System.out.println("Final count of passengers who exited through the Non-EU gate: " + totalNonEUServicedCustomer);
@@ -551,6 +553,15 @@ public class MyEngine extends Engine implements IEngine {
         } finally {
             isResetting = false; // Reset the flag
         }
+    }
+
+    /**
+     * Sets the selected airport for the simulation.
+     *
+     * @param airport The name of the selected airport.
+     */
+    public void setSelectedAirport(String airport) {
+        this.selectedAirport = airport;
     }
 
 }
