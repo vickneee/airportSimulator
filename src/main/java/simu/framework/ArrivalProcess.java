@@ -1,6 +1,5 @@
 package simu.framework;
 import simu.model.EventType;
-
 import eduni.distributions.*;
 
 /**
@@ -8,7 +7,7 @@ import eduni.distributions.*;
  * It uses a ContinuousGenerator to sample the time until the next event occurs and adds it to the event list.
  */
 public class ArrivalProcess {
-	private ContinuousGenerator generator;
+    private ContinuousGenerator generator;
 	private EventList eventList;
 	private EventType type;
 
@@ -24,14 +23,6 @@ public class ArrivalProcess {
 		this.eventList = tl;
 		this.type = type;
 	}
-
-    /**
-     * Sets the ID of the ArrivalProcess. This method is not implemented and does nothing.
-     *
-     * @param i The ID to be set.
-     */
-    public static void setId(int i) {
-    }
 
     /**
      * Generates the next event based on the current time and the sampled time from the generator.

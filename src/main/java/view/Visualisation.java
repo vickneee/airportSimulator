@@ -96,7 +96,7 @@ public class Visualisation extends Canvas implements IVisualisation {
                 drawQueue(queueName, x, y);
 
                 int queueLength = servicePointQueues.get(j);
-                drawCustomer(queueLength, x + 108, y - 10);
+                drawCustomer(queueLength, x + 108, y - 9);
             }
         }
     }

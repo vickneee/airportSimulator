@@ -272,11 +272,20 @@ public class SimulatorGUI extends Application implements ISimulatorGUI {
 
             resetButton.setOnAction(e -> {
                 controller.resetSimulation();
-                startButton.setDisable(false); // Enable the button after resetting
-                airportComboBox.setDisable(false); // Enable airport selection after resetting
-                timeSpinner.setDisable(false); // Enable time spinner after resetting
-                delay.setDisable(false); // Enable delay spinner after resetting
             });
+
+            // Set initial states of the controls
+            airportComboBox.setDisable(false);
+            arrivalSlider.setDisable(false);
+            getEUFlightPercentageSlider().setDisable(false);
+            getTimeSpinner().setDisable(false);
+            getDelaySpinner().setDisable(false);
+            getSlowDownButton().setDisable(true);
+            getSpeedUpButton().setDisable(true);
+            startButton.setDisable(false);
+            playPauseButton.setDisable(true);
+            resetButton.setDisable(true);
+            externalViewButton.setDisable(true); // Initially disabled
 
             // Layouts
             HBox canvas1 = new HBox();
@@ -509,10 +518,6 @@ public class SimulatorGUI extends Application implements ISimulatorGUI {
         }
         logEvent(sb.toString());
     }
-
-    public Node getPauseButton() {
-        return playPauseButton; // Return the play/pause button in Node format
-    }
     
     public Node getStartButton() {
         return startButton; // Return the start button in Node format
@@ -520,6 +525,22 @@ public class SimulatorGUI extends Application implements ISimulatorGUI {
 
     public Node getStopButton() {
         return stopButton; // Return the stop button in Node format
+    }
+
+    public Node getTimeSpinner() {
+        return timeSpinner; // Return the slow button in Node format
+    }
+
+    public Node getDelaySpinner() {
+        return delay; // Return the delay button in Node format
+    }
+
+    public Node getSlowDownButton() {
+        return slowButton; // Return the slow-down button in Node format
+    }
+
+    public Node getSpeedUpButton() {
+        return speedUpButton; // Return the speed-up button in Node format
     }
 
     public Node getResetButton() {
@@ -625,24 +646,31 @@ public class SimulatorGUI extends Application implements ISimulatorGUI {
         layout.setPadding(new Insets(10));
         layout.getChildren().addAll(usageChart, serviceTimeChart);
 
-        Scene scene = new Scene(layout, 600, 700); // Adjust window size for both graphs
+        Scene scene = new Scene(layout, 600, 700); // Adjust the window size for both graphs
         externalStage.setScene(scene);
 
         // Display the window
         externalStage.show();
     }
 
+    public void setSlowDownButtonDisabled(boolean b) {
+        Platform.runLater(() -> slowButton.setDisable(b));
+    }
 
+    public void setSpeedUpButtonDisabled(boolean b) {
+        Platform.runLater(() -> speedUpButton.setDisable(b));
+    }
 
+    public void setArrivalSliderDisabled(boolean b) {
+        Platform.runLater(() -> arrivalSlider.setDisable(b));
+    }
 
-
-
-
-
+    public void setEUFlightPercentageSliderDisabled(boolean b) {
+        Platform.runLater(() -> euPercentSlider.setDisable(b));
+    }
 
     /* JavaFX-application (UI) start-up */
     public static void main(String[] args) {
         launch(args);
     }
-
 }

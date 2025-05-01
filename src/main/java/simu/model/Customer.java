@@ -9,7 +9,7 @@ public class Customer {
     private double arrivalTime;
     private double removalTime;
     private int id;
-    private static int i = 1;
+    private static int i = 1; // Static counter for Customer IDs
     private static long sum = 0;
     private boolean isEUFlight;
     private double servicedTime = 0;
@@ -30,7 +30,7 @@ public class Customer {
         }
         arrivalTime = Clock.getInstance().getTime();
         Trace.out(Trace.Level.INFO, "New customer #" + id + " arrived at  " + arrivalTime);
-        // Show the line in log area
+        // Show the line in the log area
         controller.showLogArea("\nNew customer #" + id + " arrived at  " + String.format("%.2f", arrivalTime) + " (time units)");
     }
 
@@ -94,4 +94,12 @@ public class Customer {
         }
     }
 
+    /**
+     * Resets the static ID counter for the Customer class.
+     * This method should be called at the beginning of each new simulation.
+     */
+    public static void resetIdCounter() {
+        i = 1;
+        sum = 0; // Optionally reset the sum as well if needed
+    }
 }

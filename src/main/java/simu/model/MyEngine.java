@@ -6,7 +6,6 @@ import eduni.distributions.Bernoulli;
 import eduni.distributions.DiscreteGenerator;
 import eduni.distributions.Negexp;
 import eduni.distributions.Normal;
-import javafx.application.Platform;
 import simu.framework.*;
 import database.ServicePointConfig;
 import eduni.distributions.Uniform;
@@ -70,7 +69,6 @@ public class MyEngine extends Engine implements IEngine {
         servicePoints.addAll(passportControlPoints);
         servicePoints.addAll(EUGates);
         servicePoints.addAll(NonEUGates);
-
         arrivalProcess = new ArrivalProcess(new Negexp(arrivalInterval, 1), eventList, EventType.ARR1);
     }
 
@@ -83,7 +81,7 @@ public class MyEngine extends Engine implements IEngine {
         passportControlPoints = new ArrayList<>();
         EUGates = new ArrayList<>();
         NonEUGates = new ArrayList<>();
-        arrivalInterval = 5; // Default, can be overridden by config or UI
+        arrivalInterval = 5; // Default can be overridden by config or UI
 
         // Map configs to service points
         for (ServicePointConfig config : configs) {
@@ -317,7 +315,7 @@ public class MyEngine extends Engine implements IEngine {
         graphData.put("usageRatio", servicePointsUsageRatio);
         graphData.put("averageServiceTime", averageServiceTimes);
 
-        // Make the external view button clickable by setting disable to false
+        // Make the external view button clickable by setting disabling to false
         controller.setExternalViewButton();
 
     }
@@ -535,8 +533,8 @@ public class MyEngine extends Engine implements IEngine {
             EUGateUsageRatio = 0;
             NonEUGateUsageRatio = 0;
 
-            // Reset the arrival process Id-s
-            ArrivalProcess.setId(1);
+            // **Reset the Customer ID counter**
+            Customer.resetIdCounter(); // Add this line
 
             // Reinitialize the arrival process with fresh random generators
             arrivalProcess = new ArrivalProcess(new Negexp(arrivalInterval, 1), eventList, EventType.ARR1);
