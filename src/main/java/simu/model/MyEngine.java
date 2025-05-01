@@ -45,6 +45,8 @@ public class MyEngine extends Engine implements IEngine {
     private boolean isRunning = true; // Flag to control running state
     private boolean isResetting = false; // Flag to control resetting state;
 
+    private List<Customer> servicedCustomers;
+
     public MyEngine(IControllerMtoV controller, int arrivalInterval, int checkinNum, int securityNum, int passportNum, int EUNum, int NonEUNum) { // NEW
         super(controller); // NEW
         this.arrivalInterval = arrivalInterval; // Set the arrival interval
@@ -56,7 +58,8 @@ public class MyEngine extends Engine implements IEngine {
         passportControlPoints = new ArrayList<>();
         EUGates = new ArrayList<>();
         NonEUGates = new ArrayList<>();
-        selectedAirport = ""; // Initialize selected airport
+        selectedAirport = ""; // Initialize a selected airport
+        servicedCustomers = new ArrayList<>(); // Add this line
 
         // Initialize each category with the specified number of service points
         initializeServicePoints(checkinPoints, checkinNum, 10, 10, EventType.DEP1);
@@ -84,6 +87,7 @@ public class MyEngine extends Engine implements IEngine {
         EUGates = new ArrayList<>();
         NonEUGates = new ArrayList<>();
         arrivalInterval = 5; // Default can be overridden by config or UI
+        servicedCustomers = new ArrayList<>(); // Add this line
 
         // Map configs to service points
         for (ServicePointConfig config : configs) {
@@ -222,8 +226,8 @@ public class MyEngine extends Engine implements IEngine {
                 a = t.getServicePoint().removeQueue();
                 a.setRemovalTime(Clock.getInstance().getTime());
                 totalEUServicedCustomer += 1;
+                servicedCustomers.add(a); // Add to the tracked customers
                 a.reportResults((Controller) controller);
-                // a.reportResults(controller.getSimulatorGUI()); // Pass the simulator GUI to the reportResults method
                 updateQueueLengths(); // Update queue lengths
                 break;
 
@@ -241,6 +245,7 @@ public class MyEngine extends Engine implements IEngine {
                 a = t.getServicePoint().removeQueue();
                 a.setRemovalTime(Clock.getInstance().getTime());
                 totalNonEUServicedCustomer += 1;
+                servicedCustomers.add(a); // Add to the tracked customers
                 a.reportResults((Controller) controller);
                 updateQueueLengths(); // Update queue lengths
                 break;
@@ -272,12 +277,24 @@ public class MyEngine extends Engine implements IEngine {
         controller.showEndTime(Clock.getInstance().getTime());
         updateQueueLengths(); // Final update
 
+        // Calculate time metrics
+        String averageSystemTime = getAverageTimeInSystem();
+
+        // Parse values for calculation
+        System.out.println("\nAverage customer total time in system: " + averageSystemTime);
+
+        System.out.println("\nTotal serviced customers tracked: " + servicedCustomers.size());
+        System.out.println("Total serviced customers through EU gate: " + totalEUServicedCustomer);
+        System.out.println("Average customer time in system: " + averageSystemTime);
+
         // Print the final results to the console and log them
         System.out.println("\nSimulation ended.");
 
         // Log the final results
         String results = "Simulation ended.\n\n";
         results += "Selected airport: " + selectedAirport + "\n\n";
+        // Add average waiting time
+        results += "Average customer time in the system: " + averageSystemTime + " (time units)\n\n";
         // Calculate the total number of serviced customers
         System.out.println("Final count of passengers who exited through the EU gate: " + totalEUServicedCustomer);
         System.out.println("Final count of passengers who exited through the Non-EU gate: " + totalNonEUServicedCustomer);
@@ -312,14 +329,13 @@ public class MyEngine extends Engine implements IEngine {
         // Print the results to the logArea in the GUI
         controller.showLogArea("\nSimulation ended.");
 
-        //prepare data for the graph to be sent to the view
+        // Prepare data for the graph to be sent to the view
         graphData = new HashMap<>();
         graphData.put("usageRatio", servicePointsUsageRatio);
         graphData.put("averageServiceTime", averageServiceTimes);
 
         // Make the external view button clickable by setting disabling to false
         controller.setExternalViewButton();
-
     }
 
     /**
@@ -535,8 +551,11 @@ public class MyEngine extends Engine implements IEngine {
             EUGateUsageRatio = 0;
             NonEUGateUsageRatio = 0;
 
-            // **Reset the Customer ID counter**
+            // Reset the Customer ID counter
             Customer.resetIdCounter(); // Add this line
+
+            // Clear serviced customers list
+            servicedCustomers.clear();
 
             // Reinitialize the arrival process with fresh random generators
             arrivalProcess = new ArrivalProcess(new Negexp(arrivalInterval, 1), eventList, EventType.ARR1);
@@ -562,6 +581,20 @@ public class MyEngine extends Engine implements IEngine {
      */
     public void setSelectedAirport(String airport) {
         this.selectedAirport = airport;
+    }
+
+    private String getAverageTimeInSystem() {
+        double totalTimeInSystem = 0;
+        for (Customer customer : servicedCustomers) {
+            totalTimeInSystem += customer.getTotalTimeInSystem();
+        }
+
+        if (!servicedCustomers.isEmpty()) {
+            double averageTimeInSystem = totalTimeInSystem / servicedCustomers.size();
+            return String.format("%.2f", averageTimeInSystem);
+        } else {
+            return "0.00";
+        }
     }
 
 }

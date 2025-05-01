@@ -84,7 +84,7 @@ public class Controller implements IControllerVtoM, IControllerMtoV {   // NEW
         } else {
             // Get the current slider value for arrival interval
             int arrivalInterval = (int) simulatorGUI.getArrivalSlider().getValue();
-            engine = new MyEngine(this, arrivalInterval, 5, 3, 5, 3, 5);
+            engine = new MyEngine(this, arrivalInterval, 5, 3, 5, 5, 3);
         }
 
         // Then set all engine properties

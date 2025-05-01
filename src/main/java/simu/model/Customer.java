@@ -12,7 +12,8 @@ public class Customer {
     private static int i = 1; // Static counter for Customer IDs
     private static long sum = 0;
     private boolean isEUFlight;
-    private double servicedTime = 0;
+    private double totalWaitingTime = 0;
+    private double startWaitingTime = 0;
 
     /**
      * Initializes a Customer instance and determines whether the customer is on an EU flight.
@@ -87,10 +88,10 @@ public class Customer {
 
         sum += (long) (removalTime - arrivalTime);
         double mean = (double) sum / id;
-        System.out.println("Current mean of the customer service times " + mean);
+        // System.out.println("Current mean of the customer service times " + mean);
         // Log to GUI
         if (controller != null) {
-            controller.showLogArea("Current mean of the customer service times " + String.format("%.2f", mean) + " (time units)");
+            controller.showLogArea("Current mean of the customer service times: " + String.format("%.2f", mean) + " (time units)");
         }
     }
 
@@ -101,5 +102,24 @@ public class Customer {
     public static void resetIdCounter() {
         i = 1;
         sum = 0; // Optionally reset the sum as well if needed
+    }
+
+    public void startWaiting(double currentTime) {
+        this.startWaitingTime = currentTime;
+        // System.out.println("Customer " + id + " started waiting at " + currentTime);
+    }
+
+    public void stopWaiting(double currentTime) {
+        double waitTime = currentTime - startWaitingTime;
+        this.totalWaitingTime += waitTime;
+        /*
+        System.out.println("Customer " + id + " stopped waiting at " + currentTime +
+                ", waited for " + waitTime + ", total waiting: " + totalWaitingTime);
+                */
+    }
+
+    // Add a new method if you need total time in a system
+    public double getTotalTimeInSystem() {
+        return removalTime - arrivalTime;
     }
 }
