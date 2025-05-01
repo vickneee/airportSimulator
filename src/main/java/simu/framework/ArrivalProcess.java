@@ -38,7 +38,7 @@ public class ArrivalProcess {
      * The generated event is added to the event list.
      */
 	public void generateNext() {
-		Event t = new Event(type, Clock.getInstance().getTime() + generator.sample(), null, 0);
+		Event t = new Event(type, Clock.getInstance().getTime() + generator.sample(), null);
 		eventList.add(t);
 	}
 

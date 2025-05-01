@@ -13,4 +13,6 @@ public interface IControllerMtoV {
     void clearLogArea();
     void clearVisualisation();
     void updateUIAfterReset();
+
+    void setExternalViewButton();
 }

@@ -8,6 +8,7 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.chart.*;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import javafx.scene.*;
@@ -25,7 +26,9 @@ import database.Airport;
 import database.ServicePointConfig;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class SimulatorGUI extends Application implements ISimulatorGUI {
 
@@ -72,6 +75,10 @@ public class SimulatorGUI extends Application implements ISimulatorGUI {
     // EU flight percentage slider
     private Slider euPercentSlider = new Slider(0, 100, 30);
     private Label euPercentSliderLabel = new Label("Amount of EU Passengers (%):");
+
+    //Data for creating graphs
+    private HashMap<String, Double> graphDataUsageRatio;
+    private HashMap<String, Double> graphDataAverageTimes;
 
 	@Override
 	public void start(Stage primaryStage) {
@@ -123,9 +130,12 @@ public class SimulatorGUI extends Application implements ISimulatorGUI {
 
             // External view button
             externalViewButton = new Button("Graphical View");
+            externalViewButton.setDisable(true);
             externalViewButton.setFont(Font.font("Tahoma", FontWeight.NORMAL, 12));
             externalViewButton.setStyle("-fx-background-color: #7bb67d; -fx-text-fill: white; -fx-font-size: 12px;");
-            externalViewButton.setOnAction(e -> openExternalView()); // Pass the data to the external view
+            externalViewButton.setOnAction(e -> {
+                controller.getGraphData();
+            }); // Pass the data to the external view
 
             timeLabel = new Label("Simulation time (time units):");
 			timeLabel.setFont(Font.font("Tahoma", FontWeight.NORMAL, 12));
@@ -241,6 +251,7 @@ public class SimulatorGUI extends Application implements ISimulatorGUI {
                 airportComboBox.setDisable(true); // Disable airport selection after starting
                 timeSpinner.setDisable(true); // Disable time spinner after starting
                 delay.setDisable(true); // Disable delay spinner after starting
+                externalViewButton.setDisable(true);// Disable externalViewButton after starting
             });
 
             playPauseButton.setOnAction(event -> {
@@ -394,9 +405,6 @@ public class SimulatorGUI extends Application implements ISimulatorGUI {
 		}
 	}
 
-    private void handleShowGraphs(ActionEvent actionEvent) {
-    }
-
     /**
      * Initializes the GUI components and sets the trace level.
      * This method is called when the application is launched.
@@ -526,29 +534,111 @@ public class SimulatorGUI extends Application implements ISimulatorGUI {
         return playPauseButton; // Return the play/pause button in Node format
     }
 
+    public Node getExternalViewButton(){return externalViewButton; } // Return the Graphical View button
     // Add this method to the SimulatorGUI class
     public void setResetButtonDisabled(boolean disabled) {
         Platform.runLater(() -> resetButton.setDisable(disabled));
     }
 
+    /**
+     * Sets graph data for the view using the provided HashMap.
+     * This method extracts usage ratio and waiting time data
+     * from the model and stores them in corresponding fields
+     * for visualization.
+     *
+     * @param data A HashMap containing the graph data, where
+     *             "usageRatio" represents service usage ratios
+     *             and "waitingTimes" represents service point's average waiting times.
+     */
+    public void setGraphData(HashMap<String, HashMap<String, Double>> data){
+        graphDataUsageRatio = data.get("usageRatio");
+        graphDataAverageTimes = data.get("averageServiceTime");
+        openExternalView();
+    }
+
+    /**
+     * Opens an external window to display graphical data.
+     * This method creates two bar charts:
+     * - Usage Ratio per service point
+     * - Average Service Time per service point
+     * Both graphs share the same order of service points for consistency.
+     */
     private void openExternalView() {
-        Stage externalStage = new Stage(); // New window
+        Stage externalStage = new Stage();
         externalStage.setTitle("Graphical View");
 
-        // Content of the new window
-        Label label = new Label("Grpaphical View");
-        label.setStyle("-fx-font-size: 14px;");
+        // Common X-axis order for both graphs
+        String[] serviceOrder = {"Check-in", "Security", "Passport", "EU Gate", "Non-EU Gate"};
 
+        // X-axis for usage ratio
+        CategoryAxis xAxisUsage = new CategoryAxis();
+        xAxisUsage.setLabel("Service Points");
+
+        // X-axis for average service time
+        CategoryAxis xAxisServiceTime = new CategoryAxis();
+        xAxisServiceTime.setLabel("Service Points");
+
+        // Y-axis for usage ratio
+        NumberAxis yAxisUsage = new NumberAxis();
+        yAxisUsage.setLabel("Usage Ratio (%)");
+
+        // Y-axis for average service time
+        NumberAxis yAxisServiceTime = new NumberAxis();
+        yAxisServiceTime.setLabel("Average Service Time (time units)");
+
+        /** BarChart for Usage Ratio */
+        BarChart<String, Number> usageChart = new BarChart<>(xAxisUsage, yAxisUsage);
+        usageChart.setTitle("Service Usage Ratio");
+
+        XYChart.Series<String, Number> usageSeries = new XYChart.Series<>();
+        usageSeries.setName("Usage Ratio");
+
+        for (String service : serviceOrder) {
+            if (graphDataUsageRatio.containsKey(service)) {
+                usageSeries.getData().add(new XYChart.Data<>(service, graphDataUsageRatio.get(service)));
+            }
+        }
+
+        usageChart.getData().add(usageSeries);
+
+        /** BarChart for Average Service Time */
+        BarChart<String, Number> serviceTimeChart = new BarChart<>(xAxisServiceTime, yAxisServiceTime);
+        serviceTimeChart.setTitle("Average Service Time per Service Point");
+
+        XYChart.Series<String, Number> serviceTimeSeries = new XYChart.Series<>();
+        serviceTimeSeries.setName("Average Service Time");
+
+        for (String service : serviceOrder) {
+            if (graphDataAverageTimes.containsKey(service)) {
+                serviceTimeSeries.getData().add(new XYChart.Data<>(service, graphDataAverageTimes.get(service)));
+            }
+        }
+
+        serviceTimeChart.getData().add(serviceTimeSeries);
+
+        // Adjust chart sizes for better readability
+        usageChart.setPrefSize(600, 300);
+        serviceTimeChart.setPrefSize(600, 350);
+
+        /** Set up layout */
         VBox layout = new VBox(10);
-        layout.setPadding(new Insets(20));
-        layout.getChildren().add(label);
+        layout.setPadding(new Insets(10));
+        layout.getChildren().addAll(usageChart, serviceTimeChart);
 
-        Scene scene = new Scene(layout, 500, 400);
+        Scene scene = new Scene(layout, 600, 700); // Adjust window size for both graphs
         externalStage.setScene(scene);
 
-        // Show the window
+        // Display the window
         externalStage.show();
     }
+
+
+
+
+
+
+
+
 
     /* JavaFX-application (UI) start-up */
     public static void main(String[] args) {

@@ -13,6 +13,7 @@ import database.ServicePointConfigDAO;
 import database.Airport;
 import org.bson.types.ObjectId;
 
+import java.util.HashMap;
 import java.util.List;
 
 public class Controller implements IControllerVtoM, IControllerMtoV {   // NEW
@@ -299,6 +300,27 @@ public class Controller implements IControllerVtoM, IControllerMtoV {   // NEW
     public void showResults(String results) {
         Platform.runLater(() -> simulatorGUI.setResultsText(results));
     }
+
+    /**
+     * Retrieves graph data from the model and updates the view.
+     * This method ensures the UI updates safely by executing the data
+     * retrieval on the JavaFX application thread using Platform.runLater().
+     */
+    public void getGraphData(){
+        Platform.runLater(() -> simulatorGUI.setGraphData(engine.getGraphData()));
+    }
+
+    /**
+     * Enables the external view button in the simulator GUI.
+     * This method sets the button's disabled state to false,
+     * allowing user interaction.
+     */
+    @Override
+    public void setExternalViewButton(){
+        simulatorGUI.getExternalViewButton().setDisable(false);
+    }
+
+
 
     /**
      * Displays a log message in the UI.

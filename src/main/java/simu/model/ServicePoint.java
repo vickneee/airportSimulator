@@ -44,11 +44,8 @@ ServicePoint implements Comparable<ServicePoint>{
 		reserved = true;
 		double serviceTime = generator.sample();
 		totalServiceTime += serviceTime;
-		// Schedules a new event, including the service time, and passes this ServicePoint instance.
-		// The service time will later be provided to the Customer.
-		// When the Customer exits the gate, their total stayed time will be used to compute the total waiting time
-		// by subtracting the total service time.
-		eventList.add(new Event(eventTypeScheduled, Clock.getInstance().getTime()+serviceTime, this, serviceTime));
+		// Schedules a new event and passes this ServicePoint instance.
+		eventList.add(new Event(eventTypeScheduled, Clock.getInstance().getTime()+serviceTime, this));
 	}
 
 	public boolean isReserved(){

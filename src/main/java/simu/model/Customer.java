@@ -94,23 +94,4 @@ public class Customer {
         }
     }
 
-    /**
-     * Accumulates the total service time for a customer by adding the provided service duration.
-     *
-     * @param time The duration of the service to be added.
-     */
-    public void cumulateServicedTime(double time) {
-        servicedTime += time;
-    }
-
-    /**
-     * Calculates the total waiting time of a customer.
-     * The waiting time is determined by subtracting the total service time from the
-     * difference between the removal time and the arrival time.
-     *
-     * @return The total waiting time of the customer.
-     */
-    public double calculateTotalWaitingTime() {
-        return removalTime - arrivalTime - servicedTime;
-    }
 }

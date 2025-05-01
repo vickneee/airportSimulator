@@ -6,15 +6,13 @@ import eduni.distributions.Bernoulli;
 import eduni.distributions.DiscreteGenerator;
 import eduni.distributions.Negexp;
 import eduni.distributions.Normal;
+import javafx.application.Platform;
 import simu.framework.*;
 import database.ServicePointConfig;
 import eduni.distributions.Uniform;
 import eduni.distributions.ContinuousGenerator;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class MyEngine extends Engine implements IEngine {
@@ -26,6 +24,8 @@ public class MyEngine extends Engine implements IEngine {
     private ArrivalProcess arrivalProcess;
     private DiscreteGenerator euFlightGenerator;
     private int arrivalInterval;
+    private HashMap<String, HashMap<String, Double>> graphData;
+    private HashMap<String, Double> servicePointsUsageRatio;
     private double checkpointUsageRatio;
     private double securityCheckpointUsageRatio;
     private double passportControlPointUsageRatio;
@@ -35,13 +35,12 @@ public class MyEngine extends Engine implements IEngine {
     private int totalNonEUServicedCustomer = 0;
     private int totalServicedCustomer = 0;
     private double serviceThroughput;
+    private HashMap<String, Double> averageServiceTimes;
     private double averageCheckinServiceTime;
     private double averageSecurityServiceTime;
     private double averagePassportControlServiceTime;
     private double averageEUGateServiceTime;
     private double averageNonEUGateServiceTime;
-    private double totalWaitingTime = 0;
-    private double averageWaitingTime;
 
     private boolean isRunning = true; // Flag to control running state
     private boolean isResetting = false; // Flag to control resetting state
@@ -195,10 +194,6 @@ public class MyEngine extends Engine implements IEngine {
             case DEP1: // Check-in completion event.
                 // Remove the customer from the current check-in queue.
                 a = t.getServicePoint().removeQueue();
-                // Retrieves the service time from the associated ServicePoint in the event class
-                // and passes it to the Customer class to store it.
-                // This step is necessary for calculating the waiting time later.
-                a.cumulateServicedTime(t.getServiceTime());
                 // Find the security check point with the shortest queue
                 ServicePoint securityCheckPoint = Collections.min(securityCheckPoints);
                 // Move the customer to the security check queue.
@@ -209,10 +204,6 @@ public class MyEngine extends Engine implements IEngine {
             case DEP2:// Security check completion event.
                 // Remove the customer from the current security check queue.
                 a = t.getServicePoint().removeQueue();
-                // Retrieves the service time from the associated ServicePoint in the event class
-                // and passes it to the Customer class to store it.
-                // This step is necessary for calculating the waiting time later.
-                a.cumulateServicedTime(t.getServiceTime());
                 // Determine the next service point based on the customer's flight type.
                 if (a.getIsEUFlight()) {
                     // Find the EU gate with the shortest queue and move the customer there.
@@ -229,16 +220,9 @@ public class MyEngine extends Engine implements IEngine {
             case DEP3:// EU gate processing event.
                 // Remove the customer from the EU gate queue.
                 a = t.getServicePoint().removeQueue();
-                // Retrieves the service time from the associated ServicePoint in the event class
-                // and passes it to the Customer class to store it.
-                // This step is necessary for calculating the waiting time later.
-                a.cumulateServicedTime(t.getServiceTime());
                 a.setRemovalTime(Clock.getInstance().getTime());
                 totalEUServicedCustomer += 1;
                 a.reportResults((Controller) controller);
-                // When a customer exits the gate, their total waiting time is added to the overall totalWaitingTime.
-                // This accumulated value will later be used to calculate the average waiting time.
-                totalWaitingTime += a.calculateTotalWaitingTime();
                 // a.reportResults(controller.getSimulatorGUI()); // Pass the simulator GUI to the reportResults method
                 updateQueueLengths(); // Update queue lengths
                 break;
@@ -246,10 +230,6 @@ public class MyEngine extends Engine implements IEngine {
             case DEP4:// Passport control processing event (Non-EU flights).
                 // Remove the customer from the passport control queue.
                 a = t.getServicePoint().removeQueue();
-                // Retrieves the service time from the associated ServicePoint in the event class
-                // and passes it to the Customer class to store it.
-                // This step is necessary for calculating the waiting time later.
-                a.cumulateServicedTime(t.getServiceTime());
                 // Find the Non-EU gate with the shortest queue and move the customer there.
                 ServicePoint NonEUGate = Collections.min(NonEUGates);
                 NonEUGate.addQueue(a);
@@ -259,20 +239,14 @@ public class MyEngine extends Engine implements IEngine {
             case DEP5:// Non-EU gate processing event.
                 // Remove the customer from the Non-EU gate queue.
                 a = t.getServicePoint().removeQueue();
-                // Retrieves the service time from the associated ServicePoint in the event class
-                // and passes it to the Customer class to store it.
-                // This step is necessary for calculating the waiting time later.
-                a.cumulateServicedTime(t.getServiceTime());
                 a.setRemovalTime(Clock.getInstance().getTime());
                 totalNonEUServicedCustomer += 1;
                 a.reportResults((Controller) controller);
-                // When a customer exits the gate, their total waiting time is added to the overall totalWaitingTime.
-                // This accumulated value will later be used to calculate the average waiting time.
-                totalWaitingTime += a.calculateTotalWaitingTime();
                 updateQueueLengths(); // Update queue lengths
                 break;
         }
     }
+
 
     /**
      * Updates the queue lengths for various service points in the airport simulation.
@@ -320,8 +294,6 @@ public class MyEngine extends Engine implements IEngine {
         results += "Passport control average service time: " + averagePassportControlServiceTime + " (time units)\n\n";
         results += "EU gate average service time: " + averageEUGateServiceTime + " (time units)\n\n";
         results += "Non-EU gate average service time: " + averageNonEUGateServiceTime + " (time units)\n\n";
-        calculateAverageWaitingTime();
-        results += "The average waiting time: " + roundToTwoDecimals(averageWaitingTime) + " (time units)\n\n";
         // Calculate the usage ratios for different service points
         calculateServiceTimesUsageRatio();
         results += "Checkin-point usage ratio: " + checkpointUsageRatio + "%\n\n";
@@ -331,14 +303,23 @@ public class MyEngine extends Engine implements IEngine {
         results += "Non-EU gate usage ratio: " + NonEUGateUsageRatio + "%\n\n";
         // Calculate the service throughput
         calculateServiceThroughput();
-        System.out.println("The service throughput, number of clients serviced related to the time: " + serviceThroughput);
-        results += "The service throughput, number of clients serviced related to the time: " + serviceThroughput + "\n\n";
+        System.out.println("The service throughput is " + serviceThroughput + " passengers per time unit.");
+        results += "The service throughput is " + serviceThroughput + " passengers per time unit." + "\n\n";
 
         // Print the results to the console
         controller.showResults(results);
 
         // Print the results to the logArea in the GUI
         controller.showLogArea("\nSimulation ended.");
+
+        //prepare data for the graph to be sent to the view
+        graphData = new HashMap<>();
+        graphData.put("usageRatio", servicePointsUsageRatio);
+        graphData.put("averageServiceTime", averageServiceTimes);
+
+        // Make the external view button clickable by setting disable to false
+        controller.setExternalViewButton();
+
     }
 
     /**
@@ -406,11 +387,17 @@ public class MyEngine extends Engine implements IEngine {
      * This method assigns the calculated usage ratio to corresponding variables.
      */
     private void calculateServiceTimesUsageRatio() {
+        servicePointsUsageRatio = new HashMap<>();
         checkpointUsageRatio = roundToTwoDecimals(calculateUsageRatio(checkinPoints, "Checkin-point"));
+        servicePointsUsageRatio.put("Check-in", checkpointUsageRatio);
         securityCheckpointUsageRatio = roundToTwoDecimals(calculateUsageRatio(securityCheckPoints, "Security check"));
+        servicePointsUsageRatio.put("Security", securityCheckpointUsageRatio);
         passportControlPointUsageRatio = roundToTwoDecimals(calculateUsageRatio(passportControlPoints, "Passport control"));
+        servicePointsUsageRatio.put("Passport", passportControlPointUsageRatio);
         EUGateUsageRatio = roundToTwoDecimals(calculateUsageRatio(EUGates, "EU gate"));
+        servicePointsUsageRatio.put("EU Gate", EUGateUsageRatio);
         NonEUGateUsageRatio = roundToTwoDecimals(calculateUsageRatio(NonEUGates, "Non-EU gate"));
+        servicePointsUsageRatio.put("Non-EU Gate", NonEUGateUsageRatio);
     }
 
     /**
@@ -429,6 +416,9 @@ public class MyEngine extends Engine implements IEngine {
         }
 
         double usageRatio = totalServiceTime / totalSimulationTime * 100;
+        if(usageRatio > 100){
+            usageRatio = 100;
+        }
         System.out.println(servicePointName + "'s usage ratio is " + usageRatio + "%.");
         return usageRatio;
     }
@@ -444,11 +434,17 @@ public class MyEngine extends Engine implements IEngine {
      * Calculates the average service times for different service points in the airport simulation.
      */
     private void calculateAverageServiceTimes() {
+        averageServiceTimes = new HashMap<>();
         averageCheckinServiceTime = roundToTwoDecimals(calculateAverageServiceTime(checkinPoints, "Checkin-point"));
+        averageServiceTimes.put("Check-in", averageCheckinServiceTime);
         averageSecurityServiceTime = roundToTwoDecimals(calculateAverageServiceTime(securityCheckPoints, "Security check"));
+        averageServiceTimes.put("Security", averageSecurityServiceTime);
         averagePassportControlServiceTime = roundToTwoDecimals(calculateAverageServiceTime(passportControlPoints, "Passport control"));
+        averageServiceTimes.put("Passport", averagePassportControlServiceTime);
         averageEUGateServiceTime = roundToTwoDecimals(calculateAverageServiceTime(EUGates, "EU gate"));
+        averageServiceTimes.put("EU Gate", averageEUGateServiceTime);
         averageNonEUGateServiceTime = roundToTwoDecimals(calculateAverageServiceTime(NonEUGates, "Non-EU gate"));
+        averageServiceTimes.put("Non-EU Gate", averageNonEUGateServiceTime);
     }
 
     /**
@@ -486,11 +482,18 @@ public class MyEngine extends Engine implements IEngine {
     }
 
     /**
-     * Calculates the average waiting time based on total waiting time and total serviced customers.
+     * Retrieves graph data from the model and sends it to the view through the controller.
+     * If the graph data is available, it returns the stored data.
+     * If no data is present, it returns null.
+     *
+     * @return A HashMap containing graph data, or null if no data is available.
      */
-    private void calculateAverageWaitingTime() {
-        averageWaitingTime = totalWaitingTime / totalServicedCustomer;
-        System.out.printf("The average waiting time: %.2f", averageWaitingTime);
+    public HashMap<String, HashMap<String, Double>> getGraphData(){
+        if(graphData.size() != 0){
+            return graphData;
+        } else{
+            return null;
+        }
     }
 
     /**
@@ -520,8 +523,6 @@ public class MyEngine extends Engine implements IEngine {
             totalEUServicedCustomer = 0;
             totalNonEUServicedCustomer = 0;
             totalServicedCustomer = 0;
-            totalWaitingTime = 0;
-            averageWaitingTime = 0;
             averageCheckinServiceTime = 0;
             averageSecurityServiceTime = 0;
             averagePassportControlServiceTime = 0;
