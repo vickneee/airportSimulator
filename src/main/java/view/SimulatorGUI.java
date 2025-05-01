@@ -76,7 +76,7 @@ public class SimulatorGUI extends Application implements ISimulatorGUI {
     private Slider euPercentSlider = new Slider(0, 100, 30);
     private Label euPercentSliderLabel = new Label("Amount of EU Passengers (%):");
 
-    //Data for creating graphs
+    // Data for creating graphs
     private HashMap<String, Double> graphDataUsageRatio;
     private HashMap<String, Double> graphDataAverageTimes;
 
@@ -555,7 +555,7 @@ public class SimulatorGUI extends Application implements ISimulatorGUI {
         return playPauseButton; // Return the play/pause button in Node format
     }
 
-    public Node getExternalViewButton(){return externalViewButton; } // Return the Graphical View button
+    public Node getExternalViewButton(){ return externalViewButton; } // Return the Graphical View button
     // Add this method to the SimulatorGUI class
     public void setResetButtonDisabled(boolean disabled) {
         Platform.runLater(() -> resetButton.setDisable(disabled));
@@ -574,6 +574,7 @@ public class SimulatorGUI extends Application implements ISimulatorGUI {
     public void setGraphData(HashMap<String, HashMap<String, Double>> data){
         graphDataUsageRatio = data.get("usageRatio");
         graphDataAverageTimes = data.get("averageServiceTime");
+        // Enable the external view button after data is set
         openExternalView();
     }
 
@@ -591,7 +592,7 @@ public class SimulatorGUI extends Application implements ISimulatorGUI {
         // Common X-axis order for both graphs
         String[] serviceOrder = {"Check-in", "Security", "Passport", "EU Gate", "Non-EU Gate"};
 
-        // X-axis for usage ratio
+        // X-axis for a usage ratio
         CategoryAxis xAxisUsage = new CategoryAxis();
         xAxisUsage.setLabel("Service Points");
 
@@ -599,7 +600,7 @@ public class SimulatorGUI extends Application implements ISimulatorGUI {
         CategoryAxis xAxisServiceTime = new CategoryAxis();
         xAxisServiceTime.setLabel("Service Points");
 
-        // Y-axis for usage ratio
+        // Y-axis for a usage ratio
         NumberAxis yAxisUsage = new NumberAxis();
         yAxisUsage.setLabel("Usage Ratio (%)");
 

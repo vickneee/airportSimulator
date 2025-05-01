@@ -24,14 +24,22 @@ ServicePoint implements Comparable<ServicePoint>{
 		this.eventTypeScheduled = tyyppi;
 	}
 
-	public void addQueue(Customer a){   // First customer at the queue is always on the service
-		jono.add(a);
+	public void addQueue(Customer a) {   // The first customer at the queue is always on the service
+        // Start measuring waiting time when the customer joins the queue
+        a.startWaiting(Clock.getInstance().getTime());
+        jono.add(a);
 	}
 
-	public Customer removeQueue(){ // Removes the first customer from the queue
-		reserved = false;
-		return jono.poll();
-	}
+    public Customer removeQueue() { // Removes the first customer from the queue
+        reserved = false;
+        Customer customer = jono.poll();
+
+        // Stop measuring waiting time when a customer is removed from the queue
+        if (customer != null) {
+            customer.stopWaiting(Clock.getInstance().getTime());
+        }
+        return customer;
+    }
 
 	/**
 	 * Starts a new service for a customer who is waiting in the queue.
@@ -84,10 +92,8 @@ ServicePoint implements Comparable<ServicePoint>{
 		return totalServiceTime;
 	}
 
-    public void reset() {
-    }
-
     public void clear() {
-
+        jono.clear();
+        reserved = false;
     }
 }
