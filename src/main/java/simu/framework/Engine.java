@@ -5,6 +5,7 @@ import controller.IControllerMtoV;
 import simu.model.ServicePoint;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * The Engine class is responsible for managing the simulation process.

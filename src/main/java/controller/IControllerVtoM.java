@@ -25,4 +25,6 @@ public interface IControllerVtoM {
     void setServicePointConfigs(List<ServicePointConfig> configs);
     List<Airport> getAllAirports();
     List<ServicePointConfig> getConfigsByAirportId(ObjectId airportId);
+
+    void getGraphData();
 }
