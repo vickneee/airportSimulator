@@ -4,7 +4,6 @@ import javafx.application.Platform;
 import simu.framework.IEngine;
 import simu.model.MyEngine;
 import view.ISimulatorGUI;
-import view.IVisualisation;
 import view.SimulatorGUI;
 import view.Visualisation;
 import database.ServicePointConfig;
@@ -13,8 +12,9 @@ import database.ServicePointConfigDAO;
 import database.Airport;
 import org.bson.types.ObjectId;
 
-import java.util.HashMap;
 import java.util.List;
+
+import simu.framework.ArrivalProcess; // Import the ArrivalProcess class
 
 public class Controller implements IControllerVtoM, IControllerMtoV {   // NEW
     private IEngine engine;
@@ -26,6 +26,7 @@ public class Controller implements IControllerVtoM, IControllerMtoV {   // NEW
     private ServicePointConfigDAO servicePointConfigDAO = new ServicePointConfigDAO();
     private SimulatorGUI simulatorGUI;
     private boolean isStopping = false; // Flag to track stopping state
+    private ArrivalProcess arrivalProcess; // Arrival process instance
 
     public Controller(ISimulatorGUI ui) {
         this.ui = ui;
@@ -97,7 +98,7 @@ public class Controller implements IControllerVtoM, IControllerMtoV {   // NEW
         double euPercentage = simulatorGUI.getEUFlightPercentageSlider().getValue() / 100.0;
         engine.setEUFlightPercentage(euPercentage);
 
-        // Finally clear display and start engine
+        // Finally, clear display and start engine
         ui.getVisualisation().clearDisplay();
         ((Thread) engine).start();
     }
@@ -143,15 +144,17 @@ public class Controller implements IControllerVtoM, IControllerMtoV {   // NEW
             ui.setEndingTime(time);
             // Enable the reset button when simulation shows end time
             simulatorGUI.setResetButtonDisabled(false);
-
-            // Disable the play / pause button when simulation ends
+            simulatorGUI.setArrivalSliderDisabled(true);
+            simulatorGUI.setEUFlightPercentageSliderDisabled(true);
+            simulatorGUI.setSlowDownButtonDisabled(true);
+            simulatorGUI.setSpeedUpButtonDisabled(true);
             simulatorGUI.getPlayPauseButton().setDisable(true);
         });
     }
 
     /**
-     * Visualises a new customer in the UI.
-     * This method is called from the engine to update the visualisation with a new customer.
+     * Visualizes a new customer in the UI.
+     * This method is called from the engine to update the visualization with a new customer.
      */
     @Override
     public void visualiseCustomer() {
@@ -160,7 +163,7 @@ public class Controller implements IControllerVtoM, IControllerMtoV {   // NEW
 
     /**
      * Updates the queue lengths in the UI.
-     * This method is called from the engine to update the visualisation with the current queue lengths.
+     * This method is called from the engine to update the visualization with the current queue lengths.
      *
      * @param queueLengths A list of lists representing the lengths of different queues.
      */
@@ -320,11 +323,9 @@ public class Controller implements IControllerVtoM, IControllerMtoV {   // NEW
         simulatorGUI.getExternalViewButton().setDisable(false);
     }
 
-
-
     /**
      * Displays a log message in the UI.
-     * This method is called from the engine to update the visualisation with a log message.
+     * This method is called from the engine to update the visualization with a log message.
      *
      * @param log The log message to be displayed.
      */
@@ -358,18 +359,14 @@ public class Controller implements IControllerVtoM, IControllerMtoV {   // NEW
     @Override
     public void updateUIAfterReset() {
         Platform.runLater(() -> {
-            // Update UI using the simulatorGUI reference
             simulatorGUI.getStartButton().setDisable(false);
-            simulatorGUI.getPlayPauseButton().setDisable(false);
-            // Update airport selection
+            simulatorGUI.getPlayPauseButton().setDisable(true);
             simulatorGUI.getAirportComboBox().setDisable(false);
-            // Reset other UI elements
-            simulatorGUI.getPauseButton().setDisable(false);
-            simulatorGUI.getStopButton().setDisable(false);
-
-            simulatorGUI.getResetButton().setDisable(false); // Only for simulation time
-
-            // Enable sliders
+            simulatorGUI.getTimeSpinner().setDisable(false);
+            simulatorGUI.getDelaySpinner().setDisable(false);
+            simulatorGUI.getSlowDownButton().setDisable(true);
+            simulatorGUI.getSpeedUpButton().setDisable(true);
+            simulatorGUI.getResetButton().setDisable(true);
             simulatorGUI.getArrivalSlider().setDisable(false);
             simulatorGUI.getEUFlightPercentageSlider().setDisable(false);
         });
@@ -393,14 +390,19 @@ public class Controller implements IControllerVtoM, IControllerMtoV {   // NEW
         // Create a completely new engine instance and initialize it
         initializeEngine();
 
-        // Update UI
-        Platform.runLater(() -> {
-            simulatorGUI.getStartButton().setDisable(true);
-            simulatorGUI.getPlayPauseButton().setDisable(false);
-            simulatorGUI.getAirportComboBox().setDisable(true);
-            simulatorGUI.getStopButton().setDisable(false);
-            simulatorGUI.getResetButton().setDisable(true);
-        });
+//        // Update UI
+//        Platform.runLater(() -> {
+//            simulatorGUI.getAirportComboBox().setDisable(false);
+//            simulatorGUI.getArrivalSlider().setDisable(false);
+//            simulatorGUI.getEUFlightPercentageSlider().setDisable(false);
+//            simulatorGUI.getTimeSpinner().setDisable(false);
+//            simulatorGUI.getDelaySpinner().setDisable(false);
+//            simulatorGUI.getSlowDownButton().setDisable(true);
+//            simulatorGUI.getSpeedUpButton().setDisable(true);
+//            simulatorGUI.getStartButton().setDisable(false);
+//            simulatorGUI.getPlayPauseButton().setDisable(true);
+//            simulatorGUI.getResetButton().setDisable(true);
+//        });
     }
 
 }
