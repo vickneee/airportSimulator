@@ -245,12 +245,17 @@ public class SimulatorGUI extends Application implements ISimulatorGUI {
             });
 
             startButton.setOnAction(event -> {
-                // controller.startSimulation();
                 controller.startSimulation();
-                startButton.setDisable(true); // Disable the button after starting
                 airportComboBox.setDisable(true); // Disable airport selection after starting
+                arrivalSlider.setDisable(false); // Enable arrival slider after starting
+                getEUFlightPercentageSlider().setDisable(false); // Enable EU flight percentage slider after starting
                 timeSpinner.setDisable(true); // Disable time spinner after starting
                 delay.setDisable(true); // Disable delay spinner after starting
+                getSlowDownButton().setDisable(false); // Enable the slow-down button after starting
+                getSpeedUpButton().setDisable(false); // Enable slow down and speed up buttons after starting
+                startButton.setDisable(true); // Disable the button after starting
+                playPauseButton.setDisable(false); // Enable the play/pause button after starting
+                resetButton.setDisable(true);
                 externalViewButton.setDisable(true);// Disable externalViewButton after starting
             });
 
