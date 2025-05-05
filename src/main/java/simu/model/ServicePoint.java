@@ -26,7 +26,7 @@ ServicePoint implements Comparable<ServicePoint>{
 
 	public void addQueue(Customer a) {   // The first customer at the queue is always on the service
         // Start measuring waiting time when the customer joins the queue
-        a.startWaiting(Clock.getInstance().getTime());
+        a.startWaiting(); // New call without argument
         jono.add(a);
 	}
 
@@ -36,7 +36,7 @@ ServicePoint implements Comparable<ServicePoint>{
 
         // Stop measuring waiting time when a customer is removed from the queue
         if (customer != null) {
-            customer.stopWaiting(Clock.getInstance().getTime());
+            customer.stopWaiting(); // New call without argument
         }
         return customer;
     }

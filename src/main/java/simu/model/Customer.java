@@ -20,19 +20,19 @@ public class Customer {
      * The EU flight status is set based on the provided parameter.
      *
      * @param isEUFlight A numeric value indicating if the flight is an EU flight (1 for true, otherwise false).
+     * @param controller The controller instance, can be null in test environments.
      */
     public Customer(long isEUFlight, Controller controller) {
         id = i++;
 
-        if (isEUFlight == 1) {
-            this.isEUFlight = true;
-        } else {
-            this.isEUFlight = false;
-        }
+        this.isEUFlight = (isEUFlight == 1);
+
         arrivalTime = Clock.getInstance().getTime();
         Trace.out(Trace.Level.INFO, "New customer #" + id + " arrived at  " + arrivalTime);
-        // Show the line in the log area
-        controller.showLogArea("\nNew customer #" + id + " arrived at  " + String.format("%.2f", arrivalTime) + " (time units)");
+        // Show the line in the log area only if controller is not null
+        if (controller != null) {
+            controller.showLogArea("\nNew customer #" + id + " arrived at  " + String.format("%.2f", arrivalTime) + " (time units)");
+        }
     }
 
     public double getRemovalTime() {
@@ -77,7 +77,7 @@ public class Customer {
         Trace.out(Trace.Level.INFO, "Customer #" + id + " stayed: " + String.format("%.2f",(removalTime - arrivalTime))+ " (time units)");
         Trace.out(Trace.Level.INFO, "Customer #" + id + " flight type: " + (isEUFlight ? "EU flight" : "Non-EU flight"));
 
-        // Log to GUI
+        // Log to GUI only if controller is not null
         if (controller != null) {
             controller.showLogArea("\nCustomer #" + id + " ready! ");
             controller.showLogArea("Customer #" + id + " arrived: " +  String.format("%.2f", arrivalTime) + " (time units)");
@@ -88,8 +88,7 @@ public class Customer {
 
         sum += (long) (removalTime - arrivalTime);
         double mean = (double) sum / id;
-        // System.out.println("Current mean of the customer service times " + mean);
-        // Log to GUI
+        // Log mean to GUI only if controller is not null
         if (controller != null) {
             controller.showLogArea("Current mean of the customer service times: " + String.format("%.2f", mean) + " (time units)");
         }
@@ -101,24 +100,25 @@ public class Customer {
      */
     public static void resetIdCounter() {
         i = 1;
-        sum = 0; // Optionally reset the sum as well if needed
+        sum = 0; // Also reset sum when resetting ID
     }
 
-    public void startWaiting(double currentTime) {
-        this.startWaitingTime = currentTime;
-        // System.out.println("Customer " + id + " started waiting at " + currentTime);
+    // Added methods for waiting time calculation if needed by other parts
+    public void startWaiting() {
+        startWaitingTime = Clock.getInstance().getTime();
     }
 
-    public void stopWaiting(double currentTime) {
-        double waitTime = currentTime - startWaitingTime;
-        this.totalWaitingTime += waitTime;
-        /*
-        System.out.println("Customer " + id + " stopped waiting at " + currentTime +
-                ", waited for " + waitTime + ", total waiting: " + totalWaitingTime);
-                */
+    public void stopWaiting() {
+        if (startWaitingTime > 0) { // Ensure startWaiting was called
+            totalWaitingTime += (Clock.getInstance().getTime() - startWaitingTime);
+            startWaitingTime = 0; // Reset for next potential wait
+        }
     }
 
-    // Add a new method if you need total time in a system
+    public double getTotalWaitingTime() {
+        return totalWaitingTime;
+    }
+
     public double getTotalTimeInSystem() {
         return removalTime - arrivalTime;
     }
