@@ -8,14 +8,29 @@ import org.bson.types.ObjectId;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Data Access Object (DAO) for ServicePointConfig entities.
+ * Handles database operations related to service point configurations,
+ * primarily retrieving configurations for a specific airport.
+ */
 public class ServicePointConfigDAO {
     private final MongoCollection<Document> collection;
 
+    /**
+     * Constructs a ServicePointConfigDAO and initializes the MongoDB collection for service point configurations.
+     */
     public ServicePointConfigDAO() {
         MongoDatabase db = MongoDBManager.getDatabase();
         this.collection = db.getCollection("servicePointConfigs");
     }
 
+    /**
+     * Retrieves all service point configurations for a given airport ID.
+     *
+     * @param airportId The ObjectId of the airport for which to retrieve configurations.
+     * @return A list of ServicePointConfig objects associated with the given airportId.
+     *         Returns an empty list if no configurations are found or if an error occurs.
+     */
     public List<ServicePointConfig> getConfigsByAirportId(ObjectId airportId) {
         List<ServicePointConfig> configs = new ArrayList<>();
         try (MongoCursor<Document> cursor = collection.find(new Document("airportId", airportId)).iterator()) {

@@ -7,7 +7,22 @@ import org.bson.Document;
 
 import java.util.Arrays;
 
+/**
+ * Handles the initial data migration for the airport simulator database.
+ * This class is responsible for populating the database with initial airport data
+ * and their corresponding service point configurations.
+ * It should be run once to set up the database.
+ */
 public class DataMigration {
+    /**
+     * Main method to execute the data migration process.
+     * Connects to the MongoDB database, clears existing data in airports and
+     * servicePointConfigs collections for idempotency, and then inserts new
+     * sample data for Helsinki, Oslo, and Arlanda airports along with their
+     * service point configurations.
+     *
+     * @param args Command line arguments (not used).
+     */
     public static void main(String[] args) {
         MongoDatabase db = MongoDBManager.getDatabase();
         MongoCollection<Document> airports = db.getCollection("airports");
