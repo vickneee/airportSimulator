@@ -12,9 +12,9 @@ including arrival time between passengers, amount of passengers traveling out of
 (doesnt impact results). The middle of the interface displays the current queues on service points, and the right side 
 of the interface displays the results of the simulation.
 
-<img src="src/main/resources/simu.png" alt="Simulation Interface" width="600"/>
+<img src="src/main/resources/simu.png" alt="Simulation Interface" width="850"/>
 
-<img src="src/main/resources/graph.png" alt="Simulation Interface" width="200" />
+<img src="src/main/resources/graph.png" alt="Simulation Interface" width="400" />
 
 ## Technologies Used
 
