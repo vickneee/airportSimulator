@@ -1,4 +1,4 @@
-# Airport Simulation
+# Airport Simulator 
 
 This project simulates the process of passengers going through an airport. The simulation is based on a queueing model, 
 where passengers arrive at the airport and go through various service points such as check-in, security, passport, and 
@@ -9,7 +9,7 @@ of passengers traveling out of the EU, simulation time, and delay.
 
 In the simulation interface the user has the option to configure the simulation using the parameters given to the user 
 including arrival time between passengers, amount of passengers traveling out of the EU, simulation time, and delay 
-(doesnt impact results). The middle of the interface displays the current queues on service points, and the right side 
+(doesn't impact results). The middle of the interface displays the current queues on service points, and the right side 
 of the interface displays the results of the simulation.
 
 <img src="src/main/resources/simu-start.png" alt="Simulation Interface" width="850"/>
