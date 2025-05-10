@@ -4,7 +4,6 @@ import java.text.DecimalFormat;
 
 import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -30,6 +29,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * SimulatorGUI class is responsible for creating the graphical user interface (GUI)
+ * for the airport simulation. It extends the JavaFX Application class and implements
+ * the ISimulatorGUI interface.
+ */
 public class SimulatorGUI extends Application implements ISimulatorGUI {
 
 	// Controller object (UI needs)
@@ -80,6 +84,12 @@ public class SimulatorGUI extends Application implements ISimulatorGUI {
     private HashMap<String, Double> graphDataUsageRatio;
     private HashMap<String, Double> graphDataAverageTimes;
 
+    /**
+     * The start method is the main entry point for JavaFX applications.
+     * It sets up the primary stage and initializes the GUI components.
+     *
+     * @param primaryStage The primary stage for this application.
+     */
 	@Override
 	public void start(Stage primaryStage) {
 		// UI creation
@@ -248,15 +258,15 @@ public class SimulatorGUI extends Application implements ISimulatorGUI {
                 controller.startSimulation();
                 airportComboBox.setDisable(true); // Disable airport selection after starting
                 arrivalSlider.setDisable(false); // Enable arrival slider after starting
-                getEUFlightPercentageSlider().setDisable(false); // Enable EU flight percentage slider after starting
+                euPercentSlider.setDisable(false); // Enable EU flight percentage slider after starting
                 timeSpinner.setDisable(true); // Disable time spinner after starting
                 delay.setDisable(true); // Disable delay spinner after starting
-                getSlowDownButton().setDisable(false); // Enable the slow-down button after starting
-                getSpeedUpButton().setDisable(false); // Enable slow down and speed up buttons after starting
+                slowButton.setDisable(false); // Enable the slow-down button after starting
+                speedUpButton.setDisable(false); // Enable the speed-up button after starting
                 startButton.setDisable(true); // Disable the button after starting
                 playPauseButton.setDisable(false); // Enable the play/pause button after starting
                 resetButton.setDisable(true);
-                externalViewButton.setDisable(true);// Disable externalViewButton after starting
+                externalViewButton.setDisable(true);// Disable the externalViewButton after starting
             });
 
             playPauseButton.setOnAction(event -> {
@@ -282,11 +292,11 @@ public class SimulatorGUI extends Application implements ISimulatorGUI {
             // Set initial states of the controls
             airportComboBox.setDisable(false);
             arrivalSlider.setDisable(false);
-            getEUFlightPercentageSlider().setDisable(false);
-            getTimeSpinner().setDisable(false);
-            getDelaySpinner().setDisable(false);
-            getSlowDownButton().setDisable(true);
-            getSpeedUpButton().setDisable(true);
+            euPercentSlider.setDisable(false);
+            timeSpinner.setDisable(false);
+            delay.setDisable(false);
+            slowButton.setDisable(true);
+            speedUpButton.setDisable(true);
             startButton.setDisable(false);
             playPauseButton.setDisable(true);
             resetButton.setDisable(true);
@@ -422,6 +432,7 @@ public class SimulatorGUI extends Application implements ISimulatorGUI {
     /**
      * Initializes the GUI components and sets the trace level.
      * This method is called when the application is launched.
+     * It sets up the controller and initializes the GUI components.
      */
     @Override
     public void init(){
@@ -438,61 +449,139 @@ public class SimulatorGUI extends Application implements ISimulatorGUI {
         }
     }
 
+    /**
+     * GetTime method returns the current time value from the time spinner.
+     * This method is called by the controller to get the time value.
+     *
+     * @return The current time value from the time spinner.
+     */
 	/* UI interface methods (controller calls) */
 	@Override
 	public double getTime(){
 		return timeSpinner.getValue(); // Use the Spinner value
 	}
 
+    /**
+     * GetDelay method returns the current delay value from the delay spinner.
+     * This method is called by the controller to get the delay value.
+     *
+     * @return The current delay value from the delay spinner.
+     */
 	@Override
 	public long getDelay(){
 		return delay.getValue(); // Use the Spinner value
 	}
 
+    /**
+     * SetEndingTime method sets the total time label to the given time.
+     * This method is called by the controller to update the total time.
+     *
+     * @param time The total time to be set.
+     */
 	@Override
 	public void setEndingTime(double time) {
 		 DecimalFormat formatter = new DecimalFormat("#0.00");
 		 this.totalTime.setText(formatter.format(time));
 	}
 
+    /**
+     * GetVisualisation method returns the visualization component of the GUI.
+     * This method is called by the controller to get the visualization.
+     *
+     * @return The visualization component of the GUI.
+     */
 	@Override
 	public IVisualisation getVisualisation() {
 		 return display;
 	}
 
+    /**
+     * LogEvent method logs the given message to the log area.
+     * This method is called by the controller to log events.
+     *
+     * @param message The message to be logged.
+     */
     public void logEvent(String message) {
         Platform.runLater(() -> logArea.appendText(message + "\n"));
     }
 
+    /**
+     * SetResultsText method sets the result text in the result area.
+     * This method is called by the controller to update the results.
+     *
+     * @param results The results text to be set.
+     */
     public void setResultsText(String results) {
         resultArea.setText(results);
     }
 
+    /**
+     * GetLogArea method returns the log area.
+     * This method is called by the controller to get the log area.
+     *
+     * @return The log area.
+     */
     public TextArea getResultArea() {
         return resultArea;
     }
 
+    /**
+     * ClearLogArea method clears the log area.
+     * This method is called by the controller to clear the log.
+     *
+     * Use Platform.runLater to ensure that the UI is updated on the JavaFX Application Thread.
+     */
     public void clearLogArea() {
         Platform.runLater(() -> logArea.clear());
     }
 
+    /**
+     * ClearResultsArea method clears the result area.
+     * This method is called by the controller to clear the results.
+     *
+     * Use Platform.runLater to ensure that the UI is updated on the JavaFX Application Thread.
+     */
     public void clearResultsArea() {
         Platform.runLater(() -> resultArea.clear());
     }
 
+    /**
+     * GetArrivalSlider method returns the arrival slider.
+     * This method is called by the controller to get the arrival slider.
+     *
+     * @return The arrival slider.
+     */
     public Slider getArrivalSlider() {
         return arrivalSlider;
     }
 
+    /**
+     * GetCurrentConfigs method returns the current service point configurations.
+     * This method is called by the controller to get the current configurations.
+     *
+     * @return The current service point configurations.
+     */
     // Add a getter for the selected configs if needed
     public List<ServicePointConfig> getCurrentConfigs() {
         return currentConfigs;
     }
 
+    /**
+     * GetEUFlightPercentageSlider method returns the EU flight percentage slider.
+     * This method is called by the controller to get the EU flight percentage slider.
+     *
+     * @return The EU flight percentage slider.
+     */
     public Slider getEUFlightPercentageSlider() {
         return euPercentSlider; // Ensure `euPercentSlider` is properly initialized in the GUI
     }
 
+    /**
+     * UpdateServicePointSummaryLabel method updates the service point summary label.
+     * This method is called by the controller to update the service point summary.
+     *
+     * @param configs The list of service point configurations.
+     */
     // Removed servicePointSummaryLabel and UI label update. Only print to console.
     private void updateServicePointSummaryLabel(List<ServicePointConfig> configs) {
         if (configs == null || configs.isEmpty()) {
@@ -509,6 +598,12 @@ public class SimulatorGUI extends Application implements ISimulatorGUI {
         System.out.println(sb.toString());
     }
 
+    /**
+     * PrintServicePointSummaryToLog method prints the service point summary to the log area.
+     * This method is called by the controller to log the service point summary.
+     *
+     * @param configs The list of service point configurations.
+     */
     private void printServicePointSummaryToLog(List<ServicePointConfig> configs) {
         if (configs == null || configs.isEmpty()) {
             logEvent("No service point configs found for this airport.");
@@ -523,45 +618,111 @@ public class SimulatorGUI extends Application implements ISimulatorGUI {
         }
         logEvent(sb.toString());
     }
-    
+
+    /**
+     * GetStartButton method returns the start button.
+     * These methods return the corresponding UI components in Node format.
+     *
+     * Controller calls this method to get the start button.
+     */
     public Node getStartButton() {
         return startButton; // Return the start button in Node format
     }
 
+    /**
+     * GetStopButton method returns the stop button.
+     * These methods return the corresponding UI components in Node format.
+     *
+     * Controller calls this method to get the stop button.
+     */
     public Node getStopButton() {
         return stopButton; // Return the stop button in Node format
     }
 
+    /**
+     * GetTimeSpinner method returns the time spinner.
+     * These methods return the corresponding UI components in Node format.
+     *
+     * Controller calls this method to get the time spinner.
+     */
     public Node getTimeSpinner() {
         return timeSpinner; // Return the slow button in Node format
     }
 
+    /**
+     * GetDelaySpinner method returns the delay spinner.
+     * These methods return the corresponding UI components in Node format.
+     *
+     * Controller calls this method to get the delay spinner.
+     */
     public Node getDelaySpinner() {
         return delay; // Return the delay button in Node format
     }
 
+    /**
+     * GetSlowButton method returns the slow button.
+     * These methods return the corresponding UI components in Node format.
+     *
+     * Controller calls this method to get the slow button.
+     */
     public Node getSlowDownButton() {
         return slowButton; // Return the slow-down button in Node format
     }
 
+    /**
+     * GetSpeedUpButton method returns the speed-up button.
+     * These methods return the corresponding UI components in Node format.
+     *
+     * Controller calls this method to get the speed-up button.
+     */
     public Node getSpeedUpButton() {
         return speedUpButton; // Return the speed-up button in Node format
     }
 
+    /**
+     * GetResetButton method returns the reset button.
+     * These methods return the corresponding UI components in Node format.
+     *
+     * Controller calls this method to get the reset button.
+     */
     public Node getResetButton() {
         return resetButton; // Return the reset button in Node format
     }
 
+    /**
+     * GetAirportComboBox method returns the airport ComboBox.
+     * These methods return the corresponding UI components in Node format.
+     *
+     * Controller calls this method to get the airport ComboBox.
+     */
     public Node getAirportComboBox() {
         return airportComboBox; // Return the airport ComboBox in Node format
     }
 
+    /**
+     * GetPlayPauseButton method returns the play/pause button.
+     * These methods return the corresponding UI components in Node format.
+     *
+     * Controller calls this method to get the play/pause button.
+     */
     public Node getPlayPauseButton() {
         return playPauseButton; // Return the play/pause button in Node format
     }
 
-    public Node getExternalViewButton(){ return externalViewButton; } // Return the Graphical View button
-    // Add this method to the SimulatorGUI class
+    /**
+     * GetExternalViewButton method returns the external view button.
+     * These methods return the corresponding UI components in Node format.
+     *
+     * Controller calls this method to get the external view button.
+     */
+    public Node getExternalViewButton(){ return externalViewButton; }
+
+    /**
+     * SetResetButtonDisabled method sets the reset button to be disabled or enabled.
+     * This method is called by the controller to enable or disable the reset button.
+     *
+     * @param disabled true to disable the button, false to enable it.
+     */
     public void setResetButtonDisabled(boolean disabled) {
         Platform.runLater(() -> resetButton.setDisable(disabled));
     }
@@ -576,7 +737,7 @@ public class SimulatorGUI extends Application implements ISimulatorGUI {
      *             "usageRatio" represents service usage ratios
      *             and "waitingTimes" represents service point's average waiting times.
      */
-    public void setGraphData(HashMap<String, HashMap<String, Double>> data){
+    public void setGraphData(HashMap<String, HashMap<String, Double>> data) {
         graphDataUsageRatio = data.get("usageRatio");
         graphDataAverageTimes = data.get("averageServiceTime");
         // Enable the external view button after data is set
@@ -613,7 +774,7 @@ public class SimulatorGUI extends Application implements ISimulatorGUI {
         NumberAxis yAxisServiceTime = new NumberAxis();
         yAxisServiceTime.setLabel("Average Service Time (time units)");
 
-        /** BarChart for Usage Ratio */
+        /* BarChart for Usage Ratio */
         BarChart<String, Number> usageChart = new BarChart<>(xAxisUsage, yAxisUsage);
         usageChart.setTitle("Service Usage Ratio");
 
@@ -628,7 +789,7 @@ public class SimulatorGUI extends Application implements ISimulatorGUI {
 
         usageChart.getData().add(usageSeries);
 
-        /** BarChart for Average Service Time */
+        /* BarChart for Average Service Time */
         BarChart<String, Number> serviceTimeChart = new BarChart<>(xAxisServiceTime, yAxisServiceTime);
         serviceTimeChart.setTitle("Average Service Time per Service Point");
 
@@ -647,7 +808,7 @@ public class SimulatorGUI extends Application implements ISimulatorGUI {
         usageChart.setPrefSize(600, 300);
         serviceTimeChart.setPrefSize(600, 350);
 
-        /** Set up layout */
+        /* Set up layout */
         VBox layout = new VBox(10);
         layout.setPadding(new Insets(10));
         layout.getChildren().addAll(usageChart, serviceTimeChart);
@@ -659,18 +820,42 @@ public class SimulatorGUI extends Application implements ISimulatorGUI {
         externalStage.show();
     }
 
+    /**
+     * SetSlowDownButtonDisabled method sets the slow-down button to be disabled or enabled.
+     * This usingRunLater to ensure that the UI is updated on the JavaFX Application Thread.
+     *
+     * This method is called by the controller to enable or disable the slow-down button.
+     */
     public void setSlowDownButtonDisabled(boolean b) {
         Platform.runLater(() -> slowButton.setDisable(b));
     }
 
+    /**
+     * SetSpeedUpButtonDisabled method sets the speed-up button to be disabled or enabled.
+     * This usingRunLater to ensure that the UI is updated on the JavaFX Application Thread.
+     *
+     * This method is called by the controller to enable or disable the speed-up button.
+     */
     public void setSpeedUpButtonDisabled(boolean b) {
         Platform.runLater(() -> speedUpButton.setDisable(b));
     }
 
+    /**
+     * SetArrivalSliderDisabled method sets the arrival slider to be disabled or enabled.
+     * This usingRunLater to ensure that the UI is updated on the JavaFX Application Thread.
+     *
+     * This method is called by the controller to enable or disable the arrival slider.
+     */
     public void setArrivalSliderDisabled(boolean b) {
         Platform.runLater(() -> arrivalSlider.setDisable(b));
     }
 
+    /**
+     * SetEUFlightPercentageSliderDisabled method sets the EU flight percentage slider to be disabled or enabled.
+     * This usingRunLater to ensure that the UI is updated on the JavaFX Application Thread.
+     *
+     * This method is called by the controller to enable or disable the EU flight percentage slider.
+     */
     public void setEUFlightPercentageSliderDisabled(boolean b) {
         Platform.runLater(() -> euPercentSlider.setDisable(b));
     }
