@@ -14,6 +14,11 @@ import eduni.distributions.ContinuousGenerator;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * MyEngine is the main simulation engine for the airport simulation.
+ * It handles the initialization, event processing, and results reporting.
+ * The engine manages various service points and customer flow through the airport.
+ */
 public class MyEngine extends Engine implements IEngine {
     private ArrayList<ServicePoint> checkinPoints;
     private ArrayList<ServicePoint> securityCheckPoints;
@@ -47,8 +52,20 @@ public class MyEngine extends Engine implements IEngine {
 
     private List<Customer> servicedCustomers;
 
+    /**
+     * Constructor for MyEngine.
+     * Initializes the engine with the specified parameters and service points.
+     *
+     * @param controller      The controller for managing the simulation.
+     * @param arrivalInterval  The interval between customer arrivals.
+     * @param checkinNum      The number of check-in points.
+     * @param securityNum     The number of security check points.
+     * @param passportNum     The number of passport control points.
+     * @param EUNum          The number of EU gates.
+     * @param NonEUNum       The number of Non-EU gates.
+     */
     public MyEngine(IControllerMtoV controller, int arrivalInterval, int checkinNum, int securityNum, int passportNum, int EUNum, int NonEUNum) { // NEW
-        super(controller); // NEW
+        super(controller);
         this.arrivalInterval = arrivalInterval; // Set the arrival interval
         // Initialize the main list for all service points
         servicePoints = new ArrayList<>();
@@ -77,6 +94,13 @@ public class MyEngine extends Engine implements IEngine {
         arrivalProcess = new ArrivalProcess(new Negexp(arrivalInterval, 1), eventList, EventType.ARR1);
     }
 
+    /**
+     * Constructor for MyEngine with service point configurations.
+     * Initializes the engine with the specified parameters and service points based on configurations.
+     *
+     * @param controller The controller for managing the simulation.
+     * @param configs    The list of service point configurations.
+     */
     public MyEngine(IControllerMtoV controller, List<ServicePointConfig> configs) {
         super(controller);
         // Initialize the main list for all service points
@@ -179,19 +203,19 @@ public class MyEngine extends Engine implements IEngine {
     protected void runEvent(Event t) {  // B phase events
 
         // Check if the simulation is paused
-        controller.checkPaused();// Pause the simulation if needed
+        controller.checkPaused(); // Pause the simulation if needed
 
-        Customer a;// Temporary variable to hold the customer being processed.
+        Customer a; // Temporary variable to hold the customer being processed.
 
         switch ((EventType) t.getType()) {
-            case ARR1:// Customer arrival event.
+            case ARR1: // Customer arrival event.
                 // Find the check-in point with the shortest queue.
                 ServicePoint checkinPoint = Collections.min(checkinPoints);
                 // Add a new customer to the chosen check-in point queue.
                 // Generates a value of either 1 or 0 using the Bernoulli distribution and passes it as a parameter to create a new Customer object
                 checkinPoint.addQueue(new Customer(euFlightGenerator.sample(), (Controller) controller));
                 arrivalProcess.generateNext();
-                controller.visualiseCustomer(); // NEW
+                controller.visualiseCustomer(); // Visualize the customer arrival
                 updateQueueLengths(); // Update queue lengths after arrival
                 break;
 
@@ -381,7 +405,7 @@ public class MyEngine extends Engine implements IEngine {
      * which simulates the likelihood of assigning a flight to the EU region.</p>
      *
      * @param percentage The probability of success (0.0 <= prob <= 1.0).
-     *                   *             Represents the likelihood of a "successful" outcome in the Bernoulli trial.
+     * Represents the likelihood of a "successful" outcome in the Bernoulli trial.
      */
     @Override
     public void setEUFlightPercentage(double percentage) {
@@ -583,6 +607,11 @@ public class MyEngine extends Engine implements IEngine {
         this.selectedAirport = airport;
     }
 
+    /**
+     * Retrieves the average time spent in the system by all serviced customers.
+     *
+     * @return A string representing the average time in the system.
+     */
     private String getAverageTimeInSystem() {
         double totalTimeInSystem = 0;
         for (Customer customer : servicedCustomers) {
