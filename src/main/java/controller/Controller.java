@@ -17,6 +17,11 @@ import java.util.List;
 
 import simu.framework.ArrivalProcess; // Import the ArrivalProcess class
 
+/**
+ * Controller class that implements the IControllerVtoM and IControllerMtoV interfaces.
+ * This class is responsible for managing the simulation, including starting, stopping,
+ * and updating the simulation engine and UI.
+ */
 public class Controller implements IControllerVtoM, IControllerMtoV {   // NEW
     private IEngine engine;
     private ISimulatorGUI ui;
@@ -392,6 +397,12 @@ public class Controller implements IControllerVtoM, IControllerMtoV {   // NEW
         initializeEngine();
     }
 
+    /**
+     * Sets the service point configurations for the simulation.
+     * This method is called to set the configurations for the service points.
+     *
+     * @param configs A list of ServicePointConfig objects representing the configurations.
+     */
     @Override
     public void setServicePointConfigs(List<ServicePointConfig> configs) {
         this.servicePointConfigs = configs;
