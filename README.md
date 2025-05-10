@@ -12,9 +12,11 @@ including arrival time between passengers, amount of passengers traveling out of
 (doesnt impact results). The middle of the interface displays the current queues on service points, and the right side 
 of the interface displays the results of the simulation.
 
+<img src="src/main/resources/simu-start.png" alt="Simulation Interface" width="850"/>
+
 <img src="src/main/resources/simu.png" alt="Simulation Interface" width="850"/>
 
-<img src="src/main/resources/graph.png" alt="Simulation Interface" width="400" />
+<img src="src/main/resources/graph.png" alt="Simulation Interface" width="350" />
 
 ## Technologies Used
 
@@ -26,7 +28,7 @@ of the interface displays the results of the simulation.
 - **JUnit5**: A testing framework used for unit testing the simulation code.
 - **Javadoc**: A documentation generator used for generating API documentation from the Java source code.
 
-### Project team
+## Project team
 
 - Riku Kaartoaho
 - Riku Toivanen
