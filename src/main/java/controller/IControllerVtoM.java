@@ -9,7 +9,10 @@ import org.bson.types.ObjectId;
 
 import java.util.List;
 
-/* Interface for the UI */
+/**
+ * Interface for the controller to communicate with the model.
+ * This interface defines methods that the view can call to update the model.
+ */
 public interface IControllerVtoM {
     void startSimulation();
     // void start();
@@ -17,7 +20,6 @@ public interface IControllerVtoM {
     void decreaseSpeed();
     void pauseSimulation();
     void resumeSimulation();
-
     void stopSimulation();
     void resetSimulation();
     void setSimulatorGUI(SimulatorGUI simulatorGUI);
