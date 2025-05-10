@@ -67,10 +67,7 @@ public class Controller implements IControllerVtoM, IControllerMtoV {   // NEW
         });
     }
 
-    /**
-     * Starts the simulation.
-     * This method initializes the engine and starts the simulation.
-     */
+    /* Engine control: */
     @Override
     public void startSimulation() {
         start();

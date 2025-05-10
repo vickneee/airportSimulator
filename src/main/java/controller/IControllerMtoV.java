@@ -2,10 +2,7 @@ package controller;
 
 import java.util.List;
 
-/**
- * Interface for the controller to communicate with the view.
- * This interface defines methods that the controller can call to update the view.
- */
+/* Interface for the engine */
 public interface IControllerMtoV {
     void showEndTime(double time);
     void visualiseCustomer();

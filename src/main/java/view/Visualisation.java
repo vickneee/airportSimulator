@@ -7,10 +7,6 @@ import javafx.scene.paint.Color;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Visualization class that extends Canvas and implements IVisualisation.
- * This class is responsible for drawing the simulation visualization on the canvas.
- */
 public class Visualisation extends Canvas implements IVisualisation {
     private GraphicsContext gc;
     private int width, height;
@@ -28,12 +24,6 @@ public class Visualisation extends Canvas implements IVisualisation {
     private final int QUEUE_WIDTH = 100;
     private List<List<Integer>> queueLengths = new ArrayList<>();
 
-    /**
-     * Constructor for the Visualization class.
-     *
-     * @param w the width of the canvas
-     * @param h the height of the canvas
-     */
     public Visualisation(int w, int h) {
         super(w, h);
         this.width = w;
@@ -44,19 +34,12 @@ public class Visualisation extends Canvas implements IVisualisation {
         drawLocations();
     }
 
-    /**
-     * Clears the display by filling the canvas with a background color.
-     */
     @Override
     public void clearDisplay() {
         gc.setFill(Color.WHITE); // Or any background color you prefer
         gc.fillRect(0, 0, width, height);
     }
 
-    /**
-     * Draws the locations on the canvas.
-     * This method iterates through the service point names and draws them at their respective positions.
-     */
     private void drawLocations() {
         for (String servicePointName : servicePointNames) {
             Position position = getLocationPosition(servicePointName);
@@ -64,25 +47,11 @@ public class Visualisation extends Canvas implements IVisualisation {
         }
     }
 
-    /**
-     * Draws a location on the canvas.
-     *
-     * @param locationName the name of the location
-     * @param x           the x-coordinate
-     * @param y           the y-coordinate
-     */
     private void drawLocation(String locationName, double x, double y) {
         gc.setFill(Color.BLACK);
         gc.fillText(locationName, x - 20, y + 25);
     }
 
-    /**
-     * Draws a customer on the canvas based on the queue length.
-     *
-     * @param queueLength the length of the queue
-     * @param x          the x-coordinate
-     * @param y          the y-coordinate
-     */
     private void drawCustomer(int queueLength, double x, double y) {
         // Set color based on queue length
         Color queueColor;
@@ -99,10 +68,6 @@ public class Visualisation extends Canvas implements IVisualisation {
         gc.fillRect(x, y, QUEUE_WIDTH, QUEUE_HEIGHT);
     }
 
-    /**
-     * Draws the queues on the canvas.
-     * This method iterates through the queue lengths and draws them at their respective positions.
-     */
     private void drawQueues() {
         double verticalSpacing = 50;
         double horizontalOffset = -20;
@@ -136,24 +101,11 @@ public class Visualisation extends Canvas implements IVisualisation {
         }
     }
 
-    /**
-     * Draws a queue on the canvas.
-     *
-     * @param name the name of the queue
-     * @param x    the x-coordinate
-     * @param y    the y-coordinate
-     */
     private void drawQueue(String name, double x, double y) {
         gc.setFill(Color.GRAY);
         gc.fillText(name, x, y);
     }
 
-    /**
-     * Gets the position of a location based on its name.
-     *
-     * @param location the name of the location
-     * @return the position of the location
-     */
     private Position getLocationPosition(String location) {
         return switch (location) {
             case ARRIVAL -> new Position(600, 50);
@@ -166,9 +118,6 @@ public class Visualisation extends Canvas implements IVisualisation {
         };
     }
 
-    /**
-     * Position class to hold x and y coordinates.
-     */
     private static class Position {
         double x;
         double y;
@@ -179,31 +128,18 @@ public class Visualisation extends Canvas implements IVisualisation {
         }
     }
 
-    /**
-     * This method is called by the controller to create a new customer.
-     *
-     * The actual visual creation happens in newCustomer(Customer customer).
-     */
     @Override
     public void newCustomer() {
         // This method is called by the controller, but we need the Customer object to get its ID.
         // The actual visual creation happens in newCustomer(Customer customer).
     }
 
-    /**
-     * This method is called by the controller to update the queue lengths.
-     *
-     * @param lengths the length of the queue
-     */
     @Override
     public void updateQueueLengths(List<List<Integer>> lengths) {
         this.queueLengths = lengths;
         redrawCanvas();
     }
 
-    /**
-     * Redraws the canvas by clearing it and drawing the locations and queues.
-     */
     private void redrawCanvas() {
         clearDisplay();
         drawLocations();

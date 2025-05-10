@@ -5,6 +5,7 @@ import controller.IControllerMtoV;
 import simu.model.ServicePoint;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * The Engine class is responsible for managing the simulation process.
@@ -15,7 +16,7 @@ import java.util.ArrayList;
 public abstract class Engine extends Thread implements IEngine {  // NEW DEFINITIONS
 	protected double simulationTime = 0;	// time when the simulation will be stopped
 	private long delay = 0;
-	private Clock clock; // to simplify the code (clock.getClock() instead Clock.getInstance().getClock())
+	private Clock clock; // in order to simplify the code (clock.getClock() instead Clock.getInstance().getClock())
 	protected EventList eventList;
 	protected ArrayList<ServicePoint> servicePoints;
 	protected IControllerMtoV controller; // NEW
@@ -30,8 +31,8 @@ public abstract class Engine extends Thread implements IEngine {  // NEW DEFINIT
      * Constructor for the Engine class.
      * Initializes the clock and event list.
      */
-    public Engine(IControllerMtoV controller) {
-		this.controller = controller;
+    public Engine(IControllerMtoV controller) {	// NEW
+		this.controller = controller;  			// NEW
 		clock = Clock.getInstance();
 		eventList = new EventList();
 		/* Service Points are created in simu.model-package's class who is inheriting the Engine class */
@@ -52,7 +53,7 @@ public abstract class Engine extends Thread implements IEngine {  // NEW DEFINIT
      *
      * @param time The time to be set for the simulation.
      */
-	@Override
+	@Override // NEW
 	public void setDelay(long time) {
 		this.delay = time;
 	}
@@ -62,7 +63,7 @@ public abstract class Engine extends Thread implements IEngine {  // NEW DEFINIT
      *
      * @return The current delay time.
      */
-	@Override
+	@Override // NEW
 	public long getDelay() {
 		return delay;
 	}
@@ -101,7 +102,7 @@ public abstract class Engine extends Thread implements IEngine {  // NEW DEFINIT
      * Attempts to process C events for service points.
      * This method checks if any service points are available and processes them.
      */
-	private void tryCEvents() {
+	private void tryCEvents() {    // define protected, if you want to overwrite
 		for (ServicePoint p: servicePoints){
 			if (!p.isReserved() && p.isOnQueue()){
 				p.beginService();
@@ -142,29 +143,10 @@ public abstract class Engine extends Thread implements IEngine {  // NEW DEFINIT
         }
 	}
 
-    /**
-     * This method is used to reset the simulation.
-     * It can be overridden by subclasses to provide specific reset functionality.
-     */
     protected void reset() {
     }
 
-    /**
-     * Initializes the simulation.
-     * This method is called to set up the initial state of the simulation.
-     * It can be overridden by subclasses to provide specific initialization functionality.
-     */
     protected abstract void initialization(); 	// Defined in simu.model-package's class who is inheriting the Engine class
-
-    /**
-     * This method is used to run a specific event.
-     * It can be overridden by subclasses to provide specific event handling functionality.
-     */
-    protected abstract void runEvent(Event t);	// Defined in simu.model-package's class who is inheriting the Engine class
-
-    /**
-     * This method is used to handle the results of the simulation.
-     * It can be overridden by subclasses to provide specific result handling functionality.
-     */
-    protected abstract void results(); 			// Defined in simu.model-package's class who is inheriting the Engine class
+	protected abstract void runEvent(Event t);	// Defined in simu.model-package's class who is inheriting the Engine class
+	protected abstract void results(); 			// Defined in simu.model-package's class who is inheriting the Engine class
 }
