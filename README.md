@@ -20,8 +20,9 @@ of the interface displays the results of the simulation.
 <img src="src/main/resources/graph.png" alt="Simulation Interface" width="350" />
 <p>
 
-JavaDoc documentation: [https://vickneee.github.io/airportSimulator/doc/index.html](https://vickneee.github.io/airportSimulator/doc/index.html)
+## JavaDoc 
 
+JavaDoc documentation: [https://vickneee.github.io/airportSimulator/doc/index.html](https://vickneee.github.io/airportSimulator/doc/index.html)
 
 ## Technologies Used
 
