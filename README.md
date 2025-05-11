@@ -12,11 +12,16 @@ including arrival time between passengers, amount of passengers traveling out of
 (doesn't impact results). The middle of the interface displays the current queues on service points, and the right side 
 of the interface displays the results of the simulation.
 
+<p align="center">
 <img src="src/main/resources/simu-start.png" alt="Simulation Interface" width="850"/>
 
 <img src="src/main/resources/simu.png" alt="Simulation Interface" width="850"/>
 
 <img src="src/main/resources/graph.png" alt="Simulation Interface" width="350" />
+<p>
+
+JavaDoc documentation: [https://vickneee.github.io/airportSimulator/doc/index.html](https://vickneee.github.io/airportSimulator/doc/index.html)
+
 
 ## Technologies Used
 
@@ -25,7 +30,7 @@ of the interface displays the results of the simulation.
 - **JavaFX**: A Java library used for building the graphical user interface (GUI) of the simulation.
 - **MongoDB**: A NoSQL database used for storing airport configurations data.
 - **Mockito**: A mocking framework used for unit testing the simulation code.
-- **JUnit5**: A testing framework used for unit testing the simulation code.
+- **JUnit 5**: A testing framework used for unit testing the simulation code.
 - **Javadoc**: A documentation generator used for generating API documentation from the Java source code.
 
 ## Project team
