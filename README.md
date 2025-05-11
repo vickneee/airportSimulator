@@ -32,7 +32,7 @@ JavaDoc documentation: [https://vickneee.github.io/airportSimulator/doc/index.ht
 - **MongoDB**: A NoSQL database used for storing airport configurations data.
 - **Mockito**: A mocking framework used for unit testing the simulation code.
 - **JUnit 5**: A testing framework used for unit testing the simulation code.
-- **Javadoc**: A documentation generator used for generating API documentation from the Java source code.
+- **JavaDoc**: A documentation generator used for generating API documentation from the Java source code.
 
 ## Project team
 
