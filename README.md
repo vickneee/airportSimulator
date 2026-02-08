@@ -1,5 +1,7 @@
 # Airport Simulator 
 
+## Object-Oriented Java Project
+
 This project simulates the process of passengers going through an airport. The simulation is based on a queueing model, 
 where passengers arrive at the airport and go through various service points such as check-in, security, passport, and 
 boarding. The simulation allows users to configure various parameters such as arrival time between passengers, number 
