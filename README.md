@@ -22,6 +22,11 @@ of the interface displays the results of the simulation.
 <img src="src/main/resources/graph.png" alt="Simulation Interface" width="350" />
 <p>
 
+
+## Demo Video
+
+[Watch the demo on YouTube](https://www.youtube.com/watch?v=zKhnMIr5bM4)
+
 ## JavaDoc 
 
 JavaDoc documentation: [https://vickneee.github.io/airportSimulator/doc/index.html](https://vickneee.github.io/airportSimulator/doc/index.html)
